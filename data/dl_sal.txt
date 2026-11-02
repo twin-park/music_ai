@@ -1,0 +1,363 @@
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/021_A0v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=021_A0v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/021_A0v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=021_A0v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/021_A0v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=021_A0v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/021_A0v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=021_A0v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/024_C1v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=024_C1v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/024_C1v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=024_C1v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/024_C1v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=024_C1v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/024_C1v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=024_C1v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/027_D%231v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=027_D#1v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/027_D%231v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=027_D#1v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/027_D%231v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=027_D#1v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/027_D%231v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=027_D#1v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/030_F%231v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=030_F#1v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/030_F%231v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=030_F#1v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/030_F%231v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=030_F#1v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/030_F%231v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=030_F#1v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/033_A1v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=033_A1v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/033_A1v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=033_A1v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/033_A1v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=033_A1v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/033_A1v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=033_A1v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/036_C2v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=036_C2v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/036_C2v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=036_C2v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/036_C2v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=036_C2v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/036_C2v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=036_C2v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/039_D%232v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=039_D#2v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/039_D%232v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=039_D#2v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/039_D%232v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=039_D#2v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/039_D%232v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=039_D#2v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/042_F%232v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=042_F#2v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/042_F%232v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=042_F#2v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/042_F%232v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=042_F#2v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/042_F%232v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=042_F#2v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/045_A2v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=045_A2v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/045_A2v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=045_A2v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/045_A2v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=045_A2v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/045_A2v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=045_A2v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/048_C3v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=048_C3v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/048_C3v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=048_C3v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/048_C3v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=048_C3v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/048_C3v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=048_C3v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/051_D%233v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=051_D#3v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/051_D%233v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=051_D#3v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/051_D%233v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=051_D#3v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/051_D%233v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=051_D#3v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/054_F%233v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=054_F#3v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/054_F%233v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=054_F#3v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/054_F%233v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=054_F#3v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/054_F%233v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=054_F#3v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/057_A3v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=057_A3v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/057_A3v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=057_A3v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/057_A3v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=057_A3v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/057_A3v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=057_A3v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/060_C4v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=060_C4v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/060_C4v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=060_C4v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/060_C4v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=060_C4v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/060_C4v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=060_C4v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/063_D%234v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=063_D#4v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/063_D%234v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=063_D#4v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/063_D%234v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=063_D#4v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/063_D%234v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=063_D#4v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/066_F%234v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=066_F#4v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/066_F%234v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=066_F#4v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/066_F%234v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=066_F#4v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/066_F%234v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=066_F#4v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/069_A4v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=069_A4v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/069_A4v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=069_A4v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/069_A4v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=069_A4v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/069_A4v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=069_A4v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/072_C5v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=072_C5v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/072_C5v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=072_C5v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/072_C5v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=072_C5v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/072_C5v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=072_C5v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/075_D%235v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=075_D#5v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/075_D%235v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=075_D#5v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/075_D%235v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=075_D#5v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/075_D%235v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=075_D#5v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/078_F%235v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=078_F#5v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/078_F%235v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=078_F#5v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/078_F%235v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=078_F#5v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/078_F%235v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=078_F#5v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/081_A5v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=081_A5v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/081_A5v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=081_A5v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/081_A5v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=081_A5v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/081_A5v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=081_A5v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/084_C6v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=084_C6v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/084_C6v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=084_C6v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/084_C6v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=084_C6v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/084_C6v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=084_C6v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/087_D%236v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=087_D#6v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/087_D%236v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=087_D#6v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/087_D%236v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=087_D#6v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/087_D%236v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=087_D#6v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/090_F%236v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=090_F#6v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/090_F%236v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=090_F#6v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/090_F%236v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=090_F#6v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/090_F%236v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=090_F#6v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/093_A6v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=093_A6v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/093_A6v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=093_A6v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/093_A6v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=093_A6v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/093_A6v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=093_A6v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/096_C7v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=096_C7v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/096_C7v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=096_C7v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/096_C7v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=096_C7v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/096_C7v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=096_C7v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/099_D%237v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=099_D#7v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/099_D%237v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=099_D#7v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/099_D%237v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=099_D#7v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/099_D%237v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=099_D#7v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/102_F%237v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=102_F#7v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/102_F%237v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=102_F#7v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/102_F%237v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=102_F#7v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/102_F%237v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=102_F#7v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/105_A7v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=105_A7v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/105_A7v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=105_A7v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/105_A7v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=105_A7v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/105_A7v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=105_A7v15.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/108_C8v04.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=108_C8v04.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/108_C8v08.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=108_C8v08.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/108_C8v12.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=108_C8v12.wav
+https://huggingface.co/datasets/EinWWW/Accurate-Salamander-Grand-Piano-Yamaha-C5/resolve/main/AccurateSalamanderGrandPianoV6.2beta2_48khz24bit/48khz24bit/108_C8v15.wav
+  dir=/home/drboom/project/car_bgm/data/salamander
+  out=108_C8v15.wav
+https://huggingface.co/datasets/mileslilly/soundfonts/resolve/main/Sonatina_Symphonic_Orchestra.sf2
+  dir=/home/drboom/project/car_bgm/data/sf
+  out=Sonatina_Symphonic_Orchestra.sf2

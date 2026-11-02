@@ -1,0 +1,30 @@
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00000-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00000-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00001-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00001-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00002-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00002-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00003-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00003-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00004-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00004-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00005-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00005-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00006-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00006-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/pool-00007-of-00008.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=pool-00007-of-00008.parquet
+https://huggingface.co/datasets/korigamik/lakh-midicaps-dedup/resolve/main/data/selection-00000-of-00001.parquet
+  dir=/home/drboom/project/car_bgm/data/midicaps
+  out=selection-00000-of-00001.parquet
+https://huggingface.co/datasets/jspr/symbolic-jazz-standards/resolve/main/data/train-00000-of-00001.parquet
+  dir=/home/drboom/project/car_bgm/data/jazzstd
+  out=train.parquet

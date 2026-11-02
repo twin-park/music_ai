@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>차량 BGM AI</title>
+<style>
+:root{--bg:#0f1114;--card:#1a1d22;--card2:#23272e;--text:#f2f4f6;--sub:#8b95a1;--line:#2c3138;--green:#22c55e;--green2:#16a34a;--red:#f87171}
+:root[data-theme=light]{--bg:#f4f5f7;--card:#fff;--card2:#eef0f3;--text:#191f28;--sub:#6b7684;--line:#e5e8eb;--green:#16a34a;--green2:#15803d}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center}
+main{width:100%;max-width:560px;padding:28px 16px 40px;position:relative}
+h1{font-size:26px;font-weight:700;line-height:1.35;letter-spacing:-.3px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;color:var(--sub);font-size:14px}
+.ic{background:none;border:0;color:var(--sub);font-size:18px;cursor:pointer;padding:6px;border-radius:8px}
+.ic:hover{background:var(--card2)}
+.screen{display:none;animation:fade .25s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 8px;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;text-align:center;transition:transform .1s,border-color .15s;word-break:keep-all}
+.tile:hover{border-color:var(--green)}
+.tile:active{transform:scale(.97)}
+.link{display:block;margin:30px auto 0;background:none;border:0;color:var(--sub);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.steps{margin-top:30px;display:flex;flex-direction:column;gap:18px}
+.st{display:flex;align-items:center;gap:14px;font-size:17px;color:var(--sub)}
+.st .b{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.st.now{color:var(--text);font-weight:600}
+.st.now .b{border-color:var(--green)}
+.st.now .b::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1s infinite}
+.st.ok{color:var(--text)}
+.st.ok .b{background:var(--green);border-color:var(--green);color:#fff}
+.st.ok .b::after{content:"✓"}
+.st small{display:block;font-size:13px;color:var(--sub);font-weight:400;margin-top:2px}
+@keyframes pulse{50%{opacity:.25}}
+.time{margin-top:34px;color:var(--sub);font-size:14px}
+.meta{color:var(--sub);font-size:14px;margin-top:8px}
+.player{margin-top:30px;background:var(--card);border-radius:20px;padding:22px;display:flex;align-items:center;gap:18px}
+.pp{width:60px;height:60px;border-radius:50%;background:var(--green);border:0;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center}
+.pp:active{transform:scale(.95)}
+.pp svg{width:24px;height:24px;fill:#fff}
+.bar{flex:1}
+.track{height:6px;background:var(--card2);border-radius:3px;cursor:pointer;position:relative}
+.fill{height:100%;width:0;background:var(--green);border-radius:3px}
+.tt{display:flex;justify-content:space-between;color:var(--sub);font-size:12px;margin-top:8px;font-variant-numeric:tabular-nums}
+.btn{width:100%;padding:17px;border-radius:14px;border:0;font-size:17px;font-weight:600;cursor:pointer;margin-top:12px}
+.btn.g{background:var(--green);color:#fff}
+.btn.g:hover{background:var(--green2)}
+.btn.s{background:var(--card2);color:var(--text)}
+.row{display:flex;gap:8px;margin-top:22px}
+.chip{flex:1;background:none;border:1px solid var(--line);color:var(--sub);border-radius:12px;padding:11px 6px;font-size:14px;cursor:pointer}
+.chip:hover{color:var(--text)}
+pre{margin-top:12px;background:var(--card);border-radius:14px;padding:14px;font:12.5px/1.55 ui-monospace,Consolas,monospace;max-height:46vh;overflow:auto;white-space:pre;color:var(--text)}
+.info{margin-top:12px;background:var(--card);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.6;color:var(--sub)}
+.info b{color:var(--text);font-weight:600}
+textarea{width:100%;height:46vh;margin-top:22px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:14px;font:13px/1.5 ui-monospace,Consolas,monospace;resize:vertical}
+.err{margin-top:24px;color:var(--red);font-size:15px;line-height:1.5;word-break:break-all}
+.hide{display:none}
+@media (max-width:400px){.tile{font-size:15px;padding:20px 4px}h1{font-size:23px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span>차량 BGM AI</span><button class="ic" id="theme" title="화면 밝기">◐</button></div>
+
+  <!-- 1. 고르기 -->
+  <section class="screen on" id="s-pick">
+    <h1>지금 어떤 분위기로<br>음악을 쓸까요?</h1>
+    <div class="grid" id="moods"></div>
+    <button class="link" onclick="show('s-mine')">내 악보 글자로 연주하기</button>
+  </section>
+
+  <!-- 2. 만드는 중 -->
+  <section class="screen" id="s-make">
+    <h1 id="mk-title">AI가 악보를 쓰고 있어요</h1>
+    <div class="steps" id="steps"></div>
+    <div class="time" id="mk-time"></div>
+    <div class="err hide" id="mk-err"></div>
+    <button class="btn s hide" id="mk-back" onclick="show('s-pick')">처음으로</button>
+  </section>
+
+  <!-- 3. 결과 -->
+  <section class="screen" id="s-done">
+    <h1 id="dn-title"></h1>
+    <div class="meta" id="dn-meta"></div>
+    <div class="player">
+      <button class="pp" id="pp" aria-label="재생"><svg id="pp-i" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></button>
+      <div class="bar"><div class="track" id="track"><div class="fill" id="fill"></div></div>
+        <div class="tt"><span id="cur">0:00</span><span id="dur">0:00</span></div></div>
+    </div>
+    <audio id="au" preload="auto"></audio>
+    <button class="btn g" id="again">한 곡 더</button>
+    <button class="btn s" onclick="show('s-pick')">분위기 바꾸기</button>
+    <div class="row">
+      <button class="chip" id="b-score">악보 보기 ▼</button>
+      <button class="chip" id="b-info">ⓘ 어떻게 썼나</button>
+      <button class="chip" id="b-folder">파일 폴더</button>
+    </div>
+    <div class="info hide" id="dn-info"></div>
+    <pre class="hide" id="dn-score"></pre>
+  </section>
+
+  <!-- 4. 내 악보 -->
+  <section class="screen" id="s-mine">
+    <h1>악보 글자를 붙여 넣으세요</h1>
+    <textarea id="mine" spellcheck="false" placeholder="[코드]&#10;EbM7 0~3.5&#10;&#10;[피아노 오른손]&#10;0 sol N 0~1.2 72&#10;-1 mi F 3~6 60"></textarea>
+    <button class="btn g" id="b-play">연주하기</button>
+    <button class="btn s" id="b-file">파일 고르기</button>
+    <input type="file" id="file" accept=".txt" class="hide">
+    <button class="link" onclick="show('s-pick')">돌아가기</button>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const api = (p, body) => fetch(p, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {}).then(r => r.json());
+let MOODS = [], last = null, poll = null;
+try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+$("theme").onclick = () => {
+  const t = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem("theme", t); } catch (e) {}
+};
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
+  if (id !== "s-done") { $("au").pause(); }
+  window.scrollTo(0, 0);
+}
+setInterval(() => fetch("/api/ping").catch(() => {}), 5000); fetch("/api/ping");
+
+api("/api/moods").then(ms => {
+  MOODS = ms;
+  $("moods").innerHTML = ms.map(m => `<button class="tile" data-id="${m.id}">${m.name}</button>`).join("");
+  document.querySelectorAll(".tile").forEach(b => b.onclick = () => make(b.dataset.id));
+});
+
+const STEPS = [["코드 진행", "진행 AI가 8개를 써 보고 하나 고름"], ["선율", "선율 AI가 단락마다 3번 써 보고 고름"],
+               ["편곡", "피아노 · 베이스 · 드럼 · 악기 배치"], ["연주", ""], ["마무리", "잔향 · 크기 맞추기"]];
+function drawSteps(step, note, mine) {
+  $("steps").innerHTML = STEPS.map(([n, sub], i) => {
+    if (mine && i < 2) return "";
+    const k = i + 1, cls = step > k ? "ok" : step === k ? "now" : "";
+    const s = (k === 4 && step === 4 && note) ? note + " 연주 중" : (k === 3 && mine) ? "악보 읽기" : sub;
+    return `<div class="st ${cls}"><span class="b"></span><div>${k === 3 && mine ? "악보" : n}${s ? `<small>${s}</small>` : ""}</div></div>`;
+  }).join("");
+}
+function run(req, title, mine) {
+  show("s-make");
+  $("mk-title").textContent = title;
+  $("mk-err").classList.add("hide"); $("mk-back").classList.add("hide");
+  drawSteps(mine ? 3 : 1, "", mine); $("mk-time").textContent = "";
+  req.then(r => {
+    if (!r.job) return fail(r.error || "시작하지 못했어요");
+    clearInterval(poll);
+    poll = setInterval(() => api("/api/job?id=" + r.job).then(j => {
+      drawSteps(j.step || (mine ? 3 : 1), j.note, mine);
+      $("mk-time").textContent = j.elapsed + "초";
+      if (j.state === "done") { clearInterval(poll); done(j.result); }
+      if (j.state === "error") { clearInterval(poll); fail(j.error); }
+    }).catch(() => {}), 700);
+  }).catch(e => fail(String(e)));
+}
+function fail(msg) {
+  $("mk-err").textContent = "만들지 못했어요 — " + msg;
+  $("mk-err").classList.remove("hide"); $("mk-back").classList.remove("hide");
+}
+function make(id, seed) {
+  last = {id};
+  const m = MOODS.find(x => x.id === id);
+  run(api("/api/make", {mood: id, seed}), `${m.name} — AI가 악보를 쓰고 있어요`, false);
+}
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+function done(r) {
+  show("s-done");
+  $("dn-title").textContent = r.title;
+  $("dn-meta").textContent = [r.key && r.key + "조", r.bpm && "♩=" + r.bpm, fmt(r.sec), r.seed && "씨앗 " + r.seed].filter(Boolean).join(" · ");
+  $("again").classList.toggle("hide", !r.seed);
+  const au = $("au");
+  au.src = "/out/" + encodeURIComponent(r.audio);
+  au.play().catch(() => {});
+  $("dn-info").innerHTML = (r.band ? `<b>편성</b> ${r.band}<br><b>공식</b> ${r.recipe}<br>` : "") +
+    `<b>만든 시간</b> ${r.took}초 · 파일 <b>${r.audio}</b>`;
+  $("dn-info").classList.add("hide"); $("dn-score").classList.add("hide"); $("b-score").textContent = "악보 보기 ▼";
+  fetch("/out/" + encodeURIComponent(r.txt)).then(x => x.text()).then(t => $("dn-score").textContent = t);
+}
+$("again").onclick = () => last && make(last.id);
+$("b-score").onclick = () => { const h = $("dn-score").classList.toggle("hide"); $("b-score").textContent = h ? "악보 보기 ▼" : "악보 접기 ▲"; };
+$("b-info").onclick = () => $("dn-info").classList.toggle("hide");
+$("b-folder").onclick = () => api("/api/open", {}).then(r => { if (!navigator.userAgent.includes("Windows")) alert(r.path); });
+
+const au = $("au");
+const icon = playing => $("pp-i").innerHTML = playing ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4l13 8-13 8z"/>';
+$("pp").onclick = () => au.paused ? au.play() : au.pause();
+au.onplay = () => icon(true); au.onpause = () => icon(false); au.onended = () => icon(false);
+au.ontimeupdate = () => { $("fill").style.width = (100 * au.currentTime / (au.duration || 1)) + "%"; $("cur").textContent = fmt(au.currentTime); };
+au.onloadedmetadata = () => $("dur").textContent = fmt(au.duration);
+$("track").onclick = e => { const r = $("track").getBoundingClientRect(); au.currentTime = (e.clientX - r.left) / r.width * (au.duration || 0); };
+
+$("b-play").onclick = () => run(api("/api/play", {text: $("mine").value}), "악보를 연주하고 있어요", true);
+$("b-file").onclick = () => $("file").click();
+$("file").onchange = e => { const f = e.target.files[0]; if (f) f.text().then(t => $("mine").value = t); };
+</script>
+</body>
+</html>

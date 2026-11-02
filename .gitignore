@@ -1,0 +1,49 @@
+# 기본은 전부 빼고, 올릴 것만 하나씩 다시 넣음
+# (학습 데이터 data/ 51GB · 학습 결과 runs/ · 빌드 · 음원 · 사운드폰트 · 피아노 샘플은 안 올림 → 큰 건 Release 에)
+/*
+!/.gitignore
+!/README.md
+!/PLAN.md
+!/기획안_초안.md
+!/conduct.py
+!/demo.py
+!/compose_sf2list.py
+!/compose/
+!/ear/
+!/music/
+!/score/
+!/web/
+!/win/
+!/engine/
+!/dist/
+!/data/
+
+# 어디에나
+__pycache__/
+*.pyc
+*.bak
+
+# 엔진: 빌드 결과 · float 모델 · 사운드폰트/피아노(링크) 는 빼고 int8 모델과 표만
+/engine/build/
+/engine/data/*
+!/engine/data/chord.bin
+!/engine/data/melody.bin
+!/engine/data/calib.txt
+!/engine/data/tune.txt
+
+# 악보 결과 · 웹 빌드/시험 음원 · 윈도우 묶음 빌드
+/score/out/
+/web/build*/
+/web/test/
+/win/build/
+/win/launcher/*.exe
+/win/launcher/*.pdb
+
+# 내보낸 것: 설명 글만
+/dist/*
+!/dist/읽어주세요.txt
+!/dist/상황별_파라미터.md
+
+# 학습 데이터: 어디서 받았는지 목록만
+/data/*
+!/data/dl_*.txt

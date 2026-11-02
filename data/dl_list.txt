@@ -1,0 +1,45 @@
+https://zenodo.org/api/records/14648209/files/data.tar.gz/content
+  dir=/home/drboom/project/car_bgm/data/pdmx
+  out=data.tar.gz
+https://zenodo.org/api/records/14648209/files/PDMX.csv/content
+  dir=/home/drboom/project/car_bgm/data/pdmx
+  out=PDMX.csv
+https://zenodo.org/api/records/14648209/files/subset_paths.tar.gz/content
+  dir=/home/drboom/project/car_bgm/data/pdmx
+  out=subset_paths.tar.gz
+https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf2
+  dir=/home/drboom/project/car_bgm/data/sf
+  out=MuseScore_General.sf2
+https://zenodo.org/api/records/4060432/files/FSD50K.ground_truth.zip/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.ground_truth.zip
+https://zenodo.org/api/records/4060432/files/FSD50K.metadata.zip/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.metadata.zip
+https://zenodo.org/api/records/4060432/files/FSD50K.doc.zip/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.doc.zip
+https://zenodo.org/api/records/4060432/files/FSD50K.dev_audio.zip/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.dev_audio.zip
+https://zenodo.org/api/records/4060432/files/FSD50K.dev_audio.z01/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.dev_audio.z01
+https://zenodo.org/api/records/4060432/files/FSD50K.dev_audio.z02/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.dev_audio.z02
+https://zenodo.org/api/records/4060432/files/FSD50K.dev_audio.z03/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.dev_audio.z03
+https://zenodo.org/api/records/4060432/files/FSD50K.dev_audio.z04/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.dev_audio.z04
+https://zenodo.org/api/records/4060432/files/FSD50K.dev_audio.z05/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.dev_audio.z05
+https://zenodo.org/api/records/4060432/files/FSD50K.eval_audio.zip/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.eval_audio.zip
+https://zenodo.org/api/records/4060432/files/FSD50K.eval_audio.z01/content
+  dir=/home/drboom/project/car_bgm/data/fsd50k
+  out=FSD50K.eval_audio.z01

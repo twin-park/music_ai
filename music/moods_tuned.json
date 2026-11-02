@@ -1,0 +1,220 @@
+{
+ "jazz": {
+  "비 오는 날": {
+   "tag": "POLY-1",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_1",
+    "MODE_minor",
+    "DENS_2",
+    "POLY_2",
+    "REG_3",
+    "VEL_1",
+    "GENRE_jazz",
+    "FAM_piano",
+    "FAM_bass",
+    "FAM_reed",
+    "FAM_drums",
+    "MOOD_relaxing",
+    "MOOD_dark",
+    "SWING_1"
+   ],
+   "temp": null,
+   "gain": 0.049
+  },
+  "평온한 재즈": {
+   "tag": "DENS-1",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_2",
+    "MODE_major",
+    "DENS_1",
+    "POLY_3",
+    "REG_3",
+    "VEL_1",
+    "GENRE_jazz",
+    "FAM_piano",
+    "FAM_guitar",
+    "FAM_bass",
+    "FAM_drums",
+    "MOOD_relaxing",
+    "MOOD_meditative",
+    "MOOD_ballad",
+    "SWING_1"
+   ],
+   "temp": null,
+   "gain": 0.073
+  },
+  "즐거운 대화": {
+   "tag": "POLY-1",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_8",
+    "MODE_major",
+    "DENS_3",
+    "POLY_2",
+    "REG_3",
+    "VEL_2",
+    "GENRE_jazz",
+    "FAM_piano",
+    "FAM_chrom_perc",
+    "FAM_bass",
+    "FAM_reed",
+    "FAM_drums",
+    "MOOD_happy",
+    "MOOD_energetic",
+    "SWING_2"
+   ],
+   "temp": null,
+   "gain": 0.089
+  },
+  "바닷가 보사노바": {
+   "tag": "temp+0.1",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_7",
+    "MODE_major",
+    "DENS_4",
+    "POLY_3",
+    "REG_3",
+    "VEL_1",
+    "GENRE_jazz",
+    "GENRE_latin",
+    "FAM_guitar",
+    "FAM_bass",
+    "FAM_pipe",
+    "FAM_drums",
+    "MOOD_happy",
+    "MOOD_relaxing",
+    "SWING_0"
+   ],
+   "temp": 1,
+   "gain": 0.049
+  },
+  "아이 재우기": {
+   "tag": "temp+0.1",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_1",
+    "MODE_major",
+    "DENS_2",
+    "POLY_1",
+    "REG_3",
+    "VEL_0",
+    "GENRE_jazz",
+    "FAM_piano",
+    "MOOD_relaxing",
+    "MOOD_love",
+    "MOOD_slow",
+    "MOOD_ballad",
+    "SWING_1"
+   ],
+   "temp": 0.95,
+   "gain": 0.169
+  },
+  "위로": {
+   "tag": "+melodic",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_1",
+    "MODE_major",
+    "DENS_2",
+    "POLY_3",
+    "REG_3",
+    "VEL_1",
+    "GENRE_jazz",
+    "FAM_piano",
+    "FAM_bass",
+    "FAM_strings",
+    "FAM_drums",
+    "MOOD_melodic",
+    "MOOD_love",
+    "MOOD_emotional",
+    "SWING_1"
+   ],
+   "temp": null,
+   "gain": 0.084
+  }
+ },
+ "orch": {
+  "아이 재우기": {
+   "tag": "DENS-1",
+   "conds": [
+    "TS_3/4",
+    "TEMPO_1",
+    "MODE_major",
+    "DENS_0",
+    "POLY_2",
+    "REG_3",
+    "VEL_1",
+    "GENRE_classical",
+    "FAM_piano",
+    "FAM_strings",
+    "MOOD_relaxing",
+    "MOOD_love"
+   ],
+   "temp": null,
+   "gain": 0.142
+  },
+  "진정": {
+   "tag": "DENS-1",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_2",
+    "MODE_major",
+    "DENS_1",
+    "POLY_3",
+    "REG_2",
+    "VEL_1",
+    "GENRE_classical",
+    "FAM_strings",
+    "FAM_ensemble",
+    "MOOD_relaxing",
+    "MOOD_meditative"
+   ],
+   "temp": null,
+   "gain": 0.058
+  },
+  "위로": {
+   "tag": "+melodic",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_2",
+    "MODE_major",
+    "DENS_2",
+    "POLY_3",
+    "REG_3",
+    "VEL_1",
+    "GENRE_classical",
+    "FAM_piano",
+    "FAM_strings",
+    "MOOD_melodic",
+    "MOOD_film",
+    "MOOD_emotional",
+    "MOOD_ballad"
+   ],
+   "temp": null,
+   "gain": 0.062
+  },
+  "비 오는 길": {
+   "tag": "+melodic",
+   "conds": [
+    "TS_4/4",
+    "TEMPO_2",
+    "MODE_minor",
+    "DENS_3",
+    "POLY_2",
+    "REG_3",
+    "VEL_1",
+    "GENRE_classical",
+    "FAM_piano",
+    "FAM_strings",
+    "MOOD_melodic",
+    "MOOD_dark",
+    "MOOD_emotional"
+   ],
+   "temp": null,
+   "gain": 0.08
+  }
+ }
+}

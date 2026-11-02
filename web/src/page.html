@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>무드 컨덕터</title>
+<style>
+:root{--bg:#0e1013;--card:#171a20;--line:#252a33;--text:#eceff3;--sub:#8b93a1;--accent:#22c55e;--accent2:#16a34a;--chip:#1f2a22}
+:root[data-theme="light"]{--bg:#f4f6f8;--card:#ffffff;--line:#e3e7ec;--text:#14171c;--sub:#6b7480;--accent:#16a34a;--accent2:#15803d;--chip:#e7f6ec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+header h1{font-size:17px;margin:0;font-weight:700;flex:1}
+.ghost{background:none;border:0;color:var(--sub);font-size:18px;cursor:pointer;padding:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:12px}
+.now{display:flex;align-items:center;gap:14px}
+.now .txt{flex:1;min-width:0}
+#sit-name{font-size:22px;font-weight:800;margin:0 0 6px}
+.chip{display:inline-block;background:var(--chip);color:var(--accent);border-radius:999px;padding:3px 10px;margin:0 6px 6px 0;font-size:13px;font-weight:600}
+#play{width:64px;height:64px;border-radius:50%;border:0;background:var(--accent);color:#04130a;font-size:22px;font-weight:900;cursor:pointer;flex:none;box-shadow:0 6px 20px rgba(34,197,94,.25)}
+#play.on{background:var(--card);color:var(--accent);border:2px solid var(--accent)}
+#play:disabled{opacity:.5}
+canvas{width:100%;height:120px;display:block;border-radius:12px;background:rgba(127,127,127,.06)}
+#stat{color:var(--sub);font-size:12px;margin-top:8px;min-height:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mood{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px}
+.mood b{font-size:22px;font-weight:400}
+.mood.sel{border-color:var(--accent);background:var(--chip);color:var(--accent);font-weight:700}
+.row{display:flex;align-items:center;gap:10px;margin:10px 0}
+.row label{width:72px;color:var(--sub);font-size:13px;flex:none}
+.row input[type=range]{flex:1;accent-color:var(--accent)}
+.row .v{width:36px;text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:13px}
+.ends{display:flex;justify-content:space-between;color:var(--sub);font-size:11px;margin:-10px 46px 4px 82px}
+.pill{background:none;border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;margin:0 6px 6px 0}
+.pill.sel{border-color:var(--accent);color:var(--accent);background:var(--chip);font-weight:700}
+.tools{display:flex;gap:8px;align-items:center}
+#phone{flex:none}
+#more{width:100%;background:none;border:0;color:var(--sub);padding:10px;cursor:pointer;font-size:14px}
+.sec{color:var(--sub);font-size:12px;margin:12px 0 6px}
+#busy{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9}
+#busy[hidden]{display:none}
+#busy div{background:var(--card);padding:18px 22px;border-radius:16px;display:flex;gap:12px;align-items:center}
+.dots i{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:var(--accent);animation:d 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes d{0%,100%{opacity:.2}50%{opacity:1}}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#info-box{color:var(--sub);font-size:12px;margin-top:8px;word-break:keep-all}
+#conds{font-family:ui-monospace,Consolas,monospace;font-size:11px;word-break:break-all}
+@media (min-width:1000px){.wrap{max-width:1080px}.cols{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
+#more{display:none}#detail{display:block!important}.colB .card{margin-top:0!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>무드 컨덕터</h1><button class="ghost" id="info" aria-label="정보">ⓘ</button><button class="ghost" id="theme" aria-label="화면 밝기">◐</button></header>
+  <div id="info-box" class="card" hidden>
+    이 컴퓨터 안에서 AI가 악보를 한 마디씩 직접 써서 연주해요. 인터넷이 필요 없어요.<br>
+    음악 모델 __MODEL_INFO__ · 공개 악보 PDMX(퍼블릭 도메인·CC0) 9.7만 곡으로 학습 · 악기 소리 MuseScore General(MIT)<br>
+    <span id="conds"></span>
+  </div>
+
+  <main class="cols"><section class="colA">
+  <div class="card">
+    <div class="now">
+      <div class="txt"><p id="sit-name"></p><div id="sit-say"></div></div>
+      <button id="play" aria-label="시작"><span id="play-ico">▶</span></button>
+    </div>
+    <canvas id="roll"></canvas>
+    <div id="stat"></div>
+  </div>
+
+  <div class="grid" id="moods"></div>
+  </section><section class="colB">
+  <div class="card" style="margin-top:12px">
+    <div class="tools">
+      <button class="pill" id="phone">📞 통화 중</button>
+      <div class="row" style="flex:1"><label style="width:auto">🔊</label><input id="vol" type="range" min="0" max="1.2" step="0.01" value="0.8"></div>
+    </div>
+    <button id="more">세부 조절 ▼</button>
+    <div id="detail" hidden>
+      <div class="row"><label>빠르기</label><input id="qpm" type="range" min="50" max="170" step="1"><span class="v" id="qpm-v"></span></div>
+      <div class="row"><label>음 밀도</label><input id="dens" type="range" min="0" max="7" step="1"><span class="v"></span></div>
+      <div class="ends"><span>성기게</span><span>빽빽하게</span></div>
+      <div class="row"><label>겹친 음</label><input id="poly" type="range" min="0" max="4" step="1"><span class="v"></span></div>
+      <div class="ends"><span>한 줄 선율</span><span>두꺼운 화음</span></div>
+      <div class="row"><label>음역</label><input id="reg" type="range" min="0" max="5" step="1"><span class="v"></span></div>
+      <div class="ends"><span>낮게</span><span>높게</span></div>
+      <div class="row"><label>창의성</label><input id="temp" type="range" min="0.6" max="1.3" step="0.05"><span class="v" id="temp-v"></span></div>
+      <div class="sec">조 · 박자</div>
+      <button class="pill" data-mode="major">장조</button><button class="pill" data-mode="minor">단조</button>
+      <button class="pill" data-ts="4/4">4/4</button><button class="pill" data-ts="3/4">3/4</button><button class="pill" data-ts="6/8">6/8</button>
+      <div class="sec">악기</div>
+      <div id="fams"></div>
+    </div>
+  </div>
+  </section></main>
+</div>
+<div id="busy" hidden><div><span class="dots"><i></i><i></i><i></i></span><span></span></div></div>
+<div id="toast"></div>
+
+<script id="d-head" type="application/json">__HEAD__</script>
+<script id="d-sit" type="application/json">__SIT__</script>
+<script id="d-samples" type="application/json">__SAMPLES__</script>
+<script id="d-weights" type="text/plain">__WEIGHTS__</script>
+<script id="d-wasm" type="text/plain">__WASM__</script>
+<script id="w-src" type="text/plain">__WORKER__</script>
+<script>__PLAYER__</script>
+</body>
+</html>

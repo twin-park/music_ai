@@ -1,0 +1,84 @@
+https://huggingface.co/datasets/openmusic/pdmx/resolve/main/PDMX.tar.gz
+  dir=/home/drboom/project/car_bgm/data/pdmx
+  out=PDMX.tar.gz
+https://huggingface.co/datasets/mileslilly/soundfonts/resolve/main/MuseScore_General.sf2
+  dir=/home/drboom/project/car_bgm/data/sf
+  out=MuseScore_General.sf2
+https://huggingface.co/datasets/jbilcke/soundfonts/resolve/main/GeneralUser-GS.sf2
+  dir=/home/drboom/project/car_bgm/data/sf
+  out=GeneralUser-GS.sf2
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/LICENSE-DATASET.md
+  dir=/home/drboom/project/car_bgm/data/fsd50k/meta
+  out=LICENSE-DATASET.md
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/test-00000-of-00005.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=test-00000-of-00005.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/test-00001-of-00005.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=test-00001-of-00005.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/test-00002-of-00005.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=test-00002-of-00005.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/test-00003-of-00005.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=test-00003-of-00005.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/test-00004-of-00005.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=test-00004-of-00005.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00000-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00000-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00001-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00001-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00002-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00002-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00003-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00003-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00004-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00004-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00005-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00005-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00006-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00006-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00007-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00007-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00008-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00008-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00009-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00009-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00010-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00010-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00011-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00011-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/train-00012-of-00013.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=train-00012-of-00013.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/validation-00000-of-00002.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=validation-00000-of-00002.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/data/validation-00001-of-00002.parquet
+  dir=/home/drboom/project/car_bgm/data/fsd50k/data
+  out=validation-00001-of-00002.parquet
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/metadata/labels/dev.csv
+  dir=/home/drboom/project/car_bgm/data/fsd50k/meta
+  out=dev.csv
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/metadata/labels/eval.csv
+  dir=/home/drboom/project/car_bgm/data/fsd50k/meta
+  out=eval.csv
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/metadata/labels/vocabulary.csv
+  dir=/home/drboom/project/car_bgm/data/fsd50k/meta
+  out=vocabulary.csv
+https://huggingface.co/datasets/quinnlue/FSD50K-16k/resolve/main/metadata/original/class_info_FSD50K.json
+  dir=/home/drboom/project/car_bgm/data/fsd50k/meta
+  out=class_info_FSD50K.json
