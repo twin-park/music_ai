@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
                         auto e = kv.find('='); if (e == std::string::npos) continue;
                         const std::string k = kv.substr(0, e); const double v = std::atof(kv.substr(e + 1).c_str());
                         if (k == "reg") p.reg = v; else if (k == "tempo") p.tempo = v; else if (k == "dens") p.dens = v;
-                        else if (k == "energy") p.energy = v; else if (k == "novelty") p.novelty = v; else if (k == "space") p.space = v;
+                        else if (k == "energy") p.energy = v; else if (k == "novelty") p.novelty = v; else if (k == "space") p.space = v; else if (k == "tension") p.tension = v;
                     }
                     E.set_params(p);
                 } else E.request_mood(a);

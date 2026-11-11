@@ -44,6 +44,9 @@ struct Song {
     int walk_p = 39;                              // 워킹 베이스 이어 가기
     double energy = .5;                           // 큰 물결 (0~1) — 드럼 세기층 · 크래시 · 필인
     int arp_fig = 0;                              // 펼침 꼴 (가끔 바뀜)
+    double b9_rate = .6;                          // 단조 쪽으로 풀리는 딸림7 을 7(b9) 로 물들일 확률 (화성 양념에 따라)
+    double crunch = .5;                           // 화음 안 반음 부딪힘을 얼마나 두나 — .5 아래면 반음으로 붙은 음을 풀어 줌 (13·b7 → 5·b7, 9·b3 → 1·b3, 7·1 → 6·1)
+    void smooth_voicing(std::vector<int> &v, const Chord &c) const;
 
     Song(const std::string &k, double bpm_, int ts_, double sw, uint64_t seed) : key(k), bpm(bpm_), ts(ts_), swing(sw), rng(seed) {}
 

@@ -5,6 +5,8 @@
 #pragma once
 #include "gen.h"
 #include "song.h"
+#include <algorithm>
+#include <cstdlib>
 #include <deque>
 #include <map>
 #include <memory>
@@ -23,7 +25,8 @@ struct Mood {
     std::string lead; int lead_lo, lead_hi; double reverb;
     std::string band, recipe;
     bool jazzy; double ctemp;
-    int style;                         // 편곡 공식 번호 (0 비오는날 … 8 낮드라이브)
+    int style;                         // 편곡 공식 번호 (0 비오는날 … 8 낮드라이브 · 9 클래식 피아노 · 10 현악 앙상블 · 11 왈츠)
+    double spice;                      // 화성 양념 0 순하게(조 안 · 3화음 쪽) … 1 맵게(재화성 · 조 밖 · 텐션)
 };
 const std::vector<Mood> &moods();
 const Mood *mood_by_id(const std::string &id);
@@ -37,8 +40,8 @@ struct Idea { int chap = 0, ord = 0, seq = 0; std::string name; std::vector<Bar>
 struct Slot { int kind = 0, chap = 0, ord = 0; };     // kind 0 새 생각 · 1 다시 부름(chap·ord 의 생각) · 2 쉼
 struct SecRec { int a = 0, b = 0; std::string key; std::vector<std::pair<int, Slot>> slots; };   // 단락 기록 (되감기용)
 // 사용자 조절값 (-1 … +1, 0 = 분위기 기본) — 화면 옆 막대
-struct Params { double reg = 0, tempo = 0, dens = 0, energy = 0, novelty = 0, space = 0;
-    bool same_music(const Params &o) const { return reg == o.reg && tempo == o.tempo && dens == o.dens && energy == o.energy && novelty == o.novelty; } };
+struct Params { double reg = 0, tempo = 0, dens = 0, energy = 0, novelty = 0, space = 0, tension = 0;
+    bool same_music(const Params &o) const { return reg == o.reg && tempo == o.tempo && dens == o.dens && energy == o.energy && novelty == o.novelty && tension == o.tension; } };
 
 struct Models { Model chord, melody; };
 struct BNote { int bi, on, d, p; };                 // 마디 번호 · 틱 · 길이틱 · 음
@@ -49,7 +52,7 @@ std::vector<BN> sel(const std::vector<BN> &notes, const Song &S, int b0, int b1)
 std::vector<BN> up(const std::vector<BN> &notes, int k);
 std::vector<int> range_v(int a, int b);
 double mel_score(const std::vector<BNote> &notes, const std::vector<Bar> &bars, double dens_target);
-double score8(const std::vector<Bar> &bars);
+double score8(const std::vector<Bar> &bars, bool jazz = true);
 std::string key_name(int pc, bool minor);
 
 struct Session {
@@ -67,7 +70,9 @@ struct Session {
     int chapter = 0, idea_seq = 0;
     std::vector<SecRec> hist;
     std::vector<std::pair<int, int>> recall_log;    // (마디, ideas 번호) — 되감을 때 되돌림
-    std::map<int, Bar> bar_chords;                  // 마디 → 코드 (근음 절대) — AI 문맥 · 되감기
+    std::map<int, Bar> bar_chords;                  // 마디 → 코드 (근음 절대, 재화성 뒤 = 실제 울리는 것)
+    std::map<int, Bar> ai_chords;                   // 마디 → 진행 AI 가 쓴 그대로(재화성 전) — 다음 단락의 AI 문맥 (양념이 문맥에 쌓여 조를 잃지 않게)
+    int since_tonic = 0;                            // 으뜸화음이 마지막으로 나온 뒤 지난 마디 수
     std::vector<std::vector<Bar>> recent_cells;     // 최근 새 2마디 코드 (똑같은 것 피함)
     char last_sec = 'A';
     Params P;
@@ -99,6 +104,11 @@ struct Session {
     double base_bpm() const { return m.bpm * (1 + .2 * P.tempo); }    // 분위기 빠르기 × 조절값
     int reg_shift() const { return (int)std::lround(P.reg * 7); }     // 선율 음역 옮김 (반음)
     double nov() const { return .5 + .5 * P.novelty; }                 // 새로움 0 … 1
+    double spice() const { return std::max(0.0, std::min(1.0, m.spice + .45 * P.tension)); }   // 화성 양념 (분위기 + 긴장감 조절값)
+    ChordCtl chord_ctl() const { return {1.8 - 1.6 * spice(), 1.6 - 1.6 * spice(), m.src == "classical" ? 1.5 : 0.0, m.src == "jazz" ? .5 : 1.1}; }   // 진행 AI 를 조 쪽으로 당기는 세기
+    double consonance() const { const char *e = std::getenv("CBGM_CONS"); return (e ? std::atof(e) : 1.0) * (1.25 - .9 * spice()); }   // 선율을 코드 안쪽으로 당기는 세기 (CBGM_CONS = 실험용 배율)
+    int ct_level() const { if (const char *e = std::getenv("CBGM_CT")) return std::atoi(e); return spice() < .1 ? 3 : spice() < .75 ? 2 : 1; }   // 선율 AI 조건 (강박 코드음 정도)
+    double tonal_score(const std::vector<Bar> &deg_bars, bool update);                         // 진행 후보가 조에 얼마나 붙어 있나
     void rollback(int bar);                         // 이 마디부터 다시 쓰기 (조절값이 바뀌면 · 다음 2마디 덩어리부터)
     int last_mel_pitch(int bar, std::string *part = nullptr) const;   // 이 마디 앞 마지막 선율 음
 

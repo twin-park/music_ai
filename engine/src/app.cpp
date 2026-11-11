@@ -168,9 +168,9 @@ int main(int argc, char **argv) {
                           (int)std::lround(st.bpm), std::max(0.0, t - E.run_t0.load()), E.volume.load(), E.duck.load() < .99 ? "true" : "false",
                           ending ? "true" : "false", playing ? "true" : "false", underruns.load());
             const Params pp = E.get_params();
-            char pb[200];
-            std::snprintf(pb, sizeof pb, ",\"params\":{\"reg\":%.2f,\"tempo\":%.2f,\"dens\":%.2f,\"energy\":%.2f,\"novelty\":%.2f,\"space\":%.2f},\"pending\":%s}",
-                          pp.reg, pp.tempo, pp.dens, pp.energy, pp.novelty, pp.space, E.params_pending ? "true" : "false");
+            char pb[240];
+            std::snprintf(pb, sizeof pb, ",\"params\":{\"reg\":%.2f,\"tempo\":%.2f,\"dens\":%.2f,\"energy\":%.2f,\"novelty\":%.2f,\"space\":%.2f,\"tension\":%.2f},\"pending\":%s}",
+                          pp.reg, pp.tempo, pp.dens, pp.energy, pp.novelty, pp.space, pp.tension, E.params_pending ? "true" : "false");
             std::string tail = b;
             tail.pop_back();                                                   // 끝 } 떼고 조절값 붙임
             r.body = "{\"mood\":" + json_str(playing ? st.mood : "") + ",\"name\":" + json_str(st.mood_name) + ",\"role\":" + json_str(st.role) +
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
         if (q.path == "/api/params") {                                       // 조절값 (-1 … 1) — 빠진 값은 그대로
             Params p = E.get_params();
             auto get = [&](const char *k, double &v) { std::string x = json_get(q.body, k); if (!x.empty()) v = std::max(-1.0, std::min(1.0, std::atof(x.c_str()))); };
-            get("reg", p.reg); get("tempo", p.tempo); get("dens", p.dens); get("energy", p.energy); get("novelty", p.novelty); get("space", p.space);
+            get("reg", p.reg); get("tempo", p.tempo); get("dens", p.dens); get("energy", p.energy); get("novelty", p.novelty); get("space", p.space); get("tension", p.tension);
             E.set_params(p);
             r.body = "{\"ok\":true}";
             return;

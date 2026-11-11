@@ -19,7 +19,7 @@
 struct LeadOpt { const char *part; int mode, lo, hi; double base, legato; };
 // 둘째 목소리: 0 없음 · 1 가이드톤 대선율 · 2 옥타브/같은 음 겹치기 · 3 3·6도 아래 화음
 struct SecondOpt { int kind; const char *part; int lo, hi; double base; };
-// 반주: 0 없음 · 1 comp · 2 왼손 가이드 · 3 왼손 껍데기 · 4 펼침 · 5 쿵짝짝 · 7 기타 · 8 현악 패드 · 9 펼침+현악
+// 반주: 0 없음 · 1 comp · 2 왼손 가이드 · 3 왼손 껍데기 · 4 펼침 · 5 쿵짝짝 · 7 기타 · 8 현악 패드 · 9 펼침+현악 · 10 알베르티
 struct CompOpt { int kind; const char *feel, *voicing; double base; int lo, hi; const char *ph, *pl; double dens; };
 struct BassOpt { const char *style; double base; const char *part; };
 struct DrumOpt { const char *kind; int lvl; };
@@ -33,7 +33,7 @@ static const CompOpt NOCOMP{0, "", "", 0, 0, 0, "", "", 0};
 static const Palette &palette(int style) {
     static std::vector<Palette> P;
     if (P.empty()) {
-        P.resize(9);
+        P.resize(12);
         // 0 비 오는 날 — 피아노 · 테너 · 베이스 · 브러시
         P[0] = {{{PR, 1, 62, 86, 66, 1}, {"테너색소폰", 0, 50, 74, 76, 1}, {PR, 2, 64, 88, 70, 1}, {PR, 4, 64, 88, 68, 1}},
                 {{0}, {1, "테너색소폰", 50, 67, 56}, {3, "테너색소폰", 50, 72, 60}, {2, PR, 64, 88, 58}},
@@ -92,6 +92,21 @@ static const Palette &palette(int style) {
                  {1, "ballad", "rootless", 44, 50, 68, "로즈", "로즈", .35}, {2, "", "", 46, 0, 0, "", "", .3}},
                 {{"straight", 78, "일렉베이스"}, {"two", 72, "일렉베이스"}},
                 {{"straight", 0}, {"straight", 1}, {"straight", 2}}, NOCOMP, false, true, true};
+        // 9 클래식 피아노 — 피아노 혼자 (선율 한 줄 · 3·6도 · 옥타브 / 왼손 알베르티 · 펼침 · 길게 누름)
+        P[9] = {{{PR, 4, 64, 88, 60, 1}, {PR, 3, 64, 86, 58, 1}, {PR, 2, 64, 88, 60, 1}},
+                {{0}},
+                {{10, "", "", 40, 0, 0, PL, "", .5}, {4, "", "", 40, 0, 0, PL, "", .55}, {2, "", "", 42, 0, 0, "", "", .3}},
+                {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, false, false};
+        // 10 현악 앙상블 — 바이올린 · 첼로 · 현악 · 피아노
+        P[10] = {{{"바이올린", 0, 67, 88, 66, 1}, {"첼로", 0, 50, 72, 66, 1}, {PR, 4, 64, 88, 58, 1}},
+                 {{0}, {1, "첼로", 48, 62, 52}, {2, "바이올린", 67, 91, 50}},
+                 {{8, "", "", 40, 50, 70, "", "", .4}, {9, "", "", 36, 52, 70, PL, "", .55}, {4, "", "", 38, 0, 0, PL, "", .5}},
+                 {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, true, false};
+        // 11 클래식 왈츠 (3/4) — 피아노 · 플루트 · 바이올린 · 첼로 · 현악
+        P[11] = {{{PR, 3, 64, 86, 58, 1}, {"플루트", 0, 67, 91, 72, .95}, {"바이올린", 0, 67, 88, 66, 1}, {PR, 4, 64, 86, 56, 1}},
+                 {{0}, {1, "첼로", 48, 62, 50}},
+                 {{5, "", "", 40, 0, 0, PL, "", .5}, {9, "", "", 38, 55, 72, PL, "", .55}},
+                 {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, true, false};
     }
     return P[style];
 }
@@ -120,7 +135,7 @@ std::string Session::orch_text() const {
     static const char *SK[4] = {"", "대선율", "겹치기", "화음"};
     if (S2.kind) s += "+" + std::string(std::string(S2.part) == PR ? "피아노" : S2.part) + SK[S2.kind];
     const CompOpt &C = P.comp[orch.comp];
-    static const char *CK[10] = {"", "컴핑", "왼손 가이드", "왼손 껍데기", "펼침", "쿵짝짝", "", "기타", "현악", "펼침+현악"};
+    static const char *CK[11] = {"", "컴핑", "왼손 가이드", "왼손 껍데기", "펼침", "쿵짝짝", "", "기타", "현악", "펼침+현악", "알베르티"};
     if (C.kind) s += " / " + std::string(C.kind == 1 ? (std::string(C.ph) == PR ? "피아노 " : "로즈 ") : "") + CK[C.kind] + (C.kind == 1 ? std::string("(") + C.feel + ")" : "");
     const BassOpt &B = P.bass[orch.bass];
     if (B.style[0]) s += " / 베이스 " + std::string(B.style);
@@ -143,7 +158,7 @@ void Session::pick_orch(Role role) {
         for (size_t i = orch_hist.size() > 8 ? orch_hist.size() - 8 : 0; i < orch_hist.size(); i++) same += orch_hist[i] == o;
         s -= 1.1 * same;                                                         // 최근에 쓴 조합
         const double target = .15 + .7 * energy + .12 * this->P.dens;                 // 세기 · 음 수 조절값 높으면 촘촘하게
-        s -= 1.6 * std::fabs(density(o) - target * (m.style >= 5 && m.style <= 7 ? .7 : 1));
+        s -= 1.6 * std::fabs(density(o) - target * ((m.style >= 5 && m.style <= 7) || m.style >= 9 ? .7 : 1));
         if (changed == 0) s -= .25 + .5 * nov();                                 // 매번 조금은 바뀜 (새로움 조절값)
         if (changed > 1) s -= .7;                                                // 한꺼번에 많이 바뀌면 어색
         if (P.drum[o.drum].kind[0] == 0 && P.drum.size() > 1 && energy > .4) s -= .8;
@@ -266,19 +281,21 @@ static std::vector<MelNote> apply_op(std::vector<MelNote> v, int op, int span, R
 // ---------------- 재화성 ----------------
 std::vector<Bar> Session::reharm(std::vector<Bar> bars, Role role, int &n) {
     n = 0;
-    const double rate = (m.jazzy ? .16 : .06) * (role == R_B || role == R_SOLO ? 1.4 : 1) * (.6 + .8 * energy) * (.5 + nov());
+    // 얼마나 자주: 분위기 양념(spice) × 세기 × 새로움 — 양념이 순하면 거의 안 하고, 조 밖으로 나가는 수(트라이톤 대리 · 반음 위 딸림)는 매운 쪽에서만
+    const double sp = spice();
+    const double rate = (m.jazzy ? .16 : .06) * (role == R_B || role == R_SOLO ? 1.4 : 1) * (.6 + .8 * energy) * (.5 + nov()) * (2.0 * sp);
     const int kp = S.key.pc, ts = m.ts;
     for (size_t i = 0; i < bars.size(); i++) {
         Bar &b = bars[i];
         if (b.empty()) continue;
         const ChordTok *nx = i + 1 < bars.size() && !bars[i + 1].empty() ? &bars[i + 1][0] : nullptr;
         for (auto &c : b) {                                                       // 트라이톤 대리: 5도 아래로 풀리는 딸림 → 반음 위에서 풀리게
-            if (c[2] == QA_DOM && nx && pmod(c[1] - (*nx)[1], 12) == 7 && m.jazzy && rng.random() < rate) { c[1] = (c[1] + 6) % 12; n++; }
+            if (c[2] == QA_DOM && nx && pmod(c[1] - (*nx)[1], 12) == 7 && m.jazzy && sp >= .4 && rng.random() < rate * .7) { c[1] = (c[1] + 6) % 12; n++; }
         }
         if (ts == 4 && b.size() == 1 && b[0][2] == QA_DOM && rng.random() < rate * 1.3) {     // ii 끼우기
             const int r = b[0][1];
             b = {{0, (r + 7) % 12, QA_M7}, {2, r, QA_DOM}}; n++;
-        } else if (ts == 4 && b.size() == 1 && nx && rng.random() < rate * .6 && (*nx)[1] != b[0][1]) {   // 반음 위 딸림으로 다가가기
+        } else if (ts == 4 && b.size() == 1 && nx && m.jazzy && sp >= .45 && rng.random() < rate * .4 && (*nx)[1] != b[0][1]) {   // 반음 위 딸림으로 다가가기
             b.push_back({2, ((*nx)[1] + 1) % 12, QA_DOM}); n++;
         }
         if (!m.minor && rng.random() < rate * .7)                                 // 빌린 화음: IV → iv
@@ -332,7 +349,11 @@ std::vector<Bar> Session::story_prog(Role role, const std::vector<Slot> &slots, 
     const char sec = role == R_B ? 'B' : 'A';
     const std::vector<int> beats = m.ts == 4 ? std::vector<int>{0, 2} : std::vector<int>{0};
     std::vector<Bar> ctx_abs;                                                     // 문맥 = 바로 앞 8마디 코드
-    for (int k = std::max(0, next_bar - 8); k < next_bar; k++) { auto it = bar_chords.find(k); if (it != bar_chords.end()) ctx_abs.push_back(it->second); }
+    for (int k = std::max(0, next_bar - 8); k < next_bar; k++) {                  // (재화성 전 것 — 양념이 문맥에 쌓이면 조에서 떠내려감)
+        auto it = ai_chords.find(k);
+        if (it == ai_chords.end()) { it = bar_chords.find(k); if (it == bar_chords.end()) continue; }
+        ctx_abs.push_back(it->second);
+    }
     const std::vector<Bar> ctx = to_deg(ctx_abs);
     std::map<int, Bar> fixed;
     const double nv = nov();
@@ -344,17 +365,34 @@ std::vector<Bar> Session::story_prog(Role role, const std::vector<Slot> &slots, 
         if (role == R_SOLO || rng.random() < .8 - .4 * nv) fixed[(int)(2 * j + 1)] = x->deg[1];
     }
     if (must) for (auto &kv : *must) fixed[kv.first] = kv.second;
+    // 클래식: 악절 끝을 종지로 — 가운데 칸 끝은 가끔 V 에 머물고(반종지), 마지막 칸은 (ii/IV/I →) V7 → I 로 맺거나 V 에 머묾. 새 생각 칸에만.
+    if (m.src == "classical" && role != R_SOLO && role != R_BREAK && !m.minor) {
+        const int ns2 = (int)slots.size();
+        for (int j = 1; j < ns2; j += 2) {
+            if (slots[j].kind != 0 || fixed.count(2 * j) || fixed.count(2 * j + 1)) continue;
+            const bool last = j == ns2 - 1;
+            if (last && rng.random() < .65) {
+                static const Bar PRE4[4] = {{{0, 2, QA_MIN}, {2, 7, QA_DOM}}, {{0, 5, QA_MAJ}, {2, 7, QA_DOM}}, {{0, 0, QA_MAJ}, {2, 7, QA_DOM}}, {{0, 7, QA_DOM}}};
+                fixed[2 * j] = m.ts == 4 ? PRE4[rng.index(4)] : Bar{{0, 7, QA_DOM}};
+                fixed[2 * j + 1] = Bar{{0, 0, QA_MAJ}};
+            } else if (last || rng.random() < .5) fixed[2 * j + 1] = Bar{{0, 7, QA_MAJ}};
+        }
+    }
     std::vector<Bar> best; double bs = -1e9; int brep = 99;
     const uint64_t base = rng.next();
+    const ChordCtl ctl = chord_ctl();
     for (int k = 0; k < 5; k++) {
         if (k >= 3 && brep < 2) break;                                            // 최근 코드 덩어리와 많이 겹칠 때만 더 뜨겁게 다시
         auto bars = progression(M.chord, {{sec, len}}, m.minor, m.src, m.ts, beats, m.ctemp * (k < 3 ? 1.0 : 1.15 + .1 * (k - 3)), .92, base + k,
-                                ctx.empty() ? nullptr : &ctx, last_sec, fixed.empty() ? nullptr : &fixed);
+                                ctx.empty() ? nullptr : &ctx, last_sec, fixed.empty() ? nullptr : &fixed, &ctl, role == R_SOLO ? nullptr : &recent_cells);
         int rep = 0;
         for (size_t j = 0; j < slots.size() && 2 * j + 1 < bars.size(); j++) {
             if (slots[j].kind == 1) continue;
-            const std::vector<Bar> cell{bars[2 * j], bars[2 * j + 1]};
-            for (auto &c : recent_cells) if (c == cell) { rep++; break; }
+            const uint64_t sig = cell_sig(bars[2 * j], bars[2 * j + 1]);
+            bool hit = false;
+            for (auto &c : recent_cells) if (cell_sig(c[0], c[1]) == sig) { hit = true; break; }
+            for (size_t i = 0; !hit && i < j; i++) hit = cell_sig(bars[2 * i], bars[2 * i + 1]) == sig;     // 이번 단락 앞 칸과 같은 뼈대
+            rep += hit;
         }
         for (size_t j = 0; j < slots.size(); j++) {                               // 같은 단락에서 막 태어난 생각을 다시 부르면 그 칸 코드를 그대로
             if (slots[j].kind != 1 || find_idea(slots[j].chap, slots[j].ord)) continue;
@@ -363,12 +401,13 @@ std::vector<Bar> Session::story_prog(Role role, const std::vector<Slot> &slots, 
                     bars[2 * j] = bars[2 * i]; bars[2 * j + 1] = bars[2 * i + 1];
                 }
         }
-        const double sc = score8(bars) + Rng(base * 7 + k).uniform(0, .9) - 1.5 * rep;
+        const double sc = score8(bars, m.src == "jazz") + Rng(base * 7 + k).uniform(0, .9) - 1.5 * rep + tonal_score(bars, false);
         if (sc > bs) { bs = sc; best = bars; brep = rep; }
     }
     for (size_t j = 0; j < slots.size() && 2 * j + 1 < best.size(); j++)
         if (slots[j].kind == 0) recent_cells.push_back({best[2 * j], best[2 * j + 1]});
     while (recent_cells.size() > 16) recent_cells.erase(recent_cells.begin());
+    tonal_score(best, true);                                                      // 으뜸화음이 언제 마지막이었나 기억
     last_sec = sec;
     prog_score = bs;
     return best;
@@ -408,6 +447,7 @@ std::vector<BN> Session::write_story(Role role, const std::vector<Bar> &bars, in
     // 세 번 써 보기를 동시에 (각자 선율 AI 문맥 사본) — 앞 단락 마지막 음에서 이어 씀
     const uint64_t seed0 = rng.next();
     w->no_copy = 2.0 + 2.0 * nv;                                                  // 지난 마디 통째로 베끼기 막기 (새로움 높을수록 세게)
+    w->consonance = consonance();                                                 // 강박 · 긴 음을 코드 안쪽으로 (긴장감 조절값이 높으면 느슨하게)
     struct Try { MelodyWriter w; std::vector<BNote> out; std::vector<std::vector<MelNote>> ph; double sc = -1e18; };
     std::vector<Try> tries;
     for (int t = 0; t < 3; t++) tries.push_back({*w, {}, {}, -1e18});
@@ -537,6 +577,7 @@ void Session::rollback(int k) {
         S.key = Key(h.key);
     }
     bar_chords.erase(bar_chords.lower_bound(k), bar_chords.end());
+    ai_chords.erase(ai_chords.lower_bound(k), ai_chords.end());
     const double kb = (double)k * S.ts, bk = bpm_at(kb);                         // 들린 곳까지의 템포 곡선은 그대로 두고 여기서 끊음
     while (tempo_pts.size() > 1 && tempo_pts.back().first > kb + 1e-6) tempo_pts.pop_back();
     if (tempo_pts.back().first < kb - 1e-6) tempo_pts.push_back({kb, bk});
@@ -549,8 +590,10 @@ void Session::rollback(int k) {
 
 std::vector<BN> Session::write_solo(const std::vector<Bar> &bars, int bar0) {
     using tk::TPB;
-    if (!w_solo) w_solo = std::make_unique<MelodyWriter>(&M.melody, m.ts, "solo", m.feel, m.tempo, m.minor, std::min(3, m.dens + 1), m.reg, rng.next());
+    if (!w_solo) w_solo = std::make_unique<MelodyWriter>(&M.melody, m.ts, "solo", m.feel, m.tempo, m.minor, std::min(3, m.dens + 1), m.reg, rng.next(),
+                                                         m.src, std::max(1, ct_level() - 1));
     w_solo->no_copy = 3.0;
+    w_solo->consonance = .8 * consonance();
     const int nb = (int)bars.size();
     std::vector<const ChordTok *> nexts;
     for (int i = 0; i < nb; i++) { const Bar &x = i + 1 < nb ? bars[i + 1] : bars[0]; nexts.push_back(x.empty() ? nullptr : &x[0]); }
@@ -644,15 +687,18 @@ void Session::arrange_body(Role role, int a, int b, const std::vector<BN> &mel) 
         case 7: s.guitar_comp(bars, c.ph, c.feel, c.base); break;
         case 8: s.strings_pad(a, b, "현악", c.base, c.lo, c.hi); break;
         case 9: s.piano_pattern(a, b, m.ts == 3 ? "waltz" : "arp", c.base); s.pedals(a, b, m.ts == 3 ? 3 : 2); s.strings_pad(a, b, "현악", c.base, c.lo, c.hi); break;
+        case 10: s.piano_pattern(a, b, "alberti", c.base); s.pedals(a, b, 2); break;
         }
     };
     if (P.has_core) do_comp(P.core);
     do_comp(C);
+    if (m.style == 10)                                                            // 현악 앙상블: 베이스 악기가 없으니 현악 저음이 근음을 길게 받침
+        for (auto &sp : s.spans_in(a, b)) s.add("현악", sp.a, sp.b - sp.a + .05, fit(sp.c.root, 36, 47), 38 + 8 * energy);
     if (B.style[0] && !(role == R_BREAK && rng.random() < .5)) s.bass(a, b, role == R_SOLO && std::string(B.style) == "two" && P.bass.size() > 1 ? "walk" : B.style, B.base, B.part);
     if (D.kind[0] && role != R_BREAK) s.drums(a, b, D.kind, std::min(2, D.lvl + (role == R_SOLO ? 1 : 0)), 8, true);
     if (D.kind[0] && role == R_BREAK && std::string(D.kind).find("brush") != std::string::npos) s.drums(a, b, D.kind, 0, 99, false);
     // 세기가 높을 때 현악이 있는 분위기는 현악이 아주 작게 감쌈 (없던 단락에만)
-    if ((m.style >= 4 && m.style <= 7) && energy > .62 && role != R_BREAK) {
+    if (((m.style >= 4 && m.style <= 7) || m.style == 11) && energy > .62 && role != R_BREAK) {
         bool has = false;
         for (auto &n : S.pool) has = has || (n.sec == S.cur_sec && S.names[n.part] == "현악");
         if (!has) S.strings_pad(a, b, "현악", 32 + 10 * energy, 55, 72);
@@ -721,6 +767,9 @@ Section Session::next() {
     }
     std::vector<Bar> prog = to_abs(story_prog(role, slots, len, modulate ? &must : nullptr));
     if (len == 12) hnote += std::string(hnote.empty() ? "" : " · ") + "12마디로 늘임";
+    for (int i = 0; i < (int)prog.size(); i++) ai_chords[a + i] = prog[i];
+    S.b9_rate = .2 + .7 * spice();
+    S.crunch = spice();
     int nre = 0;
     if (role != R_BREAK && n_body > 0) prog = reharm(prog, role, nre);
     if (nre) hnote += std::string(hnote.empty() ? "" : " · ") + "재화성 " + std::to_string(nre);
@@ -728,12 +777,13 @@ Section Session::next() {
     S.add_chords(a, prog, m.color);
     // 템포도 아주 조금 따라 움직임 (±1.5%, 조절값 반영) — 진정은 루바토가 따로
     const double bb = base_bpm();
-    if (m.style == 6) {
+    if (m.style == 6 || m.style == 9) {                                           // 피아노 혼자: 네 마디마다 살짝 늦춤 (루바토)
+        const double rit = m.style == 6 ? .9 : .94;
         if (tempo_pts.back().first < (double)a * ts - 1e-6) tempo_pts.push_back({(double)a * ts, bpm_at((double)a * ts)});
         for (int g = a; g < b; g += 4) {
             tempo_pts.push_back({(double)g * ts + .01, bb});
             tempo_pts.push_back({(double)(g + 4) * ts - 1, bb});
-            tempo_pts.push_back({(double)(g + 4) * ts - .01, bb * .9});
+            tempo_pts.push_back({(double)(g + 4) * ts - .01, bb * rit});
         }
     } else {
         if (tempo_pts.back().first < (double)a * ts - 1e-6) tempo_pts.push_back({(double)a * ts, bpm_at((double)a * ts)});

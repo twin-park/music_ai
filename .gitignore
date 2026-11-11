@@ -17,6 +17,7 @@
 !/engine/
 !/dist/
 !/data/
+!/docs/
 
 # 어디에나
 __pycache__/

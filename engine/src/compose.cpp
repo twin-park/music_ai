@@ -12,32 +12,42 @@ const std::vector<Mood> &moods() {
         {"비오는날", "비 오는 날", {"Eb", "Db", "F"}, false, 68, 4, .62, 1, "jazz", "swing", "TEMPO_slow", 1, 1, 60, 82, .9, 6, 9, 2,
          "테너색소폰", 50, 74, 2.6, "피아노 · 테너 색소폰 · 베이스 · 브러시",
          "느린 스윙 발라드 · 피아노 선율 아래 드롭2 화음 · 색소폰이 같은 선율 변주 · B 2마디씩 주고받기 · A'' 피아노 옥타브 + 색소폰 3·7음 대선율 · 베이스 2박→워킹 · 브러시",
-         true, 1.0, 0},
+         true, 1.0, 0, 0.35},
         {"평온한재즈", "평온한 재즈", {"F", "Bb", "G"}, false, 104, 4, .64, 1, "jazz", "swing", "TEMPO_med", 1, 1, 62, 82, .9, 7, 9, 2,
          "", 0, 0, 2.2, "피아노 트리오 · 재즈기타 · 브러시",
          "미디엄 스윙 · 피아노 3·6도 겹 선율 → 기타가 선율 + 피아노 반주 → 피아노 화음 선율 + 기타 4분 반주 → 피아노 옥타브 · 워킹 베이스 · 브러시 스윙",
-         true, 1.0, 1},
+         true, 1.0, 1, 0.3},
         {"밤드라이브", "밤 드라이브", {"Dm", "Am", "Em"}, true, 96, 4, 0, 1, "jazz", "straight", "TEMPO_med", 1, 1, 60, 80, .9, 7, 9, 2,
          "", 0, 0, 2.6, "로즈 · 뮤트 트럼펫 · 피아노 · 베이스 · 드럼",
-         "곧은 8분 쿨재즈 · 로즈 4도 쌓기 반주 · 뮤트 트럼펫 선율 → B 피아노 선율 · 곧은 8분 베이스 · 하이햇+림", true, 1.0, 2},
+         "곧은 8분 쿨재즈 · 로즈 4도 쌓기 반주 · 뮤트 트럼펫 선율 → B 피아노 선율 · 곧은 8분 베이스 · 하이햇+림", true, 1.0, 2, 0.42},
         {"즐거운대화", "즐거운 대화", {"Bb", "F", "Eb"}, false, 176, 4, .6, 1, "jazz", "swing", "TEMPO_fast", 2, 1, 60, 82, .92, 9, 10, 2,
          "", 0, 0, 2.0, "알토 색소폰 · 비브라폰 · 피아노 · 베이스 · 드럼",
-         "빠른 스윙 · 알토 → 비브라폰 → 2마디씩 주고받기 → 둘이 옥타브로 같이 · 피아노 찰스턴 반주 · 워킹 베이스 · 라이드 심벌", true, 1.0, 3},
+         "빠른 스윙 · 알토 → 비브라폰 → 2마디씩 주고받기 → 둘이 옥타브로 같이 · 피아노 찰스턴 반주 · 워킹 베이스 · 라이드 심벌", true, 1.0, 3, 0.42},
         {"바닷가보사노바", "바닷가 보사노바", {"D", "F", "G"}, false, 128, 4, 0, 1, "jazz", "latin", "TEMPO_med", 1, 2, 64, 86, .9, 7, 9, 2,
          "", 0, 0, 2.4, "나일론 기타 · 플루트 · 피아노 · 로즈 · 베이스 · 림샷 · 현악",
-         "보사노바 · 나일론 기타 엄지 베이스 + 화음 뜯기 · 플루트 선율 → B 피아노 → A'' 현악 · 보사 베이스 · 림샷·킥·하이햇", true, 1.0, 4},
+         "보사노바 · 나일론 기타 엄지 베이스 + 화음 뜯기 · 플루트 선율 → B 피아노 → A'' 현악 · 보사 베이스 · 림샷·킥·하이햇", true, 1.0, 4, 0.35},
         {"아이재우기", "아이 재우기", {"F", "G", "C"}, false, 82, 3, 0, 0, "song", "straight", "TEMPO_slow", 1, 1, 62, 80, .88, 5, 7, 2,
          "", 0, 0, 2.8, "피아노 · 첼레스타 · 현악",
-         "3/4 왈츠 자장가 · 왼손 쿵-짝-짝 · 3·6도 겹 선율 → 첼레스타가 한 옥타브 위 같이 → 현악이 감쌈 · B 만 아주 작은 브러시", false, 1.0, 5},
+         "3/4 왈츠 자장가 · 왼손 쿵-짝-짝 · 3·6도 겹 선율 → 첼레스타가 한 옥타브 위 같이 → 현악이 감쌈 · B 만 아주 작은 브러시", false, 1.0, 5, 0.08},
         {"진정", "마음 가라앉히기", {"Db", "Eb", "Ab"}, false, 58, 4, .6, 1, "jazz", "swing", "TEMPO_slow", 1, 1, 62, 82, .88, 6, 8, 2,
          "", 0, 0, 3.0, "피아노 혼자 · 현악(끝 무렵)",
-         "아주 느린 피아노 발라드 · 왼손 1-5-10 펼침 · 선율 아래 화음 · 네 마디마다 살짝 늦춤(루바토) · A'' 현악 아주 작게", false, 1.0, 6},
+         "아주 느린 피아노 발라드 · 왼손 1-5-10 펼침 · 선율 아래 화음 · 네 마디마다 살짝 늦춤(루바토) · A'' 현악 아주 작게", false, 1.0, 6, 0.22},
         {"위로", "위로", {"A", "D", "E"}, false, 72, 4, 0, 0, "pop", "straight", "TEMPO_slow", 1, 1, 62, 82, .9, 6, 9, 2,
          "", 0, 0, 2.8, "피아노 · 첼로 · 바이올린 · 현악",
-         "영화음악 느낌 · 피아노 옥타브 선율 + 왼손 펼침 → 첼로 선율 → 바이올린 + 현악 → 피아노 옥타브 + 첼로 대선율", false, 1.0, 7},
+         "영화음악 느낌 · 피아노 옥타브 선율 + 왼손 펼침 → 첼로 선율 → 바이올린 + 현악 → 피아노 옥타브 + 첼로 대선율", false, 1.0, 7, 0.15},
         {"낮드라이브", "낮 드라이브", {"G", "A", "Bb"}, false, 120, 4, 0, 1, "jazz", "straight", "TEMPO_med", 2, 1, 60, 82, .92, 8, 10, 2,
          "", 0, 0, 2.0, "테너 색소폰 · 피아노 · 로즈 · 일렉 베이스 · 드럼",
-         "곧은 8분 그루브 · 테너 색소폰 선율 + 피아노 반주 → B 피아노 옥타브 + 로즈 → 색소폰과 피아노가 같이 · 일렉 베이스 · 백비트 드럼", true, 1.0, 8},
+         "곧은 8분 그루브 · 테너 색소폰 선율 + 피아노 반주 → B 피아노 옥타브 + 로즈 → 색소폰과 피아노가 같이 · 일렉 베이스 · 백비트 드럼", true, 1.0, 8, 0.38},
+        // ── 클래식 (11-11): 진행 · 선율 AI 가 클래식 악보(PDMX)로 배운 갈래를 씀 · 3화음 중심 · 스윙 없음
+        {"클래식피아노", "클래식 피아노", {"C", "G", "F", "Eb"}, false, 80, 4, 0, 0, "classical", "straight", "TEMPO_slow", 1, 1, 62, 84, .9, 8, 9, 2,
+         "", 0, 0, 2.6, "피아노 혼자",
+         "고전 · 낭만 피아노 소품 · 오른손 선율(한 줄 → 3·6도 → 옥타브) · 왼손 알베르티 / 펼침 · 3화음 중심 진행 · 네 마디마다 살짝 늦춤", false, 1.12, 9, .12},
+        {"현악앙상블", "현악 앙상블", {"D", "G", "Bb", "F"}, false, 66, 4, 0, 0, "classical", "straight", "TEMPO_slow", 0, 1, 62, 84, .88, 6, 8, 2,
+         "바이올린", 67, 88, 3.0, "바이올린 · 첼로 · 현악 · 피아노",
+         "느린 현악 · 바이올린 선율 ↔ 첼로 선율 · 현악이 길게 받침 · 첼로 대선율 · 피아노 펼침은 가끔", false, 1.12, 10, .1},
+        {"클래식왈츠", "클래식 왈츠", {"G", "D", "A", "F"}, false, 132, 3, 0, 0, "classical", "straight", "TEMPO_med", 1, 1, 64, 86, .9, 6, 9, 2,
+         "", 0, 0, 2.4, "피아노 · 플루트 · 바이올린 · 첼로 · 현악",
+         "3/4 왈츠 · 왼손 쿵-짝-짝 · 선율은 피아노 3·6도 → 플루트 → 바이올린 · 첼로 대선율 · 현악이 감쌈", false, 1.12, 11, .12},
     };
     return M;
 }
@@ -107,7 +117,7 @@ static void final_chord(Song &S, int FN, const std::string &lead, int lr0, int l
 void Session::arrange(Role R, int a, int b, const std::vector<BN> &M) {
     arrange_main(R, a, b, M);
     // 큰 물결이 높을 때: 현악이 있는 분위기는 현악이 아주 작게 감쌈 (없던 단락에만)
-    if ((m.style >= 4 && m.style <= 7) && energy > .62 && R != R_INTRO && R != R_TAG && R != R_TRANS) {
+    if (((m.style >= 4 && m.style <= 7) || m.style == 11) && energy > .62 && R != R_INTRO && R != R_TAG && R != R_TRANS) {
         bool has = false;
         for (auto &n : S.pool) has = has || (n.sec == S.cur_sec && S.names[n.part] == "현악");
         if (!has) S.strings_pad(a, b, "현악", 32 + 10 * energy, 55, 72);
@@ -274,6 +284,25 @@ void Session::arrange_main(Role R, int a, int b, const std::vector<BN> &M) {
             final_chord(s, b, "첼로", 48, 60, "", false, 46);
         }
         break;
+    case 9:                                                                       // 클래식 피아노 (혼자)
+        s.piano_pattern(a, b, "alberti", 40); s.pedals(a, b);
+        if (R == R_INTRO) s.piano_melody(top_line(s, a, b, 67, 79), 50, "line");
+        else if (R == R_TAG) { s.piano_melody(oct_fit(M, 64, 86), 52, "line"); final_chord(s, b, "", 0, 0, "", false, 44); }
+        else s.piano_melody(oct_fit(M, 64, 86), 58, "line");
+        break;
+    case 10:                                                                      // 현악 앙상블
+        s.strings_pad(a, b, "현악", 40, 50, 70);
+        for (auto &sp : s.spans_in(a, b)) s.add("현악", sp.a, sp.b - sp.a + .05, fit(sp.c.root, 36, 47), 40);
+        if (R == R_INTRO) s.lead("바이올린", top_line(s, a, b, 72, 84), 56);
+        else if (R == R_TAG) { s.lead("바이올린", oct_fit(M, 67, 88), 62); s.guide_line(a, b, "첼로", 50, 48, 62); final_chord(s, b, "첼로", 48, 60, "", false, 40); }
+        else s.lead("바이올린", oct_fit(M, 67, 88), 66);
+        break;
+    case 11:                                                                      // 클래식 왈츠 (3/4)
+        s.piano_pattern(a, b, "waltz", 40); s.pedals(a, b, 3);
+        if (R == R_INTRO) s.piano_melody(top_line(s, a, b, 67, 79), 50, "dyad");
+        else if (R == R_TAG) { s.piano_melody(oct_fit(M, 64, 84), 50, "dyad"); s.strings_pad(a, b, "현악", 36, 55, 72); final_chord(s, b, "", 0, 0, "", false, 42); }
+        else s.piano_melody(oct_fit(M, 64, 84), 56, "dyad");
+        break;
     case 8:                                                                       // 낮 드라이브
         s.bass(a, b, "straight", 78, "일렉베이스");
         if (R == R_INTRO) { s.comp(bars, "straight", 52); s.drums(a, b, "straight", 0, 4); }
@@ -320,7 +349,7 @@ static double score_progression(const std::vector<Bar> &bars) {
 // ---------------- 진행: 앞 단락을 물려받아 몇 마디만 새로 ----------------
 static double r_jit(uint64_t base, int k) { Rng r(base * 7 + k); return r.uniform(0, .9); }   // 늘 같은 '최고점'만 고르지 않게
 
-double score8(const std::vector<Bar> &bars) {
+double score8(const std::vector<Bar> &bars, bool jazz) {
     std::set<std::pair<int, int>> flat;
     for (auto &b : bars) for (auto &c : b) flat.insert({c[1], c[2]});
     int loop = 0;
@@ -332,7 +361,50 @@ double score8(const std::vector<Bar> &bars) {
         if (qin(allf[i].second, {QA_M7, QA_HDIM, QA_MIN}) && qin(allf[i + 1].second, {QA_DOM, QA_ALT}) && pmod(allf[i + 1].first - allf[i].first, 12) == 5) iiv++;
     bool end_ok = false;
     for (auto &c : bars.back()) end_ok = end_ok || c[1] == 0 || c[1] == 7;
-    return std::min<int>((int)flat.size(), 6) - loop * .8 + std::min(iiv, 3) * .5 + (end_ok ? .7 : 0);
+    if (!jazz) {                                                                  // 재즈가 아니면: ii-V 대신 V → I 끝맺음, 화음 가짓수는 5개까지만 쳐줌
+        int cad = 0;
+        for (size_t i = 0; i + 1 < allf.size(); i++)
+            if (allf[i].first == 7 && qin(allf[i].second, {QA_DOM, QA_MAJ}) && allf[i + 1].first == 0) cad++;
+        return std::min<int>((int)flat.size(), 5) - loop * .8 + std::min(cad, 2) * .5 + (end_ok ? .7 : 0);
+    }
+    return std::min<int>((int)flat.size(), 6) - loop * .8 + std::min(iiv, 3) * .35 + (end_ok ? .7 : 0);
+}
+
+// 진행 후보(도수)가 조에 얼마나 붙어 있나 — 이어 쓰기가 조에서 떠내려가지 않게 하는 닻
+//   조 안 근음 비율(85% 밑이면 벌점) · 으뜸화음이 너무 오래 안 나오면 벌점 · 긴장 큰 종류(반감 · 감 · alt · 증)가 많으면 벌점
+double Session::tonal_score(const std::vector<Bar> &bars, bool update) {
+    static const bool DIA_MAJ[12] = {1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1}, DIA_MIN[12] = {1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0};
+    int n = 0, dia = 0, tense = 0, first_tonic = -1, last_tonic = -1, chrom = 0, n_tonic = 0, hd = 0, misfit = 0;
+    //                         종류:  maj maj7 min m7 dom alt sus hdim dim aug mM7   (gen.cpp 와 같은 표)
+    static const int FIT_MAJ[12] = {0b00001000011, 0, 0b00001001100, 0, 0b00000001100, 0b00000000011, 0, 0b00001010001, 0, 0b00000001100, 0, 0b00110000000};
+    static const int FIT_MIN[12] = {0b10000001100, 0, 0b00110000000, 0b00000000011, 0, 0b00000001100, 0, 0b00001111101, 0b00000000011, 0, 0b00000010001, 0b00100000000};
+    int prev_root = -1;
+    for (size_t i = 0; i < bars.size(); i++)
+        for (auto &c : bars[i]) {
+            n++;
+            dia += (m.minor ? DIA_MIN : DIA_MAJ)[c[1]];
+            const bool tonic = c[1] == 0 && (m.minor ? (c[2] == QA_MIN || c[2] == QA_M7 || c[2] == QA_MM7) : (c[2] == QA_MAJ || c[2] == QA_MAJ7));
+            if (tonic) { if (first_tonic < 0) first_tonic = (int)i; last_tonic = (int)i; n_tonic++; }
+            hd += c[2] == QA_HDIM;
+            misfit += (m.minor ? DIA_MIN : DIA_MAJ)[c[1]] && !(((m.minor ? FIT_MIN : FIT_MAJ)[c[1]] >> c[2]) & 1);
+            tense += (c[2] == QA_HDIM && !m.minor) || c[2] == QA_DIM || c[2] == QA_ALT || c[2] == QA_AUG;
+            if (prev_root >= 0) { const int mv = pmod(c[1] - prev_root, 12); chrom += mv == 1 || mv == 11 || mv == 6; }
+            prev_root = c[1];
+        }
+    if (!n) return 0;
+    const double sp = spice();
+    double s = 0;
+    s += 5.0 * std::min(0.0, (double)dia / n - (.9 - .25 * sp));                          // 조 안 근음
+    s -= 3.0 * std::max(0.0, (double)tense / n - (.08 + .22 * sp));                        // 긴장 큰 종류
+    s -= 2.5 * std::max(0.0, (double)chrom / n - (.06 + .2 * sp));                         // 반음 · 증4도 근음 움직임
+    s -= 4.0 * std::max(0.0, (double)misfit / n - (m.src == "jazz" ? .2 + .3 * sp : .1 + .25 * sp));   // 조 안 근음인데 종류가 안 맞음 (다른 조로 기울어짐)
+    const int gap = first_tonic < 0 ? since_tonic + (int)bars.size() : std::max(since_tonic + first_tonic, (int)bars.size() - 1 - last_tonic);
+    if (first_tonic < 0) s -= .8;
+    s += .3 * std::min(n_tonic, 2);                                                        // 8마디에 으뜸화음 두 번쯤 (ii-V 만 줄줄이 이어지지 않게)
+    if (m.minor) s -= 3.0 * std::max(0.0, (double)hd / n - .14);                           // 단조: 반감 ii 가 마디마다 나오지 않게
+    s -= .35 * std::max(0, gap - 8);                                                       // 으뜸화음 없이 8마디 넘게 가면
+    if (update) since_tonic = last_tonic < 0 ? since_tonic + (int)bars.size() : (int)bars.size() - 1 - last_tonic;
+    return s;
 }
 
 std::vector<Bar> Session::to_deg(const std::vector<Bar> &a) const {
@@ -372,8 +444,9 @@ std::vector<Bar> Session::new_prog(char sec, const std::vector<Bar> *prev, int n
             for (int i = 0; i < np; i++) if (!change.count(i)) fixed[i] = (*prev)[i];
         }
         if (must) for (auto &kv : *must) fixed[kv.first] = kv.second;
-        auto bars = progression(M.chord, form, m.minor, m.src, m.ts, beats, temp, .92, base + k, ctx, 'A', fixed.empty() ? nullptr : &fixed);
-        double sc = score8(bars) + r_jit(base, k);
+        const ChordCtl ctl = chord_ctl();
+        auto bars = progression(M.chord, form, m.minor, m.src, m.ts, beats, temp, .92, base + k, ctx, 'A', fixed.empty() ? nullptr : &fixed, &ctl);
+        double sc = score8(bars, m.src == "jazz") + r_jit(base, k) + tonal_score(bars, false);
         if (prev && n_diff(bars) == 0) sc -= 5;                                   // 하나도 안 바뀌면 안 됨
         uint64_t h = 1469598103934665603ull;
         for (auto &b : bars) for (auto &c : b) h = (h ^ (uint64_t)(c[0] * 1000 + c[1] * 20 + c[2])) * 1099511628211ull;
@@ -385,10 +458,6 @@ std::vector<Bar> Session::new_prog(char sec, const std::vector<Bar> *prev, int n
 }
 
 // ---------------- 선율: AI 가 쓰고 공식 점수로 고르기 ----------------
-static const std::vector<int> TONES_Q[11] = {{0, 4, 7}, {0, 4, 7, 11}, {0, 3, 7}, {0, 3, 7, 10}, {0, 4, 7, 10}, {0, 4, 10},
-                                             {0, 5, 7, 10}, {0, 3, 6, 10}, {0, 3, 6, 9}, {0, 4, 8}, {0, 3, 7, 11}};
-static const std::vector<int> TENS_Q[11] = {{2, 9}, {2, 9}, {2, 5, 10}, {2, 5}, {2, 9}, {1, 3, 8}, {2, 9}, {5, 8}, {2, 5}, {2}, {2}};
-
 
 double mel_score(const std::vector<BNote> &notes, const std::vector<Bar> &bars, double dens_target) {
     using tk::TPB;
@@ -423,6 +492,7 @@ std::vector<BN> Session::write_melody(const std::vector<Bar> &bars, const std::v
     Runner::Snap best_snap;
     uint64_t seed0 = rng.next();
     const int pp = w->prev_p, lo = m.mel_lo + reg_shift(), hi = m.mel_hi + reg_shift();
+    w->consonance = consonance();
     for (int k = 0; k < tries; k++) {
         if (k) w->r.restore(base);
         w->prev_p = pp;                                                            // 앞 단락 마지막 음에서 이어 씀
@@ -475,7 +545,9 @@ Session::Session(const Mood &m_, const Models &M_, uint64_t seed, bool intro, do
     : m(m_), M(M_), S(m_.keys[Rng(seed).index(m_.keys.size())], m_.bpm, m_.ts, m_.swing, seed * 7 + 3), rng(seed), need_intro(intro) {
     if (p) P = *p;
     if (near) { Rng r(seed ^ 0x5bd1e995); S.key = Key(near_key(m, *near, r)); }
-    w = std::make_unique<MelodyWriter>(&M.melody, m.ts, "head", m.feel, m.tempo, m.minor, m.dens, m.reg, rng.next());
+    w = std::make_unique<MelodyWriter>(&M.melody, m.ts, "head", m.feel, m.tempo, m.minor, m.dens, m.reg, rng.next(), m.src, ct_level());
+    S.b9_rate = .2 + .7 * spice();
+    S.crunch = spice();
     tempo_pts.push_back({0, prev_bpm > 0 ? prev_bpm : base_bpm()});
     if (prev_bpm > 0) transition(prev_bpm, near, last_p, last_part);
 }

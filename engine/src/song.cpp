@@ -6,7 +6,7 @@
 const char *QUALS[11] = {"maj", "maj7", "min", "m7", "dom", "alt", "sus", "hdim", "dim", "aug", "mM7"};
 static const int COLOR[11][3] = {
     {Q_MAJ, Q_6, Q_69}, {Q_MAJ7, Q_MAJ7, Q_MAJ9}, {Q_MIN, Q_M7, Q_M9}, {Q_M7, Q_M7, Q_M9}, {Q_7, Q_9, Q_13},
-    {Q_7B9, Q_7B9, Q_7ALT}, {Q_7SUS4, Q_7SUS4, Q_7SUS4}, {Q_M7B5, Q_M7B5, Q_M7B5}, {Q_DIM7, Q_DIM7, Q_DIM7},
+    {Q_7B9, Q_7B9, Q_7ALT}, {Q_SUS4, Q_7SUS4, Q_7SUS4}, {Q_M7B5, Q_M7B5, Q_M7B5}, {Q_DIM7, Q_DIM7, Q_DIM7},
     {Q_AUG, Q_AUG, Q_AUG}, {Q_MM7, Q_MM7, Q_MM7}};
 
 static bool has(const std::vector<int> &v, int x) { return std::find(v.begin(), v.end(), x) != v.end(); }
@@ -45,7 +45,8 @@ void Song::add_chords(int bar0, const std::vector<std::vector<std::array<int, 3>
         int name = COLOR[f.q][color];
         if (f.q == QA_MAJ && nq >= 0 && pmod(nr - f.r, 12) == 5 && pmod(f.r - key.pc, 12) == 7)
             name = color == 0 ? Q_7 : Q_9;                                         // V 자리 장3화음 → 딸림7
-        if (f.q == QA_DOM && minor_target_b9 && (nq == QA_MIN || nq == QA_M7 || nq == QA_HDIM) && pmod(nr - f.r, 12) == 5)
+        if (f.q == QA_DOM && minor_target_b9 && (nq == QA_MIN || nq == QA_M7 || nq == QA_HDIM) && pmod(nr - f.r, 12) == 5 &&
+            rng.random() < b9_rate)
             name = Q_7B9;
         if ((f.q == QA_MIN || f.q == QA_M7) && color >= 1 && rng.random() < .15 && nq >= 0)
             name = color == 2 ? Q_M9 : Q_M7;
@@ -189,6 +190,20 @@ static const std::map<std::string, std::pair<std::vector<Pat>, std::vector<Pat>>
     return m;
 }
 
+// 화음 안에서 반음으로 붙은 두 음 풀기 (재즈 보이싱의 '까슬한' 맛 — 순한 분위기에선 뺌)
+void Song::smooth_voicing(std::vector<int> &v, const Chord &c) const {
+    if (crunch >= .5 || v.size() < 2) return;
+    std::sort(v.begin(), v.end());
+    for (size_t i = 0; i + 1 < v.size(); i++) {
+        if (v[i + 1] - v[i] != 1) continue;
+        const int lo_iv = pmod(v[i] - c.root, 12);
+        int repl = v[i] - 2;                                                       // 아랫음을 온음 내림: 13→5 · 9→근음 · 장7→6
+        if (!(lo_iv == 9 || lo_iv == 2 || lo_iv == 11 || lo_iv == 1)) repl = -1;     // 그 밖의 꼴은 아랫음을 뺌
+        if (repl >= 0 && (i == 0 || repl - v[i - 1] > 1)) v[i] = repl;
+        else { v.erase(v.begin() + i); if (i) i--; }
+    }
+}
+
 void Song::comp(const std::vector<int> &bars, const std::string &feel, double base, const std::string &voicing, int lo, int hi,
                 const std::vector<BN> &avoid, const std::string &p_hi, const std::string &p_lo) {
     std::vector<int> prev; bool hp = false;
@@ -224,6 +239,7 @@ void Song::comp(const std::vector<int> &bars, const std::string &feel, double ba
             std::vector<int> v = stack(pcs, std::max(40, l2), std::max(l2 + 5, h2), hp ? &prev : nullptr);
             if (v.size() > 1 && v[1] - v[0] == 1 && v[0] < 60) { int f = v[0]; v.erase(v.begin()); v.push_back(f + 12); std::sort(v.begin(), v.end()); }
             if (v.size() > 2 && v[v.size() - 1] - v[v.size() - 2] == 1 && v.back() - 12 >= 40) { int f = v.back(); v.pop_back(); v.push_back(f - 12); std::sort(v.begin(), v.end()); }
+            smooth_voicing(v, c);
             prev = v; hp = true;
             for (Note *n : ring) if (n->t + n->d > t - .03) n->d = std::max(.1, t - .03 - n->t);
             std::vector<int> keep;
@@ -253,6 +269,7 @@ void Song::guitar_comp(const std::vector<int> &bars, const std::string &part, co
         for (int x : pcs) if (x != c.root && x3.size() < 3) x3.push_back(x);
         x3.push_back(c.root);
         std::vector<int> v = stack(x3, 52, 70, hp ? &prev : nullptr);
+        smooth_voicing(v, c);
         prev = v; hp = true;
         if (feel == "bossa") {
             add(part, t0, .9, fit(c.root, 40, 52), base + 6);
@@ -266,6 +283,7 @@ void Song::guitar_comp(const std::vector<int> &bars, const std::string &part, co
                 if (&s2 != &span(t0)) {
                     auto r = rootless(s2.c); r.resize(std::min<size_t>(3, r.size())); r.push_back(s2.c.root);
                     vv = stack(r, 52, 70, &v);
+                    smooth_voicing(vv, s2.c);
                 }
                 for (size_t k = 0; k < vv.size(); k++) add(part, t0 + on + k * .012, .45, vv[k], base - 4 + rng.randint(-5, 5));
             }
@@ -274,6 +292,7 @@ void Song::guitar_comp(const std::vector<int> &bars, const std::string &part, co
                 Chord c2 = chord(t0 + on);
                 auto g = guide(c2); g.push_back(c2.root);
                 auto vv = stack(g, 48, 64, &v);
+                smooth_voicing(vv, c2);
                 for (int p : vv) add(part, t0 + on, .45, p, base - (on % 2 ? 0 : 4) + rng.randint(-4, 4));
             }
         }
@@ -295,6 +314,12 @@ void Song::piano_pattern(int b0, int b1, const std::string &kind, double base, c
                 int p = FIG[arp_fig][k % 4];
                 if (k % 8 == 6) p = fit(guide(c)[1], r + 9, r + 13);
                 add(part, t, .5 * 2.2, p, base + (k % 4 == 0 ? 6 : 0) + rng.randint(-3, 3));
+                t += .5;
+            } else if (kind == "alberti") {
+                const int rr = fit(c.root, 43, 54);
+                const int th = fit(third >= 0 ? third : fifth, rr + 2, rr + 5), fi = fit(fifth, rr + 6, rr + 9);
+                const int FIG[4] = {rr, fi, th, fi};
+                add(part, t, .5, k == 0 ? rr : FIG[k % 4], base + (k % 4 == 0 ? 5 : k % 2 == 0 ? 1 : -3) + rng.randint(-2, 2));
                 t += .5;
             } else if (kind == "waltz") {
                 double on = std::round((t - std::floor(t / ts) * ts) * 1000) / 1000;
@@ -534,10 +559,11 @@ std::vector<BN> Song::fix_avoid(const std::vector<BN> &notes, bool jazz) const {
         bool beat = std::fabs(t - std::round(t)) < 1e-6;
         bool strong = beat && ((long)std::round(t) % (ts == 4 ? 2 : 3) == 0);
         bool leapy = i > 0 && i + 1 < xs.size() && std::abs(p - xs[i - 1].p) > 2 && std::abs(xs[i + 1].p - p) > 2;
+        const bool phrase_end = i + 1 == xs.size() || xs[i + 1].t - (t + d) >= 1.0 - 1e-6;      // 뒤에 한 박 넘게 쉼 = 프레이즈 끝음
         std::vector<int> need;
         if (d < 1.5) need = ok;
         else { need = ct; if (!c.is_dom()) need.push_back((c.root + 2) % 12); else need.insert(need.end(), ten.begin(), ten.end()); }
-        if (!has(need, pmod(p, 12)) && (strong || d >= .75 || leapy)) {
+        if (!has(need, pmod(p, 12)) && (strong || d >= .75 || leapy || phrase_end)) {
             const std::vector<int> &pool = (d >= 1 || !jazz) ? ct : need;
             for (int k : {-1, 1, -2, 2, -3, 3})
                 if (has(pool, pmod(p + k, 12))) { p += k; break; }
@@ -633,6 +659,15 @@ std::pair<int, int> Song::declash(double min_len) {
         for (Note *n : ev[pi]) {
             if (n->sec != cur_sec || n->dead || mel_ids.count(n)) continue;
             auto ms = near_mels(n);
+            {
+                const Chord &c7 = span(n->t).c;
+                if (!isbass && (c7.q == Q_MAJ7 || c7.q == Q_MAJ9 || c7.q == Q_MAJ7S11) && pmod(n->p - c7.root, 12) == 11) {
+                    bool hit = false;
+                    for (Note *m : ms) hit = hit || (ovl(n, m) > .4 && m->p > n->p && pmod(m->p - c7.root, 12) == 0);
+                    for (auto &f : follow) hit = hit || (!f.h->dead && f.h->sec == cur_sec && ovl(n, f.h) > .4 && f.h->p > n->p && pmod(f.h->p - c7.root, 12) == 0);
+                    if (hit) { n->p -= 2; moved++; }
+                }
+            }
             double lim = std::max(.2, .25 * n->d);
             if (!ms.empty() && clash(n->p, n, ms) > lim) {
                 const Span &sp = span(n->t);

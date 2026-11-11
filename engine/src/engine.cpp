@@ -58,10 +58,11 @@ bool Engine::init(const std::string &data_dir, std::string *err) {
     std::string flp = fl ? fl : "libfluidsynth.so.3";
 #endif
     if (!FL.load(flp)) { if (err) *err = FL.err; return false; }
-    sf_gu = data + "/sf/GeneralUser-GS.sf2";
+    sf_gu = data + "/sf/gu_small.sf2";                                    // 쓰는 악기 14개만 남긴 판(8MB) — 없으면 원본(32MB)
+    if (FILE *fp = std::fopen(sf_gu.c_str(), "rb")) std::fclose(fp); else sf_gu = data + "/sf/GeneralUser-GS.sf2";
     sf_sso = data + "/sf/sso_small.sf2";
     if (!piano.open(data + "/piano")) { if (err) *err = "피아노 샘플이 없음: " + data + "/piano"; return false; }
-    piano.preload();
+    piano.preload_common();                                              // 자주 쓰는 음역만 뒤에서 미리 (나머지는 예약할 때)
     std::string t;
     if (read_file(data + "/tune.txt", t)) {
         std::istringstream in(t); std::string ln;
@@ -94,6 +95,7 @@ Engine::~Engine() {
 // 켤 때마다 다른 곡: 나노초 시계 + 차례 번호 섞기 (같은 초에 두 번 켜도 다름)
 static uint64_t fresh_seed() {
     static uint64_t n = 0;
+    if (const char *e = std::getenv("CAR_BGM_SEED")) return std::strtoull(e, nullptr, 10) * 1000003ull + ++n;   // 시험용: 늘 같은 곡
     uint64_t x = (uint64_t)std::chrono::system_clock::now().time_since_epoch().count() ^ (uint64_t)std::chrono::steady_clock::now().time_since_epoch().count() * 0x9E3779B97F4A7C15ull;
     x += ++n * 0xBF58476D1CE4E5B9ull;
     x ^= x >> 31; x *= 0x94D049BB133111EBull; x ^= x >> 29;
@@ -355,6 +357,7 @@ void Engine::emit(Sess &ss, const Section &sec, bool flush_all) {
                 double e = n.t1;
                 for (auto &pd : sh.pedals) if (pd.first - .02 <= n.t1 && n.t1 <= pd.second + 1e-6) { e = std::max(e, pd.second); break; }
                 evs.push_back({std::max(0.0, n.t0 - sh_t), 2, EV_PIANO, 0, n.p, n.v, e - sh_t});
+                piano.warm(n.p, n.v);                                         // 이 음의 녹음을 지금(작곡 줄에서) 읽어 둠
             }
         } else perform_fluid(tr, ns, flush_all ? 1.0 : -1.0, evs, rng);
         outs.push_back({i, std::move(evs)});

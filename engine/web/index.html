@@ -161,7 +161,7 @@ $("b-info").onclick = () => $("info").classList.toggle("hide");
 // 세부 조절: -1 … +1 (가운데 = 분위기 기본). 울림은 바로, 나머지는 다음 2마디 덩어리부터 AI 가 다시 씀
 const KNOBS = [
   ["reg", "음 높이", "낮게", "높게"], ["tempo", "빠르기", "느리게", "빠르게"], ["dens", "음 수", "성기게", "촘촘하게"],
-  ["energy", "세기", "잔잔하게", "힘차게"], ["novelty", "새로움", "익숙하게", "새롭게"], ["space", "울림", "가깝게", "넓게"]];
+  ["energy", "세기", "잔잔하게", "힘차게"], ["novelty", "새로움", "익숙하게", "새롭게"], ["tension", "긴장감", "편안하게", "긴장되게"], ["space", "울림", "가깝게", "넓게"]];
 let PV = {}, touched = 0;
 $("knobs").innerHTML = KNOBS.map(([k, n, lo, hi]) => `<div class="knob"><div class="kh"><b>${n}</b><em id="v-${k}" class="base">기본</em></div>
   <input type="range" id="k-${k}" min="-100" max="100" value="0" step="1"><div class="ends"><span>${lo}</span><span>${hi}</span></div></div>`).join("");
