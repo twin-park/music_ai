@@ -13,6 +13,22 @@ static bool has(const std::vector<int> &v, int x) { return std::find(v.begin(), 
 static bool contains(const std::string &s, const char *w) { return s.find(w) != std::string::npos; }
 static double frac1(double x) { return x - std::floor(x); }                    // 파이썬 x % 1
 static double fmodp(double x, double m) { return x - std::floor(x / m) * m; }  // 파이썬 x % m
+// 근음 · 3음 · 5음 (팝 · 포크 기타 긁기 · 레게 · 탱고 · 바로크) — 3음이 없는 꼴(sus)은 4음
+static std::vector<int> triad_pcs(const Chord &c) {
+    std::vector<int> v{c.root};
+    const int t3 = c.iv(3), t5 = c.iv(5);
+    v.push_back(t3 >= 0 ? t3 : (c.root + 5) % 12);
+    v.push_back(t5 >= 0 ? t5 : (c.root + 7) % 12);
+    return v;
+}
+
+const char *drum_kit(const std::string &kind) {
+    if (kind.find("brush") != std::string::npos || kind == "train") return "브러시";
+    if (kind == "synth") return "808드럼";
+    if (kind == "funk" || kind == "citypop" || kind == "lofi" || kind == "shuffle" || kind == "samba" || kind == "onedrop" || kind == "calypso" ||
+        kind == "folk" || kind == "celtic" || kind == "kids" || kind == "epic") return "팝드럼";
+    return "드럼";
+}
 
 // 범위 안에서 조건 맞는 음 중 cost 가 가장 작은 첫 음 (파이썬 min(…, key=…))
 static int pick_min(int lo, int hi_excl, const std::function<bool(int)> &ok, const std::function<double(int)> &cost, int fallback) {
@@ -186,6 +202,24 @@ static const std::map<std::string, std::pair<std::vector<Pat>, std::vector<Pat>>
         {"straight", {{{{0, .45}, {1.5, .45}, {3, .9}}, {{0, 1.4}, {2.5, .45}}, {{.5, .45}, {2, .9}, {3.5, .45}}},
                       {{{0, .9}, {2, .9}}, {{0, .45}, {1.5, .45}, {2, .9}}}}},
         {"waltz", {{{{1, .9}, {2, .9}}, {{0, 2.8}}, {{1, .9}, {2.5, .45}}}, {{{0, 1.4}, {1.5, 1.4}}}}},
+        // ── 11-13 새 분위기 반주 꼴 ──
+        {"funk", {{{{0, .15}, {.75, .12}, {1.5, .15}, {2.25, .12}, {2.5, .15}, {3.5, .12}}, {{.25, .12}, {1, .15}, {1.75, .12}, {2.75, .12}, {3, .15}},
+                   {{0, .12}, {.5, .12}, {1.25, .12}, {2, .15}, {2.75, .12}, {3.25, .12}}},
+                  {{{0, .15}, {.75, .12}, {1.5, .12}, {2, .15}, {2.75, .12}, {3.5, .12}}}}},
+        {"citypop", {{{{0, .45}, {.75, .2}, {1.5, .45}, {2.5, .2}, {2.75, .45}, {3.5, .4}}, {{0, .9}, {1.5, .2}, {1.75, .45}, {3, .45}, {3.5, .2}},
+                      {{-.25, .45}, {1, .2}, {1.5, .45}, {2.75, .9}}},
+                     {{{0, .45}, {.75, .45}, {2, .45}, {2.75, .45}, {3.5, .2}}}}},
+        {"skank", {{{{1, .25}, {3, .25}}, {{1, .25}, {1.5, .12}, {3, .25}}, {{1, .25}, {3, .25}, {3.5, .12}}}, {{{1, .25}, {3, .25}}}}},
+        {"strum", {{{{0, .45}, {1, .45}, {1.5, .45}, {2.5, .45}, {3, .45}, {3.5, .45}}, {{0, .9}, {1, .45}, {1.5, .45}, {2, .9}, {3, .45}, {3.5, .45}},
+                    {{0, .45}, {.5, .45}, {1, .45}, {1.5, .45}, {2, .45}, {2.5, .45}, {3, .45}, {3.5, .45}}},
+                   {{{0, .45}, {1, .45}, {1.5, .45}, {2, .45}, {3, .45}, {3.5, .45}}}}},
+        {"marcato", {{{{0, .3}, {1, .3}, {2, .3}, {3, .3}}, {{0, .3}, {1, .3}, {2, .3}, {3, .2}, {3.5, .2}}, {{0, .6}, {1.5, .3}, {2, .45}, {3, .45}}},
+                     {{{0, .3}, {1, .3}, {2, .3}, {3, .3}}}}},
+        {"ostinato", {{{{0, .4}, {.5, .4}, {1, .4}, {1.5, .4}, {2, .4}, {2.5, .4}, {3, .4}, {3.5, .4}}, {{0, .9}, {1, .4}, {1.5, .4}, {2, .9}, {3, .4}, {3.5, .4}}},
+                      {{{0, .4}, {.5, .4}, {1, .4}, {1.5, .4}, {2, .4}, {2.5, .4}, {3, .4}, {3.5, .4}}}}},
+        {"continuo", {{{{0, .9}, {1, .9}, {2, .9}, {3, .9}}, {{0, 1.9}, {2, .9}, {3, .9}}, {{0, .9}, {1, .45}, {1.5, .45}, {2, 1.9}}},
+                      {{{0, .9}, {1, .9}, {2, .9}, {3, .9}}}}},
+        {"lofi", {{{{0, 1.4}, {1.5, .4}, {2.5, 1.2}}, {{-.5, 1.9}, {2, .9}, {3.5, .4}}, {{0, .9}, {1.5, 1.9}}}, {{{0, 1.9}, {2, 1.9}}, {{0, 1.4}, {2, 1.4}}}}},
     };
     return m;
 }
@@ -230,7 +264,7 @@ void Song::comp(const std::vector<int> &bars, const std::string &feel, double ba
             if (t >= spans.back().b - 1e-6) continue;
             bool off = on < 0 || frac1(on) != 0;
             Chord c = chord(off ? t + .5 : t);
-            std::vector<int> pcs = voicing == "quartal" ? quartal(c) : rootless(c);
+            std::vector<int> pcs = voicing == "quartal" ? quartal(c) : voicing == "triad" ? triad_pcs(c) : rootless(c);
             std::vector<int> ov;
             for (auto &a : avoid) if (a.t < t + d && a.t + a.d > t) ov.push_back(a.p);
             int h2 = ov.empty() ? hi : std::min(hi, *std::min_element(ov.begin(), ov.end()) - 3);
@@ -380,9 +414,13 @@ void Song::bass(int b0, int b1, const std::string &style, double base, const std
         }
         return;
     }
+    if (style == "funk" || style == "pop8" || style == "synth8" || style == "calypso" || style == "reggae" || style == "samba" || style == "tango" ||
+        style == "oompah" || style == "boogie" || style == "pedal") {
+        if (ts == 4 || style == "pedal") { bass_pat(b0, b1, style, base, part, lo, hi); return; }
+    }
     for (int bar = b0; bar < b1; bar++) {
         double t0 = (double)bar * ts;
-        if (style == "two" || style == "ballad") {
+        if (style == "two" || style == "ballad" || (ts != 4 && style != "waltz" && style != "bossa" && style != "straight")) {
             std::vector<int> halves = ts == 4 ? std::vector<int>{0, 2} : std::vector<int>{0};
             for (int h : halves) {
                 double t = t0 + h;
@@ -440,9 +478,72 @@ void Song::bass(int b0, int b1, const std::string &style, double base, const std
     }
 }
 
+// 리듬 꼴 베이스 — {박, 길이, 음(0 근음 · 12 옥타브 · 7 5음 · 3 3음 · 10 7음(없으면 옥타브) · 9 6음 · -1 다음 근음 반음 아래), 세기}
+void Song::bass_pat(int b0, int b1, const std::string &style, double base, const std::string &part, int lo, int hi) {
+    int &p = walk_p;
+    auto absd = [](int a) { return (double)std::abs(a); };
+    const int top = std::max(hi, lo + 14);
+    auto root_near = [&](const Chord &c, int ref) {
+        return pick_min(lo, std::min(hi, lo + 15), [&](int x) { return pmod(x, 12) == c.root; }, [&](int x) { return absd(x - ref); }, fit(c.root, lo, std::min(hi, lo + 15)));
+    };
+    if (style == "pedal") {                                                       // 길게 받침 (영화 · 앰비언트): 코드마다 근음 하나
+        for (auto &s : spans_in(b0, b1)) {
+            const int q = root_near(s.c, p);
+            add(part, s.a, s.b - s.a + .05, q, base + rng.randint(-3, 3));
+            p = q;
+        }
+        return;
+    }
+    using H = std::array<double, 4>;
+    static const std::map<std::string, std::vector<std::vector<H>>> PAT = {
+        {"funk", {{{0, .2, 0, 8}, {.75, .12, 12, -4}, {1, .2, 0, -2}, {1.75, .12, 7, -6}, {2.5, .2, 0, 2}, {2.75, .12, 12, -4}, {3.5, .2, 10, -2}},
+                  {{0, .35, 0, 8}, {.5, .12, 0, -8}, {1.5, .12, 12, -2}, {2, .2, 0, 0}, {2.75, .12, 7, -4}, {3, .2, 12, -2}, {3.75, .12, -1, -6}},
+                  {{0, .2, 0, 8}, {.25, .12, 12, -6}, {1.25, .2, 7, -2}, {2, .35, 0, 2}, {3, .12, 12, -4}, {3.25, .2, 10, -4}, {3.5, .2, 7, -6}}}},
+        {"pop8", {{{0, .4, 0, 4}, {.5, .4, 0, -4}, {1, .4, 0, 0}, {1.5, .4, 12, -4}, {2, .4, 0, 2}, {2.5, .4, 0, -4}, {3, .4, 7, 0}, {3.5, .4, 12, -4}},
+                  {{0, .7, 0, 4}, {.75, .2, 0, -6}, {1.5, .4, 12, -2}, {2, .4, 0, 0}, {2.75, .2, 7, -6}, {3, .4, 0, 0}, {3.5, .4, -1, -4}}}},
+        {"synth8", {{{0, .4, 0, 4}, {.5, .4, 0, -4}, {1, .4, 0, 0}, {1.5, .4, 0, -4}, {2, .4, 0, 2}, {2.5, .4, 0, -4}, {3, .4, 0, 0}, {3.5, .4, 0, -4}},
+                    {{0, .4, 0, 4}, {.5, .4, 12, -4}, {1, .4, 0, 0}, {1.5, .4, 12, -4}, {2, .4, 0, 2}, {2.5, .4, 12, -4}, {3, .4, 0, 0}, {3.5, .4, 12, -4}}}},
+        {"calypso", {{{0, .45, 0, 4}, {1.5, .45, 0, 0}, {2, .45, 7, 0}, {3, .3, 12, -4}, {3.5, .4, 7, -4}},
+                     {{0, .45, 0, 4}, {.75, .2, 0, -6}, {1.5, .45, 7, 0}, {2.5, .45, 0, 0}, {3.5, .4, -1, -4}}}},
+        {"reggae", {{{0, .9, 0, 6}, {1.5, .4, 3, -2}, {2, .9, 7, 0}, {3, .4, 12, -4}, {3.5, .4, 7, -6}},
+                    {{.5, .4, 0, 0}, {1, .9, 0, 6}, {2.5, .4, 7, -2}, {3, .9, 3, 0}},
+                    {{0, 1.4, 0, 6}, {1.5, .4, 7, -2}, {2.5, .4, 12, -2}, {3, .9, 7, -4}}}},
+        {"samba", {{{0, .45, 0, 0}, {.75, .2, 0, -6}, {1, .45, 7, 6}, {1.75, .2, 7, -6}, {2, .45, 0, 0}, {2.75, .2, 0, -6}, {3, .45, 7, 6}, {3.75, .2, -1, -6}}}},
+        {"tango", {{{0, .35, 0, 8}, {1, .35, 0, 0}, {2, .35, 7, 4}, {3, .35, 0, 0}, {3.75, .2, -1, -4}},
+                   {{0, .6, 0, 8}, {.75, .2, 7, -2}, {1, .4, 12, 0}, {2, .6, 0, 6}, {2.75, .2, 7, -2}, {3, .4, 12, 0}},
+                   {{0, .35, 0, 8}, {1, .35, 12, -2}, {2, .35, 7, 4}, {2.5, .3, 9, -4}, {3, .35, 7, 0}, {3.5, .3, -1, -4}}}},
+        {"oompah", {{{0, .45, 0, 4}, {2, .45, 7, 0}}, {{0, .45, 0, 4}, {2, .45, 12, 0}, {3, .3, 7, -4}}, {{0, .45, 0, 4}, {2, .45, 7, 0}, {3.5, .3, -1, -6}}}},
+        {"boogie", {{{0, .45, 0, 6}, {.5, .3, 3, -4}, {1, .45, 7, 2}, {1.5, .3, 9, -4}, {2, .45, 10, 4}, {2.5, .3, 9, -4}, {3, .45, 7, 2}, {3.5, .3, 3, -4}}}},
+    };
+    const auto &pats = PAT.at(style);
+    for (int bar = b0; bar < b1; bar++) {
+        const double t0 = (double)bar * ts;
+        const auto &pat = pats[rng.index(pats.size())];
+        const Span &s0 = span(t0);
+        int r = root_near(s0.c, p);
+        for (auto &h : pat) {
+            const double t = t0 + h[0];
+            const Span &sc = span(t);
+            const Chord &c = sc.c;
+            const int rr = &sc == &s0 ? r : root_near(c, r);
+            const int code = (int)h[2];
+            int q = rr;
+            if (code == 12) q = rr + 12 <= top ? rr + 12 : rr;
+            else if (code == 7) q = rr + pmod((c.iv(5) >= 0 ? c.iv(5) : c.root + 7) - c.root, 12);
+            else if (code == 3) q = rr + pmod((c.iv(3) >= 0 ? c.iv(3) : c.root + 5) - c.root, 12);
+            else if (code == 10) q = c.iv(7) >= 0 ? rr + pmod(c.iv(7) - c.root, 12) : (rr + 12 <= top ? rr + 12 : rr);
+            else if (code == 9) q = rr + 9;
+            else if (code == -1) { const Chord &nc = chord(t + .5); q = root_near(nc, rr) - 1; if (q < lo) q += 2; }
+            if (q > top) q -= 12;
+            add(part, t, h[1] * .95, q, base + h[3] + rng.randint(-4, 3));
+        }
+        p = r;
+    }
+}
+
 // ---------- 드럼 ----------
 void Song::drums(int b0, int b1, const std::string &kind, int lvl, int fill_every, bool crash) {
-    const std::string part = contains(kind, "brush") ? "브러시" : "드럼";
+    const std::string part = drum_kit(kind);
     Rng &R = rng;
     const double a = swing ? swing : 2.0 / 3;
     // 큰 물결에 따라 세기층 ±1 · 4마디 숨은 위상을 섞고 · 필인/크래시는 정해진 마디마다가 아니라 확률로 (되풀이 느낌 줄이기)
@@ -507,15 +608,102 @@ void Song::drums(int b0, int b1, const std::string &kind, int lvl, int fill_ever
         } else if (kind == "waltz_brush") {
             add(part, t0, 3, 40, 28 + lvl * 3 + sw + R.randint(-3, 3));
             for (int on : {1, 2}) add(part, t0 + on, .2, 38, 26 + lvl * 3 + (on == 1 ? 3 : 0) + R.randint(-3, 3));
+        } else if (ts != 4) {                                                      // 아래 꼴은 4박 전용
+        } else if (kind == "funk" || kind == "citypop") {
+            const bool f = kind == "funk";
+            for (int k = 0; k < 16; k++) {                                          // 16분 하이햇 (8분에 강세)
+                if (!f && k % 2 && R.random() < .35) continue;
+                const int note = (k == 14 && R.random() < .5) ? 46 : 42;
+                add(part, t0 + k * .25, .12, note, (f ? 40 : 34) + (k % 4 == 0 ? 14 : k % 2 == 0 ? 8 : 0) + lvl * 3 + sw + R.randint(-5, 5));
+            }
+            static const std::vector<std::vector<double>> KF = {{0, .75, 2.5}, {0, 1.75, 2.5, 3.25}, {0, .5, 2.25, 2.75}, {0, 1.5, 2.5}};
+            static const std::vector<std::vector<double>> KC = {{0, 1.5, 2.5}, {0, 2, 2.5}, {0, 1.75, 2.5}};
+            const auto &kk = f ? KF[R.index(KF.size())] : KC[R.index(KC.size())];
+            for (double on : kk) add(part, t0 + on, .2, 36, 62 + (on == 0 ? 6 : 0) + lvl * 3 + R.randint(-5, 4));
+            for (int on : {1, 3}) add(part, t0 + on, .2, f || lvl > 0 ? 38 : 37, 64 + lvl * 4 + sw + R.randint(-4, 4));
+            if (!f && lvl >= 1 && R.random() < .5) for (int on : {1, 3}) add(part, t0 + on, .2, 39, 44 + R.randint(-4, 4));   // 손뼉 겹
+            if (f) for (double on : {.75, 1.75, 2.25, 3.75}) if (R.random() < .35 + .1 * lvl) add(part, t0 + on, .1, 38, 22 + R.randint(0, 10));   // 유령음
+        } else if (kind == "lofi") {                                               // 느슨한 붐뱁: 하이햇 스윙 · 킥 1 + 엇박 · 스네어(림) 조금 늦게
+            for (int k = 0; k < 8; k++) {
+                if (k % 2 && R.random() < .2) continue;
+                add(part, t0 + k / 2 + (k % 2 ? a : 0) + .02, .12, 42, 26 + (k % 2 ? -4 : 6) + lvl * 2 + sw + R.randint(-6, 6));
+            }
+            const std::vector<double> kk = R.random() < .5 ? std::vector<double>{0, 1 + a, 2 + a} : std::vector<double>{0, 2 + a};
+            for (double on : kk) add(part, t0 + on, .2, 36, 54 + R.randint(-5, 4));
+            for (int on : {1, 3}) add(part, t0 + on + .03, .2, lvl >= 1 ? 38 : 37, 48 + lvl * 3 + R.randint(-4, 4));
+        } else if (kind == "shuffle") {                                            // 셔플: 셋잇단 8분 하이햇(세면 라이드) · 킥 1 · 3 · 스네어 2 · 4
+            for (int b = 0; b < 4; b++)
+                for (double on : {0.0, a}) add(part, t0 + b + on, .15, lvl >= 2 ? 51 : 42, 40 + (on == 0 ? 10 : -2) + lvl * 3 + sw + R.randint(-5, 5));
+            for (double on : {0.0, 2.0}) add(part, t0 + on, .2, 36, 60 + R.randint(-4, 4));
+            if (R.random() < .4) add(part, t0 + 3 + a, .2, 36, 48 + R.randint(-4, 4));
+            for (int on : {1, 3}) add(part, t0 + on, .2, 38, 62 + lvl * 4 + sw + R.randint(-4, 4));
+            for (int b = 0; b < 4; b++) if (R.random() < .2) add(part, t0 + b + a, .1, 38, 24 + R.randint(0, 8));
+        } else if (kind == "samba") {                                              // 수르두(둘째 · 넷째 박이 셈) · 마라카스 16분 · 탐보림 엇박 · 아고고
+            for (int on = 0; on < 4; on++) add(part, t0 + on, .4, 41, (on % 2 ? 66 : 46) + lvl * 3 + R.randint(-4, 4));
+            for (double on : {0.0, 2.0}) add(part, t0 + on, .2, 36, 44 + R.randint(-4, 4));
+            for (int k = 0; k < 16; k++) add(part, t0 + k * .25, .1, 70, 28 + (k % 4 == 0 ? 10 : k % 2 ? 0 : 5) + sw + R.randint(-5, 5));
+            static const double TB[2][5] = {{0, .75, 1.5, 2.5, 3.25}, {.5, 1.25, 2, 2.75, 3.5}};
+            for (double on : TB[bar % 2]) add(part, t0 + on, .1, 65, 38 + lvl * 3 + R.randint(-6, 6));
+            if (lvl >= 1) for (double on : {0.0, .5, 1.5, 2.5}) if (R.random() < .5) add(part, t0 + on, .2, on == 0 ? 68 : 67, 36 + R.randint(-5, 5));
+        } else if (kind == "onedrop") {                                            // 원드롭: 셋째 박에 킥 + 림 · 하이햇 8분
+            for (int k = 0; k < 8; k++) add(part, t0 + k / 2 + (k % 2 ? a : 0), .12, 42, 32 + (k % 2 ? 0 : 8) + lvl * 2 + sw + R.randint(-5, 5));
+            add(part, t0 + 2, .3, 36, 66 + R.randint(-3, 3));
+            add(part, t0 + 2, .2, lvl >= 1 ? 38 : 37, 58 + lvl * 3 + R.randint(-4, 4));
+            if (R.random() < .3) add(part, t0 + 3 + a, .3, 46, 36);
+            if (lvl >= 2) add(part, t0, .2, 36, 50);
+        } else if (kind == "calypso") {                                            // 칼립소 · 소카: 킥 4박 · 손뼉 2 · 4 · 마라카스 · 콩가
+            for (int on = 0; on < 4; on++) add(part, t0 + on, .2, 36, 52 + (on % 2 ? 0 : 6) + lvl * 3 + R.randint(-4, 4));
+            for (int on : {1, 3}) add(part, t0 + on, .2, 39, 48 + lvl * 3 + R.randint(-4, 4));
+            for (int k = 0; k < 8; k++) add(part, t0 + k * .5, .1, 70, 28 + (k % 2 ? 6 : 0) + sw + R.randint(-5, 5));
+            static const double CG[6][2] = {{.5, 63}, {1, 64}, {1.5, 63}, {2.5, 62}, {3, 64}, {3.5, 63}};
+            for (auto &c : CG) if (R.random() < .8) add(part, t0 + c[0], .15, (int)c[1], 40 + R.randint(-6, 6));
+        } else if (kind == "folk") {                                               // 포크: 낮은 킥 · 탬버린 2 · 4 · 마라카스 살짝
+            for (double on : {0.0, 2.0}) add(part, t0 + on, .2, 36, 48 + lvl * 3 + R.randint(-4, 4));
+            if (R.random() < .4) add(part, t0 + 2.5, .2, 36, 38);
+            for (int on : {1, 3}) add(part, t0 + on, .2, 54, 42 + lvl * 4 + R.randint(-4, 4));
+            for (int k = 0; k < 8; k++) if (lvl >= 1 || k % 2 == 0) add(part, t0 + k * .5, .1, 70, 20 + (k % 2 ? 0 : 6) + sw + R.randint(-4, 4));
+            if (lvl >= 2) for (int on : {1, 3}) add(part, t0 + on, .2, 37, 40);
+        } else if (kind == "train") {                                              // 컨트리 기차 박: 스네어 8분(2 · 4 강세) + 킥 1 · 3
+            for (int k = 0; k < 8; k++) add(part, t0 + k * .5, .15, 38, 30 + ((k == 2 || k == 6) ? 18 : k % 2 ? 8 : 0) + lvl * 3 + sw + R.randint(-4, 4));
+            for (double on : {0.0, 2.0}) add(part, t0 + on, .2, 36, 52 + R.randint(-4, 4));
+        } else if (kind == "celtic") {                                             // 보란(낮은 북) 8분 · 1 · 3 강세 · 가끔 높은 톰 · 탬버린
+            for (int b = 0; b < 4; b++)
+                for (int k = 0; k < 2; k++)
+                    add(part, t0 + b + k * .5, .2, b % 2 == 0 && k == 0 ? 41 : 43, (k == 0 ? (b % 2 == 0 ? 58 : 48) : 36) + lvl * 3 + sw + R.randint(-5, 5));
+            if (R.random() < .5) add(part, t0 + 3.75, .1, 45, 40);
+            if (lvl >= 1) for (int on : {1, 3}) add(part, t0 + on, .2, 54, 34 + R.randint(-4, 4));
+        } else if (kind == "kids") {                                               // 동요: 낮은 킥 · 우드블록 2 · 4 · 마라카스 · 가끔 트라이앵글
+            for (double on : {0.0, 2.0}) add(part, t0 + on, .2, 36, 44 + R.randint(-3, 3));
+            for (int on : {1, 3}) add(part, t0 + on, .15, R.random() < .5 ? 76 : 77, 52 + R.randint(-5, 5));
+            for (int k = 0; k < 8; k++) if (k % 2 == 1 || lvl >= 1) add(part, t0 + k * .5, .1, 70, 24 + R.randint(-4, 4));
+            if (bar % 4 == 0 && R.random() < .5) add(part, t0, 1.5, 81, 40);
+        } else if (kind == "synth") {                                              // 80년대: 808/909 · 8분 하이햇 · 킥 · 스네어+손뼉 2 · 4
+            for (int k = 0; k < 8; k++) add(part, t0 + k * .5, .1, 42, 40 + (k % 2 ? 0 : 8) + lvl * 3 + sw + R.randint(-4, 4));
+            if (lvl >= 1) for (int k = 0; k < 4; k++) if (R.random() < .3) add(part, t0 + k + .75, .1, 42, 30);
+            const std::vector<double> kk = lvl >= 2 ? std::vector<double>{0, 1, 2, 3} : R.random() < .5 ? std::vector<double>{0, 1.5, 2.5} : std::vector<double>{0, 2};
+            for (double on : kk) add(part, t0 + on, .2, 36, 64 + (on == 0 ? 6 : 0) + R.randint(-4, 4));
+            for (int on : {1, 3}) { add(part, t0 + on, .2, 38, 66 + lvl * 4 + R.randint(-4, 4)); add(part, t0 + on, .2, 39, 50 + R.randint(-4, 4)); }
+            if (bar % 2 == 1) add(part, t0 + 3.5, .4, 46, 42 + R.randint(-4, 4));
+        } else if (kind == "epic") {                                               // 영화: 팀파니(근음) · 타이코 · 크게 갈 땐 북 굴림
+            const Chord &c = chord(t0);
+            const int tp = fit(c.root, 40, 52);
+            add("팀파니", t0, .9, tp, 56 + lvl * 6 + R.randint(-4, 4));
+            if (lvl >= 1) add("팀파니", t0 + 2, .9, fit((c.root + 7) % 12, 40, 52), 48 + lvl * 5 + R.randint(-4, 4));
+            if (lvl >= 1) { for (double on : {0.0, 1.5, 2.0, 3.0}) add("타이코", t0 + on, .5, 45, (on == 0 ? 70 : 52) + lvl * 4 + R.randint(-5, 5)); }
+            else add("타이코", t0, .5, 45, 52 + R.randint(-4, 4));
+            if (fill && lvl >= 1) for (int k = 0; k < 8; k++) add("팀파니", t0 + 2 + k * .25, .25, tp, 40 + 4 * k);
+            if (bar == b0 && R.random() < .3 + .4 * energy) add(part, t0, 3, 49, 50 + lvl * 4);
         }
         if (fill && (kind == "brush" || kind == "brush_swing" || kind == "waltz_brush")) {
             for (int k = 0; k < 3; k++) add(part, t0 + ts - 1 + k / 3.0, .15, 38, 34 + lvl * 4 + 8 * k);
-        } else if (fill && (kind == "ride" || kind == "straight" || kind == "bossa")) {
+        } else if (fill && (kind == "ride" || kind == "straight" || kind == "bossa" || kind == "funk" || kind == "citypop" || kind == "shuffle" ||
+                            kind == "synth" || kind == "samba" || kind == "calypso") && ts == 4) {
             const double ons_r[4] = {2 + 2 / 3.0, 3, 3 + 1 / 3.0, 3 + 2 / 3.0}, ons_s[4] = {3, 3.25, 3.5, 3.75};
             const int notes[4] = {38, 38, 47, 43};
-            for (int k = 0; k < 4; k++) add(part, t0 + (kind == "ride" ? ons_r[k] : ons_s[k]), .2, notes[k], 48 + lvl * 4 + 9 * k);
+            for (int k = 0; k < 4; k++) add(part, t0 + (kind == "ride" || kind == "shuffle" ? ons_r[k] : ons_s[k]), .2, notes[k], 48 + lvl * 4 + 9 * k);
         }
-        if (crash && (kind == "ride" || kind == "straight") &&
+        if (crash && (kind == "ride" || kind == "straight" || kind == "funk" || kind == "citypop" || kind == "shuffle" || kind == "synth" || kind == "samba" ||
+                      kind == "calypso") &&
             ((bar == b0 && R.random() < .4 + .45 * energy) || (bar - b0 == 4 && R.random() < .1 + .15 * energy))) {
             add(part, t0, 1.5, 49, 62 + lvl * 3);
             add(part, t0, .2, 36, 62 + lvl * 3);

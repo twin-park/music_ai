@@ -58,6 +58,58 @@ const std::vector<Mood> &moods() {
         {"겨울저녁", "눈 오는 저녁", {"F", "Bb", "Eb", "G"}, false, 76, 4, 0, 0, "classical", "straight", "TEMPO_slow", 1, 1, 62, 84, .88, 6, 8, 2,
          "클라리넷", 55, 79, 2.8, "하프 · 첼레스타 · 클라리넷 · 호른 · 글로켄 · 현악",
          "느린 4/4 · 하프 펼침 위에 클라리넷 ↔ 첼레스타 선율 · 호른 대선율 · 글로켄이 눈송이처럼 · 현악이 감쌈", false, 1.12, 14, .12},
+        // ── 11-13 오후: 장르마다 다른 리듬 · 악기로 17개 더 (편곡은 vary.cpp 팔레트 15~31) ──
+        {"시티팝", "시티팝 드라이브", {"Eb", "F", "Db", "Ab"}, false, 104, 4, 0, 1, "pop", "straight", "TEMPO_med", 2, 1, 62, 84, .9, 8, 9, 2,
+         "알토색소폰", 57, 79, 2.4, "알토 색소폰 · 로즈 · 클린 기타 · 슬랩 베이스 · 16분 드럼",
+         "80년대 시티팝 · 곧은 16분 그루브 · 로즈 · 기타 커팅 · 7화음 · 9화음 · 옥타브로 튀는 베이스", true, 1.0, 15, .3},
+        {"펑키그루브", "펑키 그루브", {"Em", "Am", "Dm", "Gm"}, true, 100, 4, 0, 1, "pop", "straight", "TEMPO_med", 2, 1, 60, 82, .92, 9, 9, 2,
+         "브라스", 58, 80, 2.0, "브라스 · 오르간 · 클라비넷 · 슬랩 베이스 · 펑크 드럼",
+         "16분 펑크 · 클라비넷 · 기타 짧게 끊어 치기 · 슬랩 베이스 옥타브 · 하이햇 16분 + 유령음 · 브라스 짧은 선율", true, 1.0, 16, .35},
+        {"로파이", "로파이 카페", {"Db", "Eb", "Ab", "F"}, false, 80, 4, .6, 1, "jazz", "swing", "TEMPO_slow", 1, 1, 60, 82, .88, 6, 8, 2,
+         "로즈", 60, 82, 2.6, "로즈 · 비브라폰 · 뮤트 트럼펫 · 일렉 베이스 · 붐뱁",
+         "느슨한 힙합 박 · 로즈 9화음 길게 · 비브라폰 · 하이햇 스윙 · 킥 엇박 · 스네어 살짝 늦게", true, 1.0, 17, .45},
+        {"블루스셔플", "블루스 셔플", {"Bb", "F", "G", "C"}, false, 112, 4, .66, 1, "jazz", "swing", "TEMPO_med", 2, 1, 60, 82, .92, 8, 9, 2,
+         "하모니카", 60, 84, 2.2, "하모니카 · 테너 · 오르간 · 일렉 베이스 · 셔플 드럼",
+         "셋잇단 셔플 · 부기 베이스(1-3-5-6-b7) · 오르간 길게 · 하모니카 · 테너 선율 · 스네어 2 · 4", true, 1.0, 18, .4},
+        {"빅밴드", "빅밴드 스윙", {"Bb", "Eb", "F", "Ab"}, false, 168, 4, .62, 1, "jazz", "swing", "TEMPO_fast", 2, 1, 60, 82, .92, 9, 10, 2,
+         "트럼펫", 60, 82, 2.2, "트럼펫 · 알토 · 트롬본 · 브라스 · 피아노 · 베이스 · 드럼",
+         "빠른 스윙 · 관악 선율 + 3 · 6도 화음 · 브라스 찌르기 · 워킹 베이스 · 라이드 · 크래시", true, 1.0, 19, .45},
+        {"삼바", "삼바 축제", {"C", "D", "F", "G"}, false, 104, 4, 0, 1, "jazz", "latin", "TEMPO_med", 2, 2, 64, 86, .92, 9, 9, 2,
+         "플루트", 67, 91, 2.2, "플루트 · 트럼펫 · 알토 · 나일론 기타 · 베이스 · 수르두 · 마라카스",
+         "삼바 · 수르두 둘째 박 · 마라카스 16분 · 탐보림 엇박 · 나일론 기타 · 삼바 베이스(근음-5음)", true, 1.0, 20, .3},
+        {"레게", "레게 해변", {"G", "A", "D", "C"}, false, 76, 4, .56, 0, "pop", "straight", "TEMPO_slow", 1, 1, 60, 82, .9, 6, 8, 2,
+         "하모니카", 60, 84, 2.4, "하모니카 · 트럼펫 · 오르간 · 클린 기타 · 일렉 베이스 · 원드롭",
+         "원드롭 · 기타 · 오르간 스캥크(2 · 4박) · 굵은 레게 베이스 · 하이햇 살짝 스윙 · 셋째 박 킥 + 림", false, 1.0, 21, .1},
+        {"트로피컬", "트로피컬 섬", {"C", "F", "G", "D"}, false, 108, 4, 0, 0, "pop", "straight", "TEMPO_med", 2, 1, 62, 86, .9, 8, 9, 2,
+         "스틸팬", 60, 84, 2.2, "스틸팬 · 마림바 · 칼림바 · 기타 · 일렉 베이스 · 칼립소 타악기",
+         "칼립소 · 스틸팬 선율 · 기타 긁기 · 킥 4박 · 손뼉 · 콩가 · 마라카스 · 엇박 베이스", false, 1.0, 22, .1},
+        {"캠핑포크", "어쿠스틱 캠핑", {"G", "D", "C", "A"}, false, 92, 4, 0, 0, "song", "straight", "TEMPO_med", 1, 1, 60, 82, .9, 7, 8, 2,
+         "하모니카", 60, 84, 2.2, "하모니카 · 휘슬 · 스틸 기타 · 베이스 · 탬버린",
+         "포크 · 스틸 기타 긁기 · 하모니카 · 휘슬 · 낮은 킥 · 탬버린 2 · 4 · 3화음", false, 1.0, 23, .08},
+        {"컨트리", "시골길 컨트리", {"G", "D", "A", "E"}, false, 116, 4, 0, 0, "song", "straight", "TEMPO_med", 2, 1, 62, 86, .9, 8, 9, 2,
+         "피들", 62, 88, 2.0, "피들 · 하모니카 · 스틸 기타 · 반조 · 베이스 · 기차 박",
+         "컨트리 · 반조 8분 · 붐칙 베이스(근음-5음) · 기차 박 스네어 · 피들 선율 · 3화음", false, 1.0, 24, .05},
+        {"켈틱", "켈틱 들판", {"D", "G", "A", "E"}, false, 112, 4, 0, 0, "song", "straight", "TEMPO_med", 2, 1, 62, 88, .9, 8, 8, 2,
+         "휘슬", 74, 98, 2.6, "휘슬 · 피들 · 아코디언 · 기타 · 하프 · 보란",
+         "아일랜드 릴 느낌 · 휘슬 · 피들 선율 · 기타 긁기 · 하프 펼침 · 보란 8분 · 3화음", false, 1.0, 25, .05},
+        {"탱고", "탱고의 밤", {"Am", "Dm", "Em", "Gm"}, true, 116, 4, 0, 0, "classical", "straight", "TEMPO_med", 2, 1, 60, 84, .9, 8, 9, 2,
+         "반도네온", 57, 81, 2.4, "반도네온 · 바이올린 · 피아노 · 첼로 · 베이스",
+         "탱고 · 피아노 4박 마르카토 · 하바네라 베이스 · 반도네온 ↔ 바이올린 선율 · 단조 · 북 없음", false, 1.12, 26, .2},
+        {"웅장한영화", "웅장한 영화", {"Dm", "Cm", "Am", "Em"}, true, 84, 4, 0, 0, "classical", "straight", "TEMPO_slow", 1, 1, 57, 81, .88, 6, 8, 2,
+         "호른", 50, 74, 3.0, "호른 · 현악 · 합창 · 트롬본 · 첼로 · 튜바 · 팀파니 · 타이코",
+         "영화 음악 · 빠른 현악 8분 오스티나토 · 호른 · 합창 선율 · 첼로 · 튜바 길게 받침 · 팀파니 근음 · 타이코", false, 1.12, 27, .15},
+        {"별빛앰비언트", "별빛 앰비언트", {"Db", "Ab", "E", "B"}, false, 64, 4, 0, 0, "song", "straight", "TEMPO_slow", 0, 2, 64, 88, .86, 5, 7, 2,
+         "칼림바", 60, 84, 3.2, "칼림바 · 뮤직박스 · 비브라폰 · 패드 · 하프",
+         "앰비언트 · 따뜻한 패드가 늘 깔림 · 칼림바 · 뮤직박스 성긴 선율 · 하프 펼침 · 첼로 길게 · 북 없음", false, 1.0, 28, .1},
+        {"동요", "아이와 노래", {"C", "F", "G", "D"}, false, 104, 4, 0, 0, "song", "straight", "TEMPO_med", 1, 1, 64, 86, .85, 7, 7, 2,
+         "실로폰", 64, 88, 2.0, "실로폰 · 리코더 · 글로켄 · 피아노 · 튜바 · 우드블록",
+         "동요 · 피아노 4박 쿵짝 · 튜바 움파 · 실로폰 · 리코더 선율 · 우드블록 · 마라카스 · 3화음", false, 1.0, 29, .02},
+        {"80년대", "80년대 네온", {"Am", "Em", "Dm", "Bm"}, true, 112, 4, 0, 0, "pop", "straight", "TEMPO_med", 2, 1, 60, 84, .9, 8, 9, 2,
+         "신스리드", 60, 84, 2.6, "신스 리드 · 폴리신스 · 알토 · 패드 · 신스 베이스 · 808/909",
+         "신스웨이브 · 신스 베이스 8분 · 808/909 드럼 · 패드 · 폴리신스 8분 · 신스 리드 선율 · 가끔 색소폰", false, 1.0, 30, .1},
+        {"바로크", "바로크 산책", {"D", "G", "A", "F", "Bb"}, false, 92, 4, 0, 0, "classical", "straight", "TEMPO_med", 2, 1, 62, 86, .9, 8, 8, 2,
+         "오보에", 62, 84, 2.4, "오보에 · 바이올린 · 리코더 · 하프시코드 · 첼로",
+         "바로크 · 하프시코드 통주저음 · 첼로 걷는 베이스 · 오보에 ↔ 바이올린 선율 · 3화음 · 북 없음", false, 1.12, 31, .05},
     };
     return M;
 }
@@ -121,7 +173,8 @@ std::vector<BN> top_line(const Song &S, int b0, int b1, int lo, int hi) {
     }
     return out;
 }
-void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base) {
+void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base,
+                 const std::string &bass_part, int blo, int bhi) {
     double t = (double)FN * S.ts;
     Chord c = S.chord(t);
     int r = fit(c.root, 36, 43);
@@ -132,10 +185,10 @@ void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, con
         if (ln < 0 || !(std::abs(q - ln) == 1 || std::abs(q - ln) == 11 || std::abs(q - ln) == 13)) all.push_back(q);
     for (size_t k = 0; k < all.size(); k++) S.add(all[k] < 60 ? "피아노 왼손" : "피아노 오른손", t + k * .09, 6, all[k], base + 2 - (double)k);
     S.pedal.push_back({t + .02, t + 6.5});
-    if (bass) S.add("베이스", t, 6, fit(c.root, 31, 43), 62);
+    if (bass) S.add(bass_part, t, 6, fit(c.root, std::max(31, blo), std::max(43, std::min(bhi, blo + 12))), 62);
     if (!lead.empty()) S.add(lead, t + .25, 5.5, fit(c.iv(3), lr0, lr1), 50);
     if (cym == "브러시") { S.add("브러시", t, 4, 40, 30); S.add("브러시", t, 4, 51, 30); }
-    else if (cym == "드럼") { S.add("드럼", t, 4, 51, 40); S.add("드럼", t, 3, 49, 46); }
+    else if (!cym.empty()) { S.add(cym, t, 4, 51, 40); S.add(cym, t, 3, 49, 46); }
 }
 
 // ---------------- 편곡 공식 9개 — 단락마다 ----------------
@@ -655,8 +708,14 @@ void Session::transition(double prev_bpm, const Key *near_key_p, int last_p, con
     const double to = r > 1.55 ? base_bpm() / 2 : base_bpm();                    // 빨라질 땐 반 박으로 이어 붙이고, 느려질 땐 그냥 서서히 (리타르단도)
     tempo_pts = {{0, prev_bpm}, {2.0 * ts - .01, to}};
     if (to != base_bpm()) tempo_pts.push_back({2.0 * ts, base_bpm()});
-    if (m.style == 5 || m.style == 6 || m.style == 7) {                          // 피아노 펼침 분위기
-        S.piano_pattern(0, 2, m.style == 5 ? "waltz" : "arp", 40); S.pedals(0, 2, ts == 3 ? 3 : 2);
+    const StyleInfo si = style_info(m.style);
+    if (m.style == 5 || m.style == 6 || m.style == 7 || (m.style >= 12 && (si.calm || si.drum.empty()))) {   // 피아노 펼침 분위기 · 북 없는 분위기
+        S.piano_pattern(0, 2, m.style == 5 || ts == 3 ? "waltz" : "arp", 40); S.pedals(0, 2, ts == 3 ? 3 : 2);
+        if (m.style >= 12 && !si.bass.empty() && si.bass != "walk") S.bass(0, 2, "pedal", 56, si.bass_part, si.blo, si.bhi);
+    } else if (m.style >= 12) {
+        S.comp({0, 1}, ts == 3 ? "waltz" : "ballad", 46);
+        if (!si.bass.empty()) S.bass(0, 2, ts == 3 ? "waltz" : "two", 66, si.bass_part, si.blo, si.bhi);
+        if (si.drum != "epic") S.drums(0, 2, si.drum, 0, 2, false);
     } else {
         S.comp({0, 1}, ts == 3 ? "waltz" : "ballad", 46);
         S.bass(0, 2, ts == 3 ? "waltz" : "two", 66);

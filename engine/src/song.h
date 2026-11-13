@@ -24,6 +24,9 @@ struct Span { double a, b; Chord c; };
 enum { QA_MAJ, QA_MAJ7, QA_MIN, QA_M7, QA_DOM, QA_ALT, QA_SUS, QA_HDIM, QA_DIM, QA_AUG, QA_MM7 };
 extern const char *QUALS[11];
 
+// 드럼 꼴 → 북 파트 이름 (브러시 · 재즈 드럼 · 팝 드럼 · 808)
+const char *drum_kit(const std::string &kind);
+
 struct Song {
     Key key;
     double bpm;
@@ -51,7 +54,8 @@ struct Song {
     Song(const std::string &k, double bpm_, int ts_, double sw, uint64_t seed) : key(k), bpm(bpm_), ts(ts_), swing(sw), rng(seed) {}
 
     int part_id(const std::string &name);
-    bool is_drum_part(int id) const { return names[id] == "브러시" || names[id] == "드럼"; }
+    bool is_drum_part(int id) const { return drum_name(names[id]); }
+    static bool drum_name(const std::string &n) { return n == "브러시" || n == "드럼" || n == "팝드럼" || n == "808드럼"; }
     // 코드 칸: bars[마디] = [(박, 근음, 종류번호)] · bar0 부터 덧붙임
     void add_chords(int bar0, const std::vector<std::vector<std::array<int, 3>>> &bars, int color, bool minor_target_b9 = true);
     void add_span(double a, double b, const Chord &c) { spans.push_back({a, b, c}); }
@@ -73,6 +77,7 @@ struct Song {
     void guitar_comp(const std::vector<int> &bars, const std::string &part, const std::string &feel = "bossa", double base = 56);
     void piano_pattern(int b0, int b1, const std::string &kind = "arp", double base = 46, const std::string &part = "피아노 왼손");
     void bass(int b0, int b1, const std::string &style = "two", double base = 74, const std::string &part = "베이스", int lo = 28, int hi = 48);
+    void bass_pat(int b0, int b1, const std::string &style, double base, const std::string &part, int lo, int hi);   // 리듬 꼴 베이스 (펑크 · 레게 · 삼바 · 탱고 …)
     void drums(int b0, int b1, const std::string &kind = "brush", int lvl = 0, int fill_every = 8, bool crash = true);
     void strings_pad(int b0, int b1, const std::string &part = "현악", double base = 50, int lo = 52, int hi = 74);
     void guide_line(int b0, int b1, const std::string &part, double base = 56, int lo = 50, int hi = 67);

@@ -59,6 +59,12 @@ h1{font-size:25px;font-weight:700;line-height:1.35;letter-spacing:-.3px;margin-t
 .tile:active{transform:scale(.97)}
 .tile.on{border-color:var(--green);background:var(--glow)}
 .tile.wait{border-color:var(--green);border-style:dashed}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+.cats button{background:none;border:1px solid var(--line);color:var(--sub);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:600;cursor:pointer;position:relative}
+.cats button:hover{color:var(--text)}
+.cats button.on{background:var(--text);border-color:var(--text);color:var(--bg)}
+.cats button.play::after{content:"";position:absolute;top:4px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+.cats + .grid{margin-top:12px}
 .ctl{display:flex;align-items:center;gap:12px;margin-top:24px;background:var(--card);border-radius:16px;padding:14px 16px}
 .ctl input[type=range]{flex:1;accent-color:var(--green)}
 .ctl label{color:var(--sub);font-size:14px;flex:none}
@@ -148,6 +154,7 @@ pre{margin-top:12px;background:var(--card);border-radius:14px;padding:14px;font:
     <!-- ✋ 직접: 분위기 고르기 -->
     <div id="handMain" class="hide">
       <h1 id="ask">어떤 분위기로<br>시작할까요?</h1>
+      <div class="cats" id="cats"></div>
       <div class="grid" id="moods"></div>
       <div class="row">
         <button class="chip" id="a-sea">🌊 바닷가 파도</button>
@@ -219,13 +226,33 @@ document.querySelectorAll("#seg button").forEach(b => b.onclick = () => setMode(
 let goAt = 0;
 $("go").onclick = () => { goAt = Date.now(); $("go").textContent = "상황 보는 중…"; api("/api/auto", {start: 1}).catch(() => {}); };
 
-api("/api/moods").then(ms => {
-  MOODS = ms;
-  $("moods").innerHTML = ms.map(m => `<button class="tile" data-id="${esc(m.id)}">${esc(m.name)}</button>`).join("");
+// 분위기 32개: 갈래를 먼저 고르고(한 번에 하나) 그 안의 분위기만 보여 줌 · 연주 중인 갈래엔 초록 점
+const MGROUPS = [
+  ["재즈", ["비오는날", "평온한재즈", "밤드라이브", "즐거운대화", "낮드라이브", "밤고속도로", "로파이", "블루스셔플", "빅밴드"]],
+  ["팝 · 그루브", ["상쾌한아침", "시티팝", "펑키그루브", "80년대"]],
+  ["세계 리듬", ["바닷가보사노바", "삼바", "레게", "트로피컬", "탱고", "켈틱", "컨트리"]],
+  ["잔잔 · 가족", ["아이재우기", "진정", "위로", "별빛앰비언트", "동요", "캠핑포크"]],
+  ["클래식 · 영화", ["클래식피아노", "현악앙상블", "클래식왈츠", "겨울저녁", "바로크", "웅장한영화"]],
+];
+let cat = +(store.get("moodCat") || 0), catTouched = 0;
+const groupOf = id => { const i = MGROUPS.findIndex(g => g[1].includes(id)); return i < 0 ? MGROUPS.length - 1 : i; };
+function drawTiles() {
+  const ids = MOODS.filter(m => groupOf(m.id) === cat);
+  $("moods").innerHTML = ids.map(m => `<button class="tile" data-id="${esc(m.id)}">${esc(m.name)}</button>`).join("");
   document.querySelectorAll(".tile").forEach(b => b.onclick = () => {
     wantMood = b.dataset.id; draw();
     api("/api/mood", {id: b.dataset.id});
   });
+  document.querySelectorAll("#cats button").forEach(b => b.classList.toggle("on", +b.dataset.i === cat));
+  draw();
+}
+api("/api/moods").then(ms => {
+  MOODS = ms;
+  for (const m of ms) if (!MGROUPS.some(g => g[1].includes(m.id))) MGROUPS[MGROUPS.length - 1][1].push(m.id);
+  $("cats").innerHTML = MGROUPS.map(([n], i) => `<button data-i="${i}">${esc(n)}</button>`).join("");
+  document.querySelectorAll("#cats button").forEach(b => b.onclick = () => { cat = +b.dataset.i; catTouched = Date.now(); store.set("moodCat", cat); drawTiles(); });
+  if (!(cat >= 0 && cat < MGROUPS.length)) cat = 0;
+  drawTiles();
 });
 
 function draw() {
@@ -252,6 +279,8 @@ function draw() {
     $("tags").innerHTML = (d.because || []).map(b => `<span>${esc(b)}</span>`).join("");
   }
   if (wantMood && S.mood === wantMood) wantMood = null;
+  const pg = on && S.mood ? groupOf(S.mood) : -1;
+  document.querySelectorAll("#cats button").forEach(b => b.classList.toggle("play", +b.dataset.i === pg && pg !== cat));
   document.querySelectorAll(".tile").forEach(b => {
     b.classList.toggle("on", on && b.dataset.id === S.mood && !wantMood);
     b.classList.toggle("wait", b.dataset.id === wantMood);

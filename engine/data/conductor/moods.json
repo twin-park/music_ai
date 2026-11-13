@@ -14,5 +14,23 @@
   "클래식왈츠":     { "energy": 62, "bright": 74, "genre": "classical", "evokes": ["축제", "아기", "겨울"] },
   "상쾌한아침":     { "energy": 66, "bright": 82, "genre": "pop",       "evokes": ["아침", "맑음", "들판", "여름"] },
   "밤고속도로":     { "energy": 64, "bright": 56, "genre": "jazz",      "evokes": ["밤", "고속도로", "넓음"] },
-  "겨울저녁":       { "energy": 26, "bright": 62, "genre": "classical", "evokes": ["눈", "겨울", "저녁", "아기"] }
+  "겨울저녁":       { "energy": 26, "bright": 62, "genre": "classical", "evokes": ["눈", "겨울", "저녁", "아기"] },
+  // 11-13 오후: 장르 분위기 17개
+  "시티팝":         { "energy": 62, "bright": 66, "genre": "pop",       "evokes": ["도시", "밤", "고속도로", "여름"] },
+  "펑키그루브":     { "energy": 80, "bright": 62, "genre": "pop",       "evokes": ["축제", "도시", "낮"] },
+  "로파이":         { "energy": 32, "bright": 40, "genre": "jazz",      "evokes": ["비", "밤", "도시"] },
+  "블루스셔플":     { "energy": 66, "bright": 48, "genre": "jazz",      "evokes": ["도시", "밤", "고속도로"] },
+  "빅밴드":         { "energy": 86, "bright": 74, "genre": "jazz",      "evokes": ["축제", "도시", "낮"] },
+  "삼바":           { "energy": 84, "bright": 82, "genre": "jazz",      "evokes": ["축제", "여름", "바다"] },
+  "레게":           { "energy": 52, "bright": 70, "genre": "pop",       "evokes": ["바다", "여름", "바람"] },
+  "트로피컬":       { "energy": 70, "bright": 86, "genre": "pop",       "evokes": ["바다", "여름", "축제"] },
+  "캠핑포크":       { "energy": 50, "bright": 72, "genre": "song",      "evokes": ["산", "들판", "숲", "여행", "아침"] },
+  "컨트리":         { "energy": 70, "bright": 78, "genre": "song",      "evokes": ["들판", "여행", "낮"] },
+  "켈틱":           { "energy": 64, "bright": 70, "genre": "song",      "evokes": ["들판", "산", "바람", "숲"] },
+  "탱고":           { "energy": 66, "bright": 36, "genre": "classical", "evokes": ["밤", "연인", "도시"] },
+  "웅장한영화":     { "energy": 72, "bright": 44, "genre": "classical", "evokes": ["넓음", "산"] },
+  "별빛앰비언트":   { "energy": 14, "bright": 58, "genre": "song",      "evokes": ["밤", "새벽", "아기", "눈", "넓음"] },
+  "동요":           { "energy": 58, "bright": 90, "genre": "song",      "evokes": ["아기", "아침", "축제"] },
+  "80년대":         { "energy": 68, "bright": 46, "genre": "pop",       "evokes": ["밤", "고속도로", "도시"] },
+  "바로크":         { "energy": 52, "bright": 66, "genre": "classical", "evokes": ["아침", "고향", "강"] }
 }

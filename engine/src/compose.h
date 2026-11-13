@@ -69,7 +69,11 @@ double mel_score(const std::vector<BNote> &notes, const std::vector<Bar> &bars, 
 double score8(const std::vector<Bar> &bars, bool jazz = true);
 std::string key_name(int pc, bool minor);
 std::vector<BN> top_line(const Song &S, int b0, int b1, int lo = 70, int hi = 81);     // 코드마다 가이드톤 한 음씩 (도입 선율)
-void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base);
+void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base,
+                 const std::string &bass_part = "베이스", int blo = 31, int bhi = 43);
+// 팔레트 첫 선택지 (이음 · 끝에서 씀)
+struct StyleInfo { std::string drum, bass, bass_part; int blo = 28, bhi = 48; bool calm = false; };
+StyleInfo style_info(int style);
 
 struct Session {
     const Mood &m;
