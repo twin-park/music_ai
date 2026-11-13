@@ -173,8 +173,12 @@ int main(int argc, char **argv) {
                           pp.reg, pp.tempo, pp.dens, pp.energy, pp.novelty, pp.space, pp.tension, E.params_pending ? "true" : "false");
             std::string tail = b;
             tail.pop_back();                                                   // 끝 } 떼고 조절값 붙임
+            char ab[80];
+            std::snprintf(ab, sizeof ab, ",\"amb\":{\"sea\":%.2f,\"rain\":%.2f}}", E.amb.level[0].load(), E.amb.level[1].load());
+            std::string pbs = pb;
+            pbs.pop_back();                                                    // 끝 } 떼고 주변 소리 붙임
             r.body = "{\"mood\":" + json_str(playing ? st.mood : "") + ",\"name\":" + json_str(st.mood_name) + ",\"role\":" + json_str(st.role) +
-                     ",\"key\":" + json_str(st.key) + tail + pb;
+                     ",\"key\":" + json_str(st.key) + tail + pbs + ab;
             return;
         }
         if (q.path == "/api/score") { r.type = "text/plain; charset=utf-8"; r.body = E.recent_score(3); return; }
@@ -183,6 +187,15 @@ int main(int argc, char **argv) {
             auto get = [&](const char *k, double &v) { std::string x = json_get(q.body, k); if (!x.empty()) v = std::max(-1.0, std::min(1.0, std::atof(x.c_str()))); };
             get("reg", p.reg); get("tempo", p.tempo); get("dens", p.dens); get("energy", p.energy); get("novelty", p.novelty); get("space", p.space); get("tension", p.tension);
             E.set_params(p);
+            r.body = "{\"ok\":true}";
+            return;
+        }
+        if (q.path == "/api/amb") {                                           // 주변 소리: {"sea":1,"rain":0} (0 끔 · 1 기본 · 2 조금 크게) — 빠진 건 그대로
+            std::string err;
+            for (int k = 0; k < Ambience::N; k++) {
+                const std::string x = json_get(q.body, Ambience::NAME[k]);
+                if (!x.empty() && !E.amb.set(k, (float)std::atof(x.c_str()), &err)) { r.code = 500; r.body = "{\"error\":" + json_str(err) + "}"; return; }
+            }
             r.body = "{\"ok\":true}";
             return;
         }

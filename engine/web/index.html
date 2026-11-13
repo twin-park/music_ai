@@ -61,6 +61,7 @@ h1{font-size:25px;font-weight:700;line-height:1.35;letter-spacing:-.3px;margin-t
 .row{display:flex;gap:8px;margin-top:12px}
 .chip{flex:1;background:none;border:1px solid var(--line);color:var(--sub);border-radius:12px;padding:11px 6px;font-size:14px;cursor:pointer}
 .chip:hover{color:var(--text)}
+.chip.on{border-color:var(--green);color:var(--green);background:var(--glow)}
 pre{margin-top:12px;background:var(--card);border-radius:14px;padding:14px;font:12.5px/1.55 ui-monospace,Consolas,monospace;max-height:44vh;overflow:auto;white-space:pre;color:var(--text)}
 .info{margin-top:12px;background:var(--card);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.6;color:var(--sub)}
 .info b{color:var(--text);font-weight:600}
@@ -86,6 +87,10 @@ pre{margin-top:12px;background:var(--card);border-radius:14px;padding:14px;font:
   <div class="ctl">
     <label>소리</label><input type="range" id="vol" min="0" max="100" value="80">
     <button class="tg" id="duck">📞 통화 중</button>
+  </div>
+  <div class="row">
+    <button class="chip" id="a-sea">🌊 바닷가 파도</button>
+    <button class="chip" id="a-rain">🌧 빗소리</button>
   </div>
   <div class="row">
     <button class="chip" id="b-score">악보 보기 ▼</button>
@@ -144,6 +149,7 @@ function draw() {
   const m = MOODS.find(x => x.id === S.mood);
   $("info").innerHTML = m ? `<b>${m.name}</b><br><b>편성</b> ${m.band}<br><b>공식</b> ${m.recipe}` : "아직 연주 중이 아니에요";
   $("duck").classList.toggle("on", !!S.duck);
+  if (S.amb && Date.now() - ambTouched > 1500) { $("a-sea").classList.toggle("on", S.amb.sea > 0); $("a-rain").classList.toggle("on", S.amb.rain > 0); }
 }
 function poll() {
   api("/api/state").then(s => { if (S.vol === undefined) $("vol").value = Math.round(s.vol * 100); S = s; draw(); syncKnobs(s.params, s.pending); }).catch(() => {});
@@ -155,6 +161,13 @@ setInterval(() => fetch("/api/ping").catch(() => {}), 5000); fetch("/api/ping");
 $("end").onclick = () => api(S.ending ? "/api/stop" : "/api/end", {});
 $("vol").oninput = e => api("/api/volume", {v: e.target.value / 100});
 $("duck").onclick = () => api("/api/duck", {on: S.duck ? 0 : 1}).then(poll);
+// 주변 소리: 음악 밑에 실제 파도 · 빗소리를 작게 (켜고 끌 때 몇 초에 걸쳐 천천히)
+let ambTouched = 0;
+["sea", "rain"].forEach(k => $("a-" + k).onclick = () => {
+  const b = $("a-" + k), on = !b.classList.contains("on");
+  b.classList.toggle("on", on); ambTouched = Date.now();
+  api("/api/amb", {[k]: on ? 1 : 0}).catch(() => {});
+});
 $("b-score").onclick = () => { showScore = !showScore; $("score").classList.toggle("hide", !showScore); $("b-score").textContent = showScore ? "악보 접기 ▲" : "악보 보기 ▼"; poll(); };
 $("b-info").onclick = () => $("info").classList.toggle("hide");
 

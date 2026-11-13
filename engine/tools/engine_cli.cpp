@@ -1,5 +1,6 @@
 // 시험·보정 도구 (소리 장치 없이 파일로)
-//   engine_cli render <data> <출력.wav> <초> "0:비오는날,70:즐거운대화,100:@reg=0.5/tempo=-0.3,140:끝"  — 실시간 엔진을 그대로 빨리 돌려 녹음 (@ = 조절값)
+//   engine_cli render <data> <출력.wav> <초> "0:비오는날,70:즐거운대화,100:@reg=0.5/tempo=-0.3,120:~sea=1/rain=0,140:끝"
+//      — 실시간 엔진을 그대로 빨리 돌려 녹음 (@ = 조절값 · ~ = 주변 소리)
 //   engine_cli calib <data> [초]                                                    — 분위기마다 악기 크기 · 마스터 크기 재서 data/calib.txt
 #include "../src/engine.h"
 #include "../src/util.h"
@@ -38,6 +39,13 @@ int main(int argc, char **argv) {
             while (pi < plan.size() && plan[pi].first <= now) {
                 const std::string &a = plan[pi].second;
                 if (a == "끝") E.request_end();
+                else if (a[0] == '~') {                                          // ~sea=1/rain=0 (주변 소리)
+                    std::stringstream ps(a.substr(1)); std::string kv;
+                    while (std::getline(ps, kv, '/')) {
+                        auto e = kv.find('='); if (e == std::string::npos) continue;
+                        for (int k = 0; k < Ambience::N; k++) if (kv.substr(0, e) == Ambience::NAME[k]) E.amb.set(k, (float)std::atof(kv.substr(e + 1).c_str()));
+                    }
+                }
                 else if (a[0] == '@') {                                          // @reg=0.5/tempo=-0.3 … (조절값)
                     Params p = E.get_params();
                     std::stringstream ps(a.substr(1)); std::string kv;

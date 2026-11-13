@@ -1,6 +1,7 @@
 // 실시간 엔진: 작곡(단락씩 미리) → 연주 사건(음정 보정·지연·관악기 표현) → 악기별 소리(fluidsynth·피아노) → 믹서
 //   작곡은 작곡 줄(스레드)이, 소리는 소리 줄이 만듦. 분위기를 바꾸면 소리 줄보다 조금 앞 마디에서 자르고 이음 2마디 → 새 분위기.
 #pragma once
+#include "amb.h"
 #include "compose.h"
 #include "dsp.h"
 #include "fluid.h"
@@ -77,6 +78,7 @@ struct Engine {
     Limiter lim;
     double master_db = 0, master_to = 0;
     std::atomic<float> volume{1.f}, duck{1.f};
+    Ambience amb;                      // 주변 소리 (바닷가 파도 · 빗소리) — 음악 밑에 작게
     float vol_now = 1, fade = 0;       // 시작 페이드 · 끝 페이드
     std::atomic<bool> fading_out{false};
     std::vector<float> sendL, sendR, dryL, dryR, wetL, wetR;

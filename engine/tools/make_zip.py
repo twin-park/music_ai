@@ -24,6 +24,8 @@ for f in ("chord.bin", "melody.bin", "tune.txt", "calib.txt"):
     cp(os.path.join(D, f), os.path.join(OUT, "data", f))
 for f in ("gu_small.sf2", "sso_small.sf2"):          # GeneralUser GS 는 쓰는 악기 14개만 남긴 판 (win/sf2_subset.py)
     cp(os.path.join(D, "sf", f), os.path.join(OUT, "data", "sf", f))
+for f in ("sea.flac", "rain.flac"):                    # 주변 소리 (win/build/assets/amb, 링크)
+    cp(os.path.join(D, "amb", f), os.path.join(OUT, "data", "amb", f))
 for f in sorted(glob.glob(os.path.join(D, "piano", "*.flac"))):
     cp(f, os.path.join(OUT, "data", "piano", os.path.basename(f)))
 
@@ -47,6 +49,7 @@ README = """차량 BGM AI (실시간판) — 듣는 동안 AI 가 다음 악보�
      - 긴장감: 편안하게 = 조 안의 순한 화음 · 선율도 화음 안쪽으로 / 긴장되게 = 재화성 · 조 밖 화음 · 텐션이 늘어남
    · [끝내기] 마지막 4마디 + 마지막 화음으로 자연스럽게 끝 · 끝나는 중에 한 번 더 누르면 바로 끔
    · 소리 크기 · [📞 통화 중] (누르면 바로 작아짐 — 차 안에서 전화 올 때)
+   · [🌊 바닷가 파도] [🌧 빗소리] 실제 녹음을 음악 밑에 작게 (음악보다 약 15dB 작게, 켜고 끌 때 3초쯤 천천히)
    · [악보 보기] AI 가 지금 쓰고 있는 악보 글자 (-1 mi F 3~6 70 = 옥타브 · 계이름 · 임시표 · 초 · 세기)
 4. 악보는 C:\\Users\\<이름>\\차량BGM_결과\\<날짜시각>_실시간악보.txt 에 계속 쌓입니다 ([악보 폴더])
 
@@ -63,6 +66,8 @@ THIRD = """차량 BGM AI 에 들어 있는 남의 것
 소리
 - Accurate-Salamander Grand Piano (Chisato Yamauchi) / Salamander Grand Piano (Alexander Holm) — CC-BY 3.0, FLAC 16비트로 바꾸고 14초에서 자름
 - GeneralUser GS (S. Christian Collins) — 자유 사용 · 재배포 허용, 쓰는 악기 14개 프리셋만 남김
+- 바닷가 파도: "Ocean Waves on a Tropical Beach" (J.D. Savanyu, Wikimedia Commons) — CC0, 60초 고리로 다듬음
+- 빗소리: "Rain (1)" (ezwa) · "Rain against the window" (cori) (Wikimedia Commons) — 퍼블릭 도메인, 섞어 120초 고리로 다듬음
 - Sonatina Symphonic Orchestra (Mattias Westlund) — Creative Commons Sampling Plus 1.0, 바이올린 · 첼로 · 플루트 프리셋만 남김
 
 AI 학습 자료 (가중치만 들어 있음)

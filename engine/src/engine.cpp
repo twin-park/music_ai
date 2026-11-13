@@ -61,6 +61,7 @@ bool Engine::init(const std::string &data_dir, std::string *err) {
     sf_gu = data + "/sf/gu_small.sf2";                                    // 쓰는 악기 14개만 남긴 판(8MB) — 없으면 원본(32MB)
     if (FILE *fp = std::fopen(sf_gu.c_str(), "rb")) std::fclose(fp); else sf_gu = data + "/sf/GeneralUser-GS.sf2";
     sf_sso = data + "/sf/sso_small.sf2";
+    amb.open(data + "/amb");
     if (!piano.open(data + "/piano")) { if (err) *err = "피아노 샘플이 없음: " + data + "/piano"; return false; }
     piano.preload_common();                                              // 자주 쓰는 음역만 뒤에서 미리 (나머지는 예약할 때)
     std::string t;
@@ -423,6 +424,10 @@ void Engine::request_mood(const std::string &id) {
 }
 
 bool Engine::compose_step(double now) {
+    {                                                                     // 주변 소리는 음악이 나오는 동안만 (끝맺음이 다 울린 뒤엔 같이 사라짐)
+        std::lock_guard<std::mutex> g(mtx);
+        amb.run = live && !stopped && !(ending && now > composed_until + 1.0);
+    }
     if (req_stop.exchange(false) && cur) {                                // 바로 끄기: 1.5초 동안 작아지며 끝
         fading_out = true;
         cut_at(now + 1.6);
@@ -639,6 +644,7 @@ void Engine::render(float *L, float *R, int n) {
             float g = (float)(m0 + (m1 - m0) * i / B) * vol_now * fade;
             oL[i] *= g; oR[i] *= g;
         }
+        amb.render(oL, oR, B, vol_now);                     // 주변 소리 (음악 볼륨 · 통화 중 줄이기를 따라감)
         lim.process(oL, oR, B);
         frame += B;
     }
