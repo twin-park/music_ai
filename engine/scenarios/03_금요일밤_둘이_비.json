@@ -1,0 +1,15 @@
+{
+  "name": "비 오는 금요일 밤 퇴근 · 둘이 · 다툼",
+  "seconds": 330,
+  "steps": [
+    { "t": 0,   "set": { "time": { "day": "fri", "slot": "night" }, "trip": { "kind": "homeward" }, "weather": { "kind": "rain" },
+                         "place": { "kind": "city" }, "drive": { "state": "cruise" }, "people": { "group": "partner" },
+                         "car": { "windows": "closed" }, "cabin": { "sound": "quiet" } } },
+    { "t": 80,  "set": { "cabin": { "sound": "talk" } }, "talk": 0.6 },
+    { "t": 110, "set": { "cabin": { "sound": "argument" } }, "talk": 1.0 },
+    { "t": 150, "set": { "cabin": { "sound": "quiet" } }, "talk": 0 },
+    { "t": 200, "set": { "place": { "kind": "coast" }, "weather": { "kind": "cloudy" } } },
+    { "t": 280, "say": "이거 좋다" },
+    { "t": 310, "end": true }
+  ]
+}

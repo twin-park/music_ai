@@ -134,6 +134,8 @@ def main():
     ap.add_argument("--sel_jazz", type=float, default=0.0, help="가장 좋은 때를 고를 때 재즈 검증의 비중 (0 = 전체만)")
     ap.add_argument("--jazz_x", type=float, default=1.0, help="재즈 출처를 뽑는 비율 배수")
     ap.add_argument("--ema", type=float, default=0.0, help="가중치 이동 평균 (0 = 안 씀, 0.999 쯤)")
+    ap.add_argument("--init", default="", help="이 저장본의 가중치에서 이어 배움 (멈춘 학습 잇기)")
+    ap.add_argument("--warmup", type=int, default=200)
     ap.add_argument("--out", required=True)
     A = ap.parse_args()
     cfg = dict(chord=dict(d=128, layers=4, heads=4, ctx=256), melody=dict(d=256, layers=6, heads=8, ctx=512))[A.which]
@@ -150,6 +152,10 @@ def main():
     torch.manual_seed(0)
     model = MusicLM(tr.vocab, cfg["d"], cfg["layers"], cfg["heads"], cfg["ctx"], A.drop).to(dev)
     print(f"{A.which}: 매개변수 {sum(p.numel() for p in model.parameters()) / 1e6:.2f}M · 설정 {cfg}", flush=True)
+    if A.init:
+        ck0 = torch.load(A.init, map_location=dev)
+        model.load_state_dict(ck0["model"])
+        print(f"이어 배움: {A.init} (걸음 {ck0.get('step')} · 검증 {ck0.get('val', 0):.4f})", flush=True)
     teacher = None
     if A.teacher:
         ck = torch.load(A.teacher, map_location=dev)
@@ -209,7 +215,7 @@ def main():
             print(f"  걸음 {step} · 검증 {v['전체']:.4f}{mark} · " + " ".join(f"{g} {v[g]:.3f}" for g in groups) + f" · {time.time() - t0:.0f}초", flush=True)
             if step == A.steps or step - best_step >= A.patience:
                 break
-        lr = A.lr * min(1, (step + 1) / 200) * (0.1 + 0.9 * 0.5 * (1 + math.cos(math.pi * step / A.steps)))
+        lr = A.lr * min(1, (step + 1) / A.warmup) * (0.1 + 0.9 * 0.5 * (1 + math.cos(math.pi * step / A.steps)))
         for g in opt.param_groups:
             g["lr"] = lr
         x, y, is_old = batch(tr, rng, A.bs, dev, with_old=True)

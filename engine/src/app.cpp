@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
     }
     std::string err;
     if (!E.init(data, &err)) { say("시작하지 못했습니다\n" + err); return 2; }
+    E.auto_mode = E.cond.loaded;                                             // 지휘자가 있으면 처음부터 알아서
     E.out_dir = home_dir() + "/차량BGM_결과";
     make_dirs(E.out_dir);
     const double target_fill = .2;
@@ -173,12 +174,25 @@ int main(int argc, char **argv) {
                           pp.reg, pp.tempo, pp.dens, pp.energy, pp.novelty, pp.space, pp.tension, E.params_pending ? "true" : "false");
             std::string tail = b;
             tail.pop_back();                                                   // 끝 } 떼고 조절값 붙임
-            char ab[80];
-            std::snprintf(ab, sizeof ab, ",\"amb\":{\"sea\":%.2f,\"rain\":%.2f}}", E.amb.level[0].load(), E.amb.level[1].load());
+            char ab[200];
+            std::snprintf(ab, sizeof ab, ",\"amb\":{\"sea\":%.2f,\"rain\":%.2f},\"auto\":%s,\"talk\":%.2f,\"conductor\":%s}", E.amb.level[0].load(), E.amb.level[1].load(),
+                          E.auto_mode ? "true" : "false", E.talk_level.load(), E.cond.loaded ? "true" : "false");
+            std::string line;
+            {
+                std::lock_guard<std::mutex> g(E.cond_mtx);
+                Json lj = Json::obj_();
+                lj.set("line", Json::str_(E.dec.line)); lj.set("scene", Json::str_(E.dec.scene_name));
+                Json bc = Json::arr_(); for (auto &b : E.dec.because) bc.a.push_back(Json::str_(b)); lj.set("because", bc);
+                lj.set("next", Json::str_(E.dec.mood_name));
+                line = lj.dump();
+            }
+            std::string abs = ab;
+            abs.pop_back();
+            abs += ",\"dec\":" + line + "}";
             std::string pbs = pb;
             pbs.pop_back();                                                    // 끝 } 떼고 주변 소리 붙임
             r.body = "{\"mood\":" + json_str(playing ? st.mood : "") + ",\"name\":" + json_str(st.mood_name) + ",\"role\":" + json_str(st.role) +
-                     ",\"key\":" + json_str(st.key) + tail + pbs + ab;
+                     ",\"key\":" + json_str(st.key) + tail + pbs + abs;
             return;
         }
         if (q.path == "/api/score") { r.type = "text/plain; charset=utf-8"; r.body = E.recent_score(3); return; }
@@ -199,7 +213,56 @@ int main(int argc, char **argv) {
             r.body = "{\"ok\":true}";
             return;
         }
-        if (q.path == "/api/mood") { E.request_mood(json_get(q.body, "id")); r.body = "{\"ok\":true}"; return; }
+        if (q.path == "/api/mood") { E.user_mood(json_get(q.body, "id")); r.body = "{\"ok\":true}"; return; }
+        // ── 지휘자: 상황 → 음악 ──
+        if (q.path == "/api/situation") {                                    // POST = 상황 일부 (null 은 지움) · GET = 지금 상황 (지휘자가 채운 칸 포함)
+            if (q.method == "POST") {
+                std::string pe;
+                Json patch = Json::parse(q.body, &pe);
+                if (!pe.empty() || !patch.is_obj()) { r.code = 400; r.body = "{\"error\":" + json_str("상황 JSON 이 아님: " + pe) + "}"; return; }
+                E.situation(patch);
+                r.body = "{\"ok\":true}";
+                return;
+            }
+            std::lock_guard<std::mutex> g(E.cond_mtx);
+            r.body = E.cond.derived((double)E.frame.load() / SR).dump();
+            return;
+        }
+        if (q.path == "/api/situation/reset") {                              // 상황 모두 지우기 (시연)
+            const double now = (double)E.frame.load() / SR;
+            std::lock_guard<std::mutex> g(E.cond_mtx);
+            E.cond.sit = Json::obj_(); E.cond.clear_requests(); E.cond.reset_holds(); E.cond.update(Json::obj_(), now);
+            r.body = "{\"ok\":true}";
+            return;
+        }
+        if (q.path == "/api/say") {                                          // 말 (음성 인식 문장) → 요청
+            std::string it;
+            const std::string reply = E.hear(json_get(q.body, "text"), &it);
+            r.body = "{\"intent\":" + json_str(it) + ",\"say\":" + json_str(reply) + "}";
+            return;
+        }
+        if (q.path == "/api/auto") {                                         // {"on":1} 알아서 · {"on":0} 직접 · {"start":1} 지휘자가 고른 분위기로 시작
+            const std::string on = json_get(q.body, "on"), st = json_get(q.body, "start");
+            if (!on.empty()) {
+                E.auto_mode = on == "1" || on == "true";
+                if (E.auto_mode) { E.user_pick_until = -1e9; E.params_at = -1e9; }
+                else E.set_steer(Steer());                                     // 직접: 지휘자의 악기 지시는 풀고 (조절값은 화면에 보이는 그대로)
+            }
+            if (st == "1" || st == "true") { E.auto_mode = true; E.auto_start = true; }
+            r.body = std::string("{\"auto\":") + (E.auto_mode ? "true" : "false") + "}";
+            return;
+        }
+        if (q.path == "/api/decision") {                                     // 지휘자가 지금 정한 것 (화면 · 시험)
+            std::lock_guard<std::mutex> g(E.cond_mtx);
+            r.body = E.dec.to_json().dump();
+            return;
+        }
+        if (q.path == "/api/level") {                                        // 지금 나가는 소리 크기 (마이크 메아리 빼기용 · 자주 부름)
+            char b[96];
+            std::snprintf(b, sizeof b, "{\"out_db\":%.1f,\"talk\":%.2f}", E.out_db.load(), E.talk_level.load());
+            r.body = b;
+            return;
+        }
         if (q.path == "/api/end") { E.request_end(); r.body = "{\"ok\":true}"; return; }
         if (q.path == "/api/stop") { E.request_stop(); r.body = "{\"ok\":true}"; return; }
         if (q.path == "/api/volume") { E.volume = (float)std::max(0.0, std::min(1.0, std::atof(json_get(q.body, "v").c_str()))); r.body = "{\"ok\":true}"; return; }

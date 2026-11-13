@@ -1,0 +1,18 @@
+// 분위기 성격 — 지휘자가 분위기를 고를 때 (energy 활기 · bright 밝기 0~100 · genre 갈래 · evokes 떠올리게 하는 것)
+{
+  "비오는날":       { "energy": 30, "bright": 38, "genre": "jazz",      "evokes": ["비", "밤", "연인", "도시"] },
+  "평온한재즈":     { "energy": 48, "bright": 58, "genre": "jazz",      "evokes": ["도시", "낮", "비"] },
+  "밤드라이브":     { "energy": 50, "bright": 32, "genre": "jazz",      "evokes": ["밤", "도시", "고속도로"] },
+  "즐거운대화":     { "energy": 82, "bright": 76, "genre": "jazz",      "evokes": ["축제", "도시", "낮"] },
+  "바닷가보사노바": { "energy": 58, "bright": 72, "genre": "jazz",      "evokes": ["바다", "여름", "연인", "바람"] },
+  "아이재우기":     { "energy": 12, "bright": 66, "genre": "song",      "evokes": ["아기", "밤", "겨울"] },
+  "진정":           { "energy": 16, "bright": 42, "genre": "jazz",      "evokes": ["밤", "새벽", "비"] },
+  "위로":           { "energy": 28, "bright": 50, "genre": "pop",       "evokes": ["위로", "저녁", "연인", "넓음"] },
+  "낮드라이브":     { "energy": 70, "bright": 68, "genre": "jazz",      "evokes": ["낮", "고속도로", "도시"] },
+  "클래식피아노":   { "energy": 36, "bright": 60, "genre": "classical", "evokes": ["아침", "강", "고향"] },
+  "현악앙상블":     { "energy": 26, "bright": 52, "genre": "classical", "evokes": ["넓음", "산", "위로"] },
+  "클래식왈츠":     { "energy": 62, "bright": 74, "genre": "classical", "evokes": ["축제", "아기", "겨울"] },
+  "상쾌한아침":     { "energy": 66, "bright": 82, "genre": "pop",       "evokes": ["아침", "맑음", "들판", "여름"] },
+  "밤고속도로":     { "energy": 64, "bright": 56, "genre": "jazz",      "evokes": ["밤", "고속도로", "넓음"] },
+  "겨울저녁":       { "energy": 26, "bright": 62, "genre": "classical", "evokes": ["눈", "겨울", "저녁", "아기"] }
+}

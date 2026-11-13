@@ -48,8 +48,33 @@ const std::vector<Mood> &moods() {
         {"클래식왈츠", "클래식 왈츠", {"G", "D", "A", "F"}, false, 132, 3, 0, 0, "classical", "straight", "TEMPO_med", 1, 1, 64, 86, .9, 6, 9, 2,
          "", 0, 0, 2.4, "피아노 · 플루트 · 바이올린 · 첼로 · 현악",
          "3/4 왈츠 · 왼손 쿵-짝-짝 · 선율은 피아노 3·6도 → 플루트 → 바이올린 · 첼로 대선율 · 현악이 감쌈", false, 1.12, 11, .12},
+        // ── 11-13 지휘자용 분위기 3개 (상황에 맞는 자리가 비어 있던 것)
+        {"상쾌한아침", "상쾌한 아침", {"D", "G", "A", "C"}, false, 112, 4, 0, 0, "pop", "straight", "TEMPO_med", 2, 1, 64, 84, .9, 8, 9, 2,
+         "마림바", 62, 86, 2.2, "마림바 · 스틸 기타 · 비브라폰 · 플루트 · 일렉 베이스 · 드럼",
+         "밝은 곧은 8분 · 마림바 선율 ↔ 비브라폰 · 플루트 · 스틸 기타 펼친 화음 · 글로켄이 반짝 · 일렉 베이스 · 가벼운 드럼", false, 1.0, 12, .2},
+        {"밤고속도로", "밤 고속도로", {"Eb", "F", "Ab"}, false, 116, 4, 0, 1, "jazz", "straight", "TEMPO_med", 2, 1, 60, 82, .9, 8, 9, 2,
+         "비브라폰", 62, 86, 2.4, "비브라폰 · 테너 색소폰 · 로즈 · 재즈 기타 · 베이스 · 드럼",
+         "곧은 8분 미디엄 · 비브라폰 ↔ 테너 선율 · 로즈 4도 쌓기 반주 · 곧은 베이스 · 하이햇 (또렷하되 시끄럽지 않게, 졸음 막기)", true, 1.0, 13, .35},
+        {"겨울저녁", "눈 오는 저녁", {"F", "Bb", "Eb", "G"}, false, 76, 4, 0, 0, "classical", "straight", "TEMPO_slow", 1, 1, 62, 84, .88, 6, 8, 2,
+         "클라리넷", 55, 79, 2.8, "하프 · 첼레스타 · 클라리넷 · 호른 · 글로켄 · 현악",
+         "느린 4/4 · 하프 펼침 위에 클라리넷 ↔ 첼레스타 선율 · 호른 대선율 · 글로켄이 눈송이처럼 · 현악이 감쌈", false, 1.12, 14, .12},
     };
     return M;
+}
+
+// 지휘자 지시: 파트 이름("피아노 오른손" · "테너색소폰 대선율" …)에 들어 있는 악기 이름 중 가장 긴 것
+static const std::string *steer_key(const std::map<std::string, double> &m, const std::string &part) {
+    const std::string *best = nullptr;
+    for (auto &kv : m) if (part.find(kv.first) != std::string::npos && (!best || kv.first.size() > best->size())) best = &kv.first;
+    return best;
+}
+double Steer::weight(const std::string &part) const {
+    const std::string *k = steer_key(instr, part);
+    return k ? instr.at(*k) : 0.0;
+}
+bool Steer::avoided(const std::string &part) const {
+    for (auto &a : avoid) if (!a.empty() && part.find(a) != std::string::npos) return true;
+    return false;
 }
 
 const Mood *mood_by_id(const std::string &id) {
@@ -81,7 +106,7 @@ std::vector<BN> up(const std::vector<BN> &notes, int k) {
     return out;
 }
 std::vector<int> range_v(int a, int b) { std::vector<int> v; for (int i = a; i < b; i++) v.push_back(i); return v; }
-static std::vector<BN> top_line(const Song &S, int b0, int b1, int lo = 70, int hi = 81) {
+std::vector<BN> top_line(const Song &S, int b0, int b1, int lo, int hi) {
     std::vector<BN> out; int p = -1;
     for (auto &s : S.spans_in(b0, b1)) {
         auto g = guide(s.c);
@@ -96,7 +121,7 @@ static std::vector<BN> top_line(const Song &S, int b0, int b1, int lo = 70, int 
     }
     return out;
 }
-static void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base) {
+void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base) {
     double t = (double)FN * S.ts;
     Chord c = S.chord(t);
     int r = fit(c.root, 36, 43);
@@ -125,6 +150,7 @@ void Session::arrange(Role R, int a, int b, const std::vector<BN> &M) {
 }
 
 void Session::arrange_main(Role R, int a, int b, const std::vector<BN> &M) {
+    if (m.style >= 12) { arrange_generic(R, a, b, M); return; }               // 11-13 분위기: 팔레트로 도입 · 끝
     Song &s = S;
     const int lr0 = m.lead_lo, lr1 = m.lead_hi;
     const std::string L = m.lead;
@@ -541,9 +567,10 @@ static std::string near_key(const Mood &m, const Key &k, Rng &r) {
 }
 
 Session::Session(const Mood &m_, const Models &M_, uint64_t seed, bool intro, double prev_bpm, const Key *near, int last_p,
-                 const std::string &last_part, const Params *p)
+                 const std::string &last_part, const Params *p, const Steer *st)
     : m(m_), M(M_), S(m_.keys[Rng(seed).index(m_.keys.size())], m_.bpm, m_.ts, m_.swing, seed * 7 + 3), rng(seed), need_intro(intro) {
     if (p) P = *p;
+    if (st) steer = *st;
     if (near) { Rng r(seed ^ 0x5bd1e995); S.key = Key(near_key(m, *near, r)); }
     w = std::make_unique<MelodyWriter>(&M.melody, m.ts, "head", m.feel, m.tempo, m.minor, m.dens, m.reg, rng.next(), m.src, ct_level());
     S.b9_rate = .2 + .7 * spice();

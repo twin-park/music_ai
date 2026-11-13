@@ -1,0 +1,17 @@
+{
+  "name": "비 오는 월요일 출근길 (혼자)",
+  "seconds": 330,
+  "steps": [
+    { "t": 0,   "set": { "time": { "day": "mon", "slot": "morning" }, "trip": { "kind": "commute" }, "weather": { "kind": "rain" },
+                         "place": { "kind": "residential" }, "drive": { "state": "start" }, "people": { "group": "alone" },
+                         "car": { "windows": "closed" }, "cabin": { "sound": "quiet" } } },
+    { "t": 25,  "set": { "drive": { "state": "cruise" }, "place": { "kind": "city" } } },
+    { "t": 70,  "set": { "drive": { "state": "jam" } } },
+    { "t": 130, "set": { "drive": { "state": "cruise" }, "place": { "ahead": [ { "kind": "tunnel", "in_sec": 40, "len_sec": 30 } ] } } },
+    { "t": 170, "set": { "place": { "kind": "tunnel", "ahead": null } } },
+    { "t": 200, "set": { "place": { "kind": "city" } } },
+    { "t": 235, "set": { "cabin": { "sound": "call_car" } } },
+    { "t": 262, "set": { "cabin": { "sound": "quiet" } } },
+    { "t": 280, "set": { "trip": { "eta_min": 0.8 } } }
+  ]
+}

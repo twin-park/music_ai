@@ -1,0 +1,17 @@
+{
+  "name": "주말 아침 가족 나들이 · 바닷길 · 아기 재우기",
+  "seconds": 360,
+  "steps": [
+    { "t": 0,   "set": { "time": { "day": "sat", "slot": "morning" }, "trip": { "kind": "outing" }, "weather": { "kind": "clear" },
+                         "place": { "kind": "city" }, "drive": { "state": "cruise" }, "people": { "group": "family", "baby": "awake" },
+                         "car": { "windows": "closed" }, "cabin": { "sound": "quiet" } } },
+    { "t": 50,  "set": { "place": { "kind": "coast" } } },
+    { "t": 90,  "set": { "cabin": { "sound": "talk" } }, "talk": 0.7 },
+    { "t": 115, "set": { "cabin": { "sound": "quiet" } }, "talk": 0 },
+    { "t": 140, "say": "이제 애기 재우자" },
+    { "t": 220, "set": { "place": { "kind": "highway" } } },
+    { "t": 260, "set": { "people": { "baby": "crying" } } },
+    { "t": 300, "set": { "people": { "baby": "sleeping" } } },
+    { "t": 340, "end": true }
+  ]
+}

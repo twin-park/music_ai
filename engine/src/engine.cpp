@@ -17,6 +17,7 @@ const std::vector<InstDef> &insts() {
         {"트럼펫", 1, "gu", 0, 56, false, -19, 0.3, 0.30, 150},
         {"비브라폰", 1, "gu", 0, 11, false, -21, -0.3, 0.30, 120},
         {"나일론", 1, "gu", 0, 24, false, -21, -0.3, 0.20, 80},
+        {"스틸", 1, "gu", 0, 25, false, -23, -0.3, 0.20, 90},                 // (11-13 새 악기 — "기타" 보다 앞에: 이름에 '기타' 가 들어 있어서)
         {"기타", 1, "gu", 0, 26, false, -23, -0.35, 0.20, 80},
         {"로즈", 1, "gu", 0, 4, false, -22, -0.2, 0.30, 80},
         {"플루트", 1, "sso", 0, 14, false, -19.5, 0.25, 0.35, 250},
@@ -28,6 +29,13 @@ const std::vector<InstDef> &insts() {
         {"베이스", 1, "gu", 0, 32, false, -21.5, 0.05, 0.08, 30},
         {"브러시", 1, "gu", 128, 40, true, -31, -0.12, 0.22, 60},
         {"드럼", 1, "gu", 128, 32, true, -27, -0.1, 0.18, 40},
+        // 11-13 새 악기: 하프 · 클라리넷 · 오보에 · 호른 · 글로켄 (Sonatina) · 마림바 (GeneralUser) — 상황에 맞는 음색을 고르려고
+        {"하프", 1, "sso", 0, 1, false, -21, -0.25, 0.40, 60},
+        {"클라리넷", 1, "sso", 0, 20, false, -20, 0.2, 0.32, 120},
+        {"오보에", 1, "sso", 0, 16, false, -21, 0.25, 0.32, 200},
+        {"호른", 1, "sso", 0, 29, false, -22, -0.15, 0.45, 60},
+        {"글로켄", 1, "sso", 0, 39, false, -26, 0.3, 0.35, 300},
+        {"마림바", 1, "gu", 0, 12, false, -21, 0.2, 0.25, 100},
     };
     return I;
 }
@@ -40,7 +48,8 @@ int inst_of(const std::string &part) {
 
 struct WindDef { const char *kw; double scoop, fall, vib_rate, vib_depth; };
 static const WindDef WIND[] = {{"테너", .5, .22, 5.2, 16}, {"알토", .45, .22, 5.4, 14}, {"뮤트", .4, .2, 4.8, 9}, {"트럼펫", .35, .2, 4.8, 10},
-                               {"플루트", .1, 0, 5.4, 12}, {"첼로", .1, 0, 5.6, 14}, {"바이올린", .1, 0, 5.8, 14}};
+                               {"플루트", .1, 0, 5.4, 12}, {"첼로", .1, 0, 5.6, 14}, {"바이올린", .1, 0, 5.8, 14},
+                               {"클라리넷", .15, 0, 5.0, 8}, {"오보에", .12, 0, 5.4, 10}, {"호른", .2, .1, 4.8, 8}};
 static const WindDef *wind_of(const std::string &kw) {
     for (auto &w : WIND) if (kw == w.kw) return &w;
     return nullptr;
@@ -62,6 +71,12 @@ bool Engine::init(const std::string &data_dir, std::string *err) {
     if (FILE *fp = std::fopen(sf_gu.c_str(), "rb")) std::fclose(fp); else sf_gu = data + "/sf/GeneralUser-GS.sf2";
     sf_sso = data + "/sf/sso_small.sf2";
     amb.open(data + "/amb");
+    {                                                                     // 지휘자 (없거나 틀려도 음악은 됨 — 직접 고르기만)
+        std::string ce;
+        if (!cond.load(data + "/conductor", &ce)) std::fprintf(stderr, "지휘자 못 읽음: %s\n", ce.c_str());
+        trk_talk.assign(insts().size(), .3f);
+        for (size_t i = 0; i < insts().size(); i++) trk_talk[i] = (float)cond.talk_of(insts()[i].kw);
+    }
     if (!piano.open(data + "/piano")) { if (err) *err = "피아노 샘플이 없음: " + data + "/piano"; return false; }
     piano.preload_common();                                              // 자주 쓰는 음역만 뒤에서 미리 (나머지는 예약할 때)
     std::string t;
@@ -418,12 +433,148 @@ void Engine::set_params(const Params &p) {
     if (music) { params_pending = true; req_params = true; }
 }
 
+void Engine::set_steer(const Steer &s) {
+    bool ch;
+    {
+        std::lock_guard<std::mutex> g(mtx);
+        ch = !s.same(steer_cur);
+        steer_cur = s;
+    }
+    if (ch) { params_pending = true; req_params = true; }
+}
+
+std::string Engine::cur_mood_id() {
+    if (!cur || !cur->s) return "";
+    return cur->s->m.id;
+}
+
+static Json brief_situation(const Json &s) {                              // 반응 기록에 남길 상황 (몇 칸만)
+    Json b = Json::obj_();
+    for (const char *k : {"trip.kind", "time.slot", "time.group", "weather.kind", "place.kind", "drive.state", "people.group", "people.baby", "cabin.sound"}) {
+        const Json &v = s.path(k);
+        if (!v.is_null()) b.set(k, v);
+    }
+    return b;
+}
+
+static void log_feedback(const std::string &dir, const std::string &action, const std::string &mood, const Json &sit) {
+    if (dir.empty()) return;
+    Json j = Json::obj_();
+    j.set("t", Json::num_((double)std::time(nullptr))); j.set("action", Json::str_(action)); j.set("mood", Json::str_(mood));
+    j.set("situation", brief_situation(sit));
+    write_file(dir + "/반응기록.jsonl", j.dump() + "\n", true);           // 둘째 겹(개인 학습)이 읽을 것
+}
+
+void Engine::user_mood(const std::string &id) {
+    const double now = (double)frame.load() / SR;
+    if (auto_mode) {
+        user_pick_until = now + 900;                                       // 알아서 하는 중이라도 사람이 고른 건 15분 지킴
+        mood_since = now;
+        std::lock_guard<std::mutex> g(cond_mtx);
+        log_feedback(out_dir, "pick", id, cond.derived(now));
+    }
+    request_mood(id);
+}
+
+void Engine::situation(const Json &patch) {
+    const double now = (double)frame.load() / SR;
+    std::lock_guard<std::mutex> g(cond_mtx);
+    cond.update(patch, now);
+    const Json &t = patch.path("cabin.talk");
+    if (t.is_num()) talk_level = (float)std::max(0.0, std::min(1.0, t.n));
+}
+
+std::string Engine::hear(const std::string &text, std::string *intent) {
+    const double now = (double)frame.load() / SR;
+    std::string it, cm = cur_mood_id();
+    {
+        std::lock_guard<std::mutex> g(cond_mtx);
+        it = cond.hear(text, now);
+        if (it == "change" && !cm.empty()) cond.exclude_mood(cm, now + 600);
+        if (it == "like" || it == "change") log_feedback(out_dir, it, cm, cond.derived(now));
+    }
+    if (intent) *intent = it;
+    if (it == "like") { keep_until = now + 600; return "이 느낌 오래 둘게요"; }
+    if (it == "change") { mood_since = -1e9; pend_since = -1e9; return "다른 분위기로 바꿀게요"; }
+    if (it == "music_off") { request_end(); return "음악을 마무리할게요"; }
+    if (it == "auto_off") { auto_mode = false; set_steer(Steer()); return "자동을 껐어요 · 직접 골라 주세요"; }
+    if (it == "baby_sleep") return "아기가 자요 → 잔잔하게 바꿀게요";
+    if (it == "quiet") return "조용히 할게요";
+    if (it == "upbeat") return "신나게 갈게요";
+    if (it == "calm") return "잔잔하게 갈게요";
+    if (it == "sea_sound") return "파도 소리를 깔게요";
+    if (it == "reset") return "원래대로 할게요";
+    return "잘 못 알아들었어요";
+}
+
+// 지휘자 한 걸음 (0.5초마다, 작곡 줄): 섞기는 늘 · 분위기 · 조절값 · 악기는 '알아서' 일 때만
+void Engine::cond_tick(double now) {
+    Decision d;
+    double lv;
+    std::string snd;
+    const std::string curm = cur_mood_id();
+    {
+        std::lock_guard<std::mutex> g(cond_mtx);
+        d = cond.decide(now, curm);
+        dec = d;
+        lv = cond.sit.path("cabin.talk").num(-1);
+        snd = cond.sit.path("cabin.sound").str();
+    }
+    mix_db = (float)(d.volume_db + d.duck_db);
+    talk_duck_db = (float)d.talk_duck_db; talk_cut_db = (float)d.talk_cut_db; overlap_db = (float)d.overlap_db;
+    if (lv < 0) talk_level = (snd == "talk" || snd == "argument") ? 1.f : snd == "laugh" ? .7f : 0.f;   // 마이크 값이 없으면 차 안 소리 상태로
+    if (!auto_mode) return;
+    if (std::fabs(amb.level[0].load() - d.amb_sea) > 1e-3) amb.set(0, (float)d.amb_sea);
+    if (std::fabs(amb.level[1].load() - d.amb_rain) > 1e-3) amb.set(1, (float)d.amb_rain);
+    const bool playing = cur && live && !ending && !stopped;
+    if (!playing) {
+        if (auto_start && start_at < 0) start_at = now;                    // 상황이 자리 잡을 2.5초를 기다렸다가 시작
+        if (auto_start && now - start_at >= 3.6 && !d.mood.empty()) {     // (장면은 3초 이어져야 켜짐)
+            auto_start = false; start_at = -1;
+            set_params(d.params); set_steer(d.steer); params_at = now;
+            request_mood(d.mood); mood_since = now; pend_mood.clear(); cond_ended = false;
+        }
+        return;
+    }
+    if (d.end) { if (!cond_ended) { cond_ended = true; request_end(); } return; }
+    cond_ended = false;
+    // 분위기: 몇 초 이어져야 · 한 분위기는 얼마쯤 머문 뒤에 (급한 일 — 아기 · 언성 · 과속 — 은 빨리)
+    if (!d.mood.empty() && d.mood != curm && now >= user_pick_until) {
+        if (pend_mood != d.mood) { pend_mood = d.mood; pend_since = now; }
+        const double need = d.urgent ? 3 : 8;
+        const double dwell = d.urgent ? 8 : (now < keep_until ? 600 : 45);
+        if (now - pend_since >= need && now - mood_since >= dwell) {
+            set_params(d.params); set_steer(d.steer); params_at = now;
+            request_mood(d.mood); mood_since = now; pend_mood.clear();
+            return;
+        }
+    } else pend_mood.clear();
+    // 같은 분위기 안: 조절값 · 악기 지시가 꽤 달라졌으면 (터널 · 급한 일은 2초, 보통은 15초 간격)
+    const Params cp = get_params();
+    const Steer cs = get_steer();
+    const double pd = std::max({std::fabs(cp.reg - d.params.reg), std::fabs(cp.tempo - d.params.tempo), std::fabs(cp.dens - d.params.dens),
+                                std::fabs(cp.energy - d.params.energy), std::fabs(cp.novelty - d.params.novelty), std::fabs(cp.tension - d.params.tension),
+                                std::fabs(cp.space - d.params.space)});
+    double idiff = 0;
+    std::set<std::string> keys;
+    for (auto &kv : cs.instr) keys.insert(kv.first);
+    for (auto &kv : d.steer.instr) keys.insert(kv.first);
+    for (auto &k : keys) idiff += std::fabs((cs.instr.count(k) ? cs.instr.at(k) : 0) - (d.steer.instr.count(k) ? d.steer.instr.at(k) : 0));
+    const bool big = d.steer.thin != cs.thin || d.steer.lead_rest != cs.lead_rest || d.steer.avoid != cs.avoid ||
+                     std::fabs(d.steer.energy_max - cs.energy_max) > .01 || std::fabs(d.steer.tempo_max - cs.tempo_max) > .5;
+    const double gap = (d.move_now || d.urgent || big) ? 2 : 15;
+    if ((pd > .12 || big || idiff > .8) && now - params_at >= gap) {
+        set_params(d.params); set_steer(d.steer); params_at = now;
+    }
+}
+
 void Engine::request_mood(const std::string &id) {
     auto &ms = moods();
     for (size_t i = 0; i < ms.size(); i++) if (ms[i].id == id) req_mood = (int)i;
 }
 
 bool Engine::compose_step(double now) {
+    if (cond.loaded && now - cond_last >= .5) { cond_last = now; cond_tick(now); }
     {                                                                     // 주변 소리는 음악이 나오는 동안만 (끝맺음이 다 울린 뒤엔 같이 사라짐)
         std::lock_guard<std::mutex> g(mtx);
         amb.run = live && !stopped && !(ending && now > composed_until + 1.0);
@@ -452,7 +603,8 @@ bool Engine::compose_step(double now) {
             }
             cur = std::make_unique<Sess>();
             const Params pp = get_params();
-            cur->s = std::make_unique<Session>(m, M, fresh_seed(), true, 0, nullptr, -1, "", &pp);
+            const Steer st = get_steer();
+            cur->s = std::make_unique<Session>(m, M, fresh_seed(), true, 0, nullptr, -1, "", &pp, &st);
             cur->t0 = t_start;
             run_t0 = t_start;
             set_mood_mix(m, cur->t0);
@@ -478,7 +630,8 @@ bool Engine::compose_step(double now) {
         prev = std::move(cur);
         cur = std::make_unique<Sess>();
         const Params pp = get_params();
-        cur->s = std::make_unique<Session>(m, M, fresh_seed(), false, prev_bpm, &old_key, last_p, last_part, &pp);
+        const Steer st = get_steer();
+        cur->s = std::make_unique<Session>(m, M, fresh_seed(), false, prev_bpm, &old_key, last_p, last_part, &pp, &st);
         cur->t0 = tc;
         set_mood_mix(m, tc);
         emit(*cur, {R_TRANS, 0, 2, 0}, false);
@@ -488,8 +641,10 @@ bool Engine::compose_step(double now) {
         if (cur && !ending && live) {
             Session &os = *cur->s;
             const Params pp = get_params();
-            if (!pp.same_music(os.P)) {
+            const Steer st = get_steer();
+            if (!pp.same_music(os.P) || !st.same(os.steer)) {
                 os.P = pp;
+                if (!st.same(os.steer)) { os.steer = st; os.steer_dirty = true; }
                 double tc;
                 const int bar = phrase_cut(os, cur->t0, now, &tc);
                 if (bar >= 2 && bar < os.next_bar) {
@@ -605,7 +760,14 @@ void Engine::render(float *L, float *R, int n) {
             const double g0 = std::pow(10.0, tr->gain_db / 20);
             tr->gain_db += (tr->gain_to - tr->gain_db) * .08;
             const double g1 = std::pow(10.0, tr->gain_db / 20);
-            const double pa = tr->def->pan, pl = std::cos((pa + 1) * M_PI / 4) * 1.414, pr = std::sin((pa + 1) * M_PI / 4) * 1.414;
+            const double pa = tr->def->pan, pl0 = std::cos((pa + 1) * M_PI / 4) * 1.414, pr0 = std::sin((pa + 1) * M_PI / 4) * 1.414;
+            double ovg = 1;                                                   // 말소리 중: 말과 많이 겹치는 악기(색소폰 · 트럼펫 · 오보에 …)를 더 줄임
+            {
+                const size_t ti = (size_t)(tr->def - &insts()[0]);
+                const double ov = overlap_db.load() * talk_env, at = ti < trk_talk.size() ? trk_talk[ti] : .3;
+                if (ov < -.05) ovg = std::pow(10.0, ov * std::max(0.0, std::min(1.0, (at - .4) / .5)) / 20);
+            }
+            const double pl = pl0 * ovg, pr = pr0 * ovg;
             const float rv = (float)tr->def->rv;
             const bool hp = tr->def->hp > 0;
             for (int i = 0; i < B; i++) {
@@ -631,6 +793,29 @@ void Engine::render(float *L, float *R, int n) {
         const float sp = space.load(), wg = .9f * (sp >= 0 ? 1 + .9f * sp : 1 + .65f * sp);   // 울림: 가깝게 .3 … 넓게 1.7 배
         for (int i = 0; i < B; i++) { oL[i] = dryL[i] + wetL[i] * wg; oR[i] = dryR[i] + wetR[i] * wg; }
         comp.process(oL, oR, B);
+        {                                                                 // 섞기: 말소리 덮개 (빨리 붙고 · 말이 멈춰도 3초 버티다 · 1.5초에 걸쳐 풀림)
+            const float tl = talk_level.load(), bt = (float)B / SR;
+            if (tl >= talk_env - .02f) { talk_env += (tl - talk_env) * std::min(1.f, bt / .15f); talk_hold = 3.f; }
+            else if ((talk_hold -= bt) <= 0) talk_env += (tl - talk_env) * std::min(1.f, bt / 1.5f);
+            const double cut = talk_cut_db.load() * talk_env;               // 말 대역(1.5kHz 둘레 넓게) 만 깎음 — 베이스 · 울림은 남김
+            if (std::fabs(cut - peq_db) > .05) {
+                peq_db = cut;
+                const double A = std::pow(10.0, cut / 40), w0 = 2 * M_PI * 1500 / SR, al = std::sin(w0) / (2 * .6), cw = std::cos(w0), a0 = 1 + al / A;
+                peq_b[0] = (1 + al * A) / a0; peq_b[1] = -2 * cw / a0; peq_b[2] = (1 - al * A) / a0; peq_a[0] = -2 * cw / a0; peq_a[1] = (1 - al / A) / a0;
+            }
+            if (std::fabs(peq_db) > .05) {
+                float *ch[2] = {oL, oR};
+                for (int c = 0; c < 2; c++) {
+                    double z1 = peq_z[c][0], z2 = peq_z[c][1];
+                    for (int i = 0; i < B; i++) {
+                        const double x = ch[c][i], y = peq_b[0] * x + z1;
+                        z1 = peq_b[1] * x - peq_a[0] * y + z2; z2 = peq_b[2] * x - peq_a[1] * y;
+                        ch[c][i] = (float)y;
+                    }
+                    peq_z[c][0] = z1; peq_z[c][1] = z2;
+                }
+            } else { peq_z[0][0] = peq_z[0][1] = peq_z[1][0] = peq_z[1][1] = 0; }
+        }
         if (measure_master)
             for (int i = 0; i < B; i++)
                 if (std::max(std::fabs(oL[i]), std::fabs(oR[i])) > 1e-4) { mm_sum += (oL[i] * oL[i] + oR[i] * oR[i]) * .5; mm_n++; }
@@ -638,14 +823,22 @@ void Engine::render(float *L, float *R, int n) {
         master_db += (master_to - master_db) * .05;
         const double m1 = std::pow(10.0, master_db / 20);
         const float vt = volume.load() * duck.load();
+        const float mt = std::pow(10.f, (mix_db.load() + talk_duck_db.load() * talk_env) / 20.f);   // 지휘자 섞기 (뚜껑 · 길 안내 · 통화 · 말소리)
         for (int i = 0; i < B; i++) {
             if (fading_out) fade = std::max(0.f, fade - 1.f / (1.5f * SR)); else fade = std::min(1.f, fade + 1.f / (.05f * SR));
             vol_now += (vt - vol_now) * .0008f;
-            float g = (float)(m0 + (m1 - m0) * i / B) * vol_now * fade;
+            mix_now += (mt - mix_now) * (mt < mix_now ? 1.f / (.25f * SR) : 1.f / (1.2f * SR));
+            float g = (float)(m0 + (m1 - m0) * i / B) * vol_now * mix_now * fade;
             oL[i] *= g; oR[i] *= g;
         }
-        amb.render(oL, oR, B, vol_now);                     // 주변 소리 (음악 볼륨 · 통화 중 줄이기를 따라감)
+        amb.render(oL, oR, B, vol_now * mix_now);                         // 주변 소리 (음악 볼륨 · 통화 중 · 섞기를 따라감)
         lim.process(oL, oR, B);
+        {
+            double ss = 0;
+            for (int i = 0; i < B; i++) ss += oL[i] * oL[i] + oR[i] * oR[i];
+            const float db = (float)(10 * std::log10(ss / (2 * B) + 1e-12));
+            out_db = out_db.load() * .8f + db * .2f;
+        }
         frame += B;
     }
 }

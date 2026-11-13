@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <deque>
 #include <map>
+#include <set>
 #include <memory>
 #include <string>
 #include <vector>
@@ -43,6 +44,19 @@ struct SecRec { int a = 0, b = 0; std::string key; std::vector<std::pair<int, Sl
 struct Params { double reg = 0, tempo = 0, dens = 0, energy = 0, novelty = 0, space = 0, tension = 0;
     bool same_music(const Params &o) const { return reg == o.reg && tempo == o.tempo && dens == o.dens && energy == o.energy && novelty == o.novelty && tension == o.tension; } };
 
+// 지휘자가 작곡에 내리는 지시 (상황 → 악기 · 뚜껑) — 사용자 조절값(Params)과 따로
+struct Steer {
+    std::map<std::string, double> instr;            // 악기 이름(악기 성격표 이름) → 고를 점수 (+ 더 고름 · - 덜 고름)
+    std::set<std::string> avoid;                    // 쓰지 말 악기 이름 (드럼 · 브러시 포함)
+    double energy_max = 1.0;                        // 큰 강약 물결 위쪽 뚜껑 (0~1)
+    double tempo_max = 0;                           // 빠르기 뚜껑 (0 = 없음)
+    bool thin = false;                              // 편성 비우기 (터널) — 선율 · 둘째 목소리 · 드럼 쉼
+    bool lead_rest = false;                         // 선율 악기 쉼 (언성 · 큰 대화) — 반주만
+    bool same(const Steer &o) const { return instr == o.instr && avoid == o.avoid && energy_max == o.energy_max && tempo_max == o.tempo_max && thin == o.thin && lead_rest == o.lead_rest; }
+    double weight(const std::string &part) const;   // 파트 이름에 들어 있는 악기의 점수 (가장 긴 이름이 맞는 것)
+    bool avoided(const std::string &part) const;
+};
+
 struct Models { Model chord, melody; };
 struct BNote { int bi, on, d, p; };                 // 마디 번호 · 틱 · 길이틱 · 음
 
@@ -54,6 +68,8 @@ std::vector<int> range_v(int a, int b);
 double mel_score(const std::vector<BNote> &notes, const std::vector<Bar> &bars, double dens_target);
 double score8(const std::vector<Bar> &bars, bool jazz = true);
 std::string key_name(int pc, bool minor);
+std::vector<BN> top_line(const Song &S, int b0, int b1, int lo = 70, int hi = 81);     // 코드마다 가이드톤 한 음씩 (도입 선율)
+void final_chord(Song &S, int FN, const std::string &lead, int lr0, int lr1, const std::string &cym, bool bass, double base);
 
 struct Session {
     const Mood &m;
@@ -76,6 +92,7 @@ struct Session {
     std::vector<std::vector<Bar>> recent_cells;     // 최근 새 2마디 코드 (똑같은 것 피함)
     char last_sec = 'A';
     Params P;
+    Steer steer; bool steer_dirty = false;          // 지휘자 지시 (바뀌면 다음 단락 편성을 처음부터 다시 고름)
     Orch orch; bool orch_set = false;
     std::vector<Orch> orch_hist;
     std::vector<uint64_t> prog_hist;
@@ -97,11 +114,11 @@ struct Session {
 
     // near = 앞 분위기의 조 (가까운 조로 고름) · last_p / last_part = 앞 분위기 선율의 마지막 음 · 악기 (이음 선율이 거기서 이어짐)
     Session(const Mood &m, const Models &M, uint64_t seed, bool intro, double prev_bpm = 0, const Key *near = nullptr, int last_p = -1,
-            const std::string &last_part = "", const Params *p = nullptr);
+            const std::string &last_part = "", const Params *p = nullptr, const Steer *st = nullptr);
     Section next();                                 // 다음 단락 작곡 + 편곡
     Section ending();                               // 끝 4마디 + 마지막 화음 (+ 느려지기)
     double bpm_at(double beat) const;
-    double base_bpm() const { return m.bpm * (1 + .2 * P.tempo); }    // 분위기 빠르기 × 조절값
+    double base_bpm() const { const double b = m.bpm * (1 + .2 * P.tempo); return steer.tempo_max > 0 ? std::min(b, std::max(m.bpm * .75, steer.tempo_max)) : b; }   // 분위기 빠르기 × 조절값 (지휘자 뚜껑)
     int reg_shift() const { return (int)std::lround(P.reg * 7); }     // 선율 음역 옮김 (반음)
     double nov() const { return .5 + .5 * P.novelty; }                 // 새로움 0 … 1
     double spice() const { return std::max(0.0, std::min(1.0, m.spice + .45 * P.tension)); }   // 화성 양념 (분위기 + 긴장감 조절값)
@@ -129,6 +146,7 @@ private:
     void pick_orch(Role role);
     std::string orch_text() const;
     void arrange_body(Role role, int a, int b, const std::vector<BN> &mel);
+    void arrange_generic(Role role, int a, int b, const std::vector<BN> &mel);   // 팔레트만으로 도입 · 끝 (새 분위기)
     std::vector<BN> write_melody(const std::vector<Bar> &bars, const std::vector<const ChordTok *> &nexts, int bar0, double temp,
                                  double dens_target, const std::map<int, std::vector<MelNote>> *copy, int tries = 3);
     void arrange(Role role, int a, int b, const std::vector<BN> &mel);

@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")"
 mkdir -p build
-SRC="src/model.cpp src/gen.cpp src/theory.cpp src/song.cpp src/compose.cpp src/vary.cpp src/notation.cpp src/dsp.cpp src/piano.cpp src/amb.cpp src/fluid.cpp src/engine.cpp src/util.cpp"
+SRC="src/model.cpp src/gen.cpp src/theory.cpp src/song.cpp src/compose.cpp src/vary.cpp src/notation.cpp src/dsp.cpp src/piano.cpp src/amb.cpp src/json.cpp src/conductor.cpp src/fluid.cpp src/engine.cpp src/util.cpp"
 g++ -O3 -std=c++17 -Wall -Wno-unused-result -pthread -o build/engine_cli tools/engine_cli.cpp $SRC -ldl
 python3 tools/embed_web.py >/dev/null
 gcc -O2 -c src/ma_impl.c -o build/ma_impl.o

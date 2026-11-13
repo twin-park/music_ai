@@ -1,0 +1,51 @@
+// 상황 어휘 — 지휘자가 알아듣는 신호 11갈래 · 84가지
+//   상황은 POST /api/situation 으로 이 꼴의 JSON 을 보냄 (아는 것만 · 바뀐 것만 보내도 됨 · null 은 지움)
+//   from = 어디서 오나 (실제 차) — 시연 땐 화면의 상황 판이 같은 꼴로 보냄
+{
+  "trip.kind": { "name": "여정", "from": "내비 목적지 · 날마다 같은 길 학습", "values": {
+    "commute": "출근", "homeward": "퇴근", "school_run": "등하원", "outing": "나들이",
+    "long_trip": "장거리 여행", "late_home": "심야 귀가", "hurry": "급한 이동", "joyride": "그냥 드라이브" } },
+  "time.slot": { "name": "시간대", "from": "차 시계 (보내지 않으면 지휘자가 시계로 채움)", "values": {
+    "dawn": "새벽", "morning": "아침", "day": "낮", "dusk": "해 질 녘", "evening": "저녁", "night": "밤", "latenight": "심야" } },
+  "time.group": { "name": "요일", "from": "차 시계 · 공휴일 달력 (time.day 를 보내면 지휘자가 묶음)", "values": {
+    "mon": "월요일", "midweek": "주중", "fri": "금요일", "weekend": "주말", "holiday": "연휴" } },
+  "weather.kind": { "name": "날씨", "from": "날씨 API · 와이퍼 · 바깥 온도", "values": {
+    "clear": "맑음", "cloudy": "흐림", "rain": "약한 비", "storm": "폭우", "snow": "눈", "fog": "안개",
+    "wind": "강풍", "dust": "미세먼지", "heat": "폭염", "cold": "한파" } },
+  "place.kind": { "name": "장소", "from": "GPS · 내비 지도", "values": {
+    "city": "도심", "residential": "주택가", "highway": "고속도로", "country_road": "국도", "coast": "바닷가",
+    "mountain": "산길", "river": "강변", "tunnel": "터널", "bridge": "다리", "farmland": "들판 · 시골길", "school_zone": "어린이보호구역" } },
+  "drive.state": { "name": "달리는 상태", "from": "차량 SDK 속도 · 제한속도 (speed · limit 만 보내면 지휘자가 정함)", "values": {
+    "stopped": "신호 대기", "jam": "정체", "slow": "저속", "cruise": "순항", "fast": "고속", "speeding": "과속",
+    "start": "막 출발", "hard_brake": "급정거 직후", "arriving": "도착 임박" } },
+  "car": { "name": "차 상태", "from": "차량 SDK", "values": {
+    "windows": "창문 (open · closed)", "nav_voice": "길 안내 음성 중 (true · false)",
+    "drive_min": "운전한 지 몇 분 (120 넘으면 장시간)", "just_started": "시동 직후 (true · false)" } },
+  "people": { "name": "동승자", "from": "좌석 센서 · 실내 카메라 · 사용자가 한 번 고름", "values": {
+    "group=alone": "혼자", "group=partner": "연인", "group=family": "가족 (아이 깸)", "baby=sleeping": "아기 잠듦",
+    "baby=crying": "아기 울음", "group=friends": "친구들", "group=elders": "부모님 · 어른", "group=business": "업무 손님", "pet=true": "반려동물" } },
+  "cabin.sound": { "name": "차 안 소리", "from": "실내 마이크 (우리 음악을 지운 소리) · 소리 분류", "values": {
+    "quiet": "조용함", "talk": "대화", "laugh": "웃음", "singing": "따라 부름", "argument": "언성",
+    "call_car": "통화 (차 연결)", "call_phone": "통화 (개인 폰)", "yawn": "하품 · 졸린 말" },
+    "level": "cabin.talk = 말소리 크기 0~1 (마이크에서 0.1초마다) — 이 값으로 실시간 자리 비우기" },
+  "speech.intent": { "name": "말로 하는 요청", "from": "음성 인식 문장 (POST /api/say {\"text\":…}) → 낱말로 알아들음", "values": {
+    "baby_sleep": "\"아기 잔다 · 재우자\"", "quiet": "\"쉿 · 조용히\"", "upbeat": "\"신나는 거\"", "calm": "\"잔잔하게\"",
+    "like": "\"이거 좋다\"", "change": "\"다른 거\"", "sea_sound": "\"바다 소리\"", "music_off": "\"음악 꺼\"",
+    "auto_off": "\"자동 꺼\"", "reset": "\"원래대로\"" } },
+  "driver.state": { "name": "운전자 상태 (추정)", "from": "운전 시간 · 하품 · 시간대 · 급정거 · 언성으로 지휘자가 추정", "values": {
+    "drowsy": "졸림", "stressed": "스트레스", "tired": "피곤" } },
+
+  // 말 → 요청: 문장에 이 낱말이 들어 있으면 그 요청 (앞에 있는 것부터 봄)
+  "speech_words": {
+    "music_off": ["음악 꺼", "노래 꺼", "음악 그만", "노래 그만", "꺼 줘", "꺼줘"],
+    "auto_off": ["자동 꺼", "자동 그만", "내가 고를", "알아서 하지 마"],
+    "reset": ["원래대로", "처음처럼", "되돌려"],
+    "baby_sleep": ["재우", "잠들", "자려", "잔다", "자네", "자요", "잠 들", "낮잠", "코 자", "잘 거"],
+    "quiet": ["쉿", "조용히", "조용하게", "작게", "줄여", "시끄러"],
+    "upbeat": ["신나는", "신나게", "신난", "빠른 거", "기분 좋은", "흥겨", "힘나는", "텐션"],
+    "calm": ["잔잔", "차분", "조용한 거", "느린 거", "편안", "편하게", "릴렉스"],
+    "sea_sound": ["바다 소리", "파도 소리", "파도"],
+    "like": ["좋다", "좋네", "좋아", "이거 좋", "맘에 들", "마음에 들"],
+    "change": ["다른 거", "바꿔", "별로", "지겨", "질려"]
+  }
+}

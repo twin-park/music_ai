@@ -1,0 +1,14 @@
+{
+  "name": "심야 고속도로 혼자 · 졸음 · 과속",
+  "seconds": 330,
+  "steps": [
+    { "t": 0,   "set": { "time": { "day": "wed", "slot": "latenight" }, "trip": { "kind": "late_home" }, "weather": { "kind": "clear" },
+                         "place": { "kind": "highway" }, "drive": { "speed": 95, "limit": 100 }, "people": { "group": "alone" },
+                         "car": { "windows": "closed", "drive_min": 40 }, "cabin": { "sound": "quiet" } } },
+    { "t": 90,  "set": { "cabin": { "sound": "yawn" }, "car": { "drive_min": 75 } } },
+    { "t": 110, "set": { "cabin": { "sound": "quiet" } } },
+    { "t": 170, "set": { "drive": { "speed": 128, "limit": 100 } } },
+    { "t": 250, "set": { "drive": { "speed": 98 } } },
+    { "t": 310, "end": true }
+  ]
+}

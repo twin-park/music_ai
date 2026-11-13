@@ -19,7 +19,7 @@
 struct LeadOpt { const char *part; int mode, lo, hi; double base, legato; };
 // 둘째 목소리: 0 없음 · 1 가이드톤 대선율 · 2 옥타브/같은 음 겹치기 · 3 3·6도 아래 화음
 struct SecondOpt { int kind; const char *part; int lo, hi; double base; };
-// 반주: 0 없음 · 1 comp · 2 왼손 가이드 · 3 왼손 껍데기 · 4 펼침 · 5 쿵짝짝 · 7 기타 · 8 현악 패드 · 9 펼침+현악 · 10 알베르티
+// 반주: 0 없음 · 1 comp · 2 왼손 가이드 · 3 왼손 껍데기 · 4 펼침 · 5 쿵짝짝 · 7 기타 · 8 현악 패드 · 9 펼침+현악 · 10 알베르티 · 11 ph 악기 펼침(하프 등)
 struct CompOpt { int kind; const char *feel, *voicing; double base; int lo, hi; const char *ph, *pl; double dens; };
 struct BassOpt { const char *style; double base; const char *part; };
 struct DrumOpt { const char *kind; int lvl; };
@@ -33,7 +33,7 @@ static const CompOpt NOCOMP{0, "", "", 0, 0, 0, "", "", 0};
 static const Palette &palette(int style) {
     static std::vector<Palette> P;
     if (P.empty()) {
-        P.resize(12);
+        P.resize(15);
         // 0 비 오는 날 — 피아노 · 테너 · 베이스 · 브러시
         P[0] = {{{PR, 1, 62, 86, 66, 1}, {"테너색소폰", 0, 50, 74, 76, 1}, {PR, 2, 64, 88, 70, 1}, {PR, 4, 64, 88, 68, 1}},
                 {{0}, {1, "테너색소폰", 50, 67, 56}, {3, "테너색소폰", 50, 72, 60}, {2, PR, 64, 88, 58}},
@@ -42,7 +42,7 @@ static const Palette &palette(int style) {
                 {{"two", 74, "베이스"}, {"walk", 75, "베이스"}, {"ballad", 70, "베이스"}},
                 {{"brush", 0}, {"brush", 1}, {"brush_swing", 2}, {"", 0}}, NOCOMP, false, true, true};
         // 1 평온한 재즈 — 피아노 트리오 · 재즈기타
-        P[1] = {{{PR, 3, 64, 86, 64, 1}, {"재즈기타", 0, 55, 77, 72, 1}, {PR, 1, 64, 88, 66, 1}, {PR, 2, 64, 88, 68, 1}},
+        P[1] = {{{PR, 3, 64, 86, 64, 1}, {"재즈기타", 0, 55, 77, 72, 1}, {PR, 1, 64, 88, 66, 1}, {PR, 2, 64, 88, 68, 1}, {"클라리넷", 0, 55, 79, 70, 1}},
                 {{0}, {1, "재즈기타", 52, 67, 54}, {3, "재즈기타", 52, 72, 58}},
                 {{2, "", "", 46, 0, 0, "", "", .3}, {1, "swing", "rootless", 46, 50, 68, PR, PL, .7}, {7, "swing", "", 46, 0, 0, "재즈기타", "", .6},
                  {1, "swing", "quartal", 44, 50, 70, PR, PL, .65}, {3, "", "", 40, 0, 0, "", "", .2}},
@@ -63,7 +63,7 @@ static const Palette &palette(int style) {
                 {{"walk", 80, "베이스"}, {"two", 74, "베이스"}},
                 {{"ride", 0}, {"ride", 1}, {"ride", 2}, {"brush_swing", 1}}, NOCOMP, false, true, true};
         // 4 바닷가 보사노바 — 나일론 기타(늘) · 플루트 · 피아노 · 로즈 · 베이스 · 림샷 · 현악
-        P[4] = {{{"플루트", 0, 67, 91, 78, .95}, {PR, 3, 64, 86, 64, 1}, {PR, 2, 64, 86, 62, 1}},
+        P[4] = {{{"플루트", 0, 67, 91, 78, .95}, {PR, 3, 64, 86, 64, 1}, {PR, 2, 64, 86, 62, 1}, {"마림바", 0, 62, 86, 72, .9}},
                 {{0}, {1, "플루트", 67, 82, 58}, {3, "플루트", 64, 86, 62}},
                 {{0, "", "", 0, 0, 0, "", "", .3}, {1, "bossa", "rootless", 40, 50, 68, "로즈", "로즈", .5}, {1, "bossa", "rootless", 42, 50, 68, PR, PL, .5},
                  {8, "", "", 44, 55, 74, "", "", .4}},
@@ -71,25 +71,26 @@ static const Palette &palette(int style) {
                 {{"bossa", 0}, {"bossa", 1}, {"", 0}}, {7, "bossa", "", 56, 0, 0, "나일론기타", "", .6}, true, true, true};
         // 5 아이 재우기 (3/4) — 피아노 · 첼레스타 · 현악
         P[5] = {{{PR, 3, 64, 84, 56, 1}, {PR, 4, 64, 84, 54, 1}, {"첼레스타", 0, 76, 96, 52, 1}, {PR, 1, 64, 84, 52, 1}},
-                {{0}, {2, "첼레스타", 72, 96, 48}, {1, "현악", 52, 67, 38}},
-                {{5, "", "", 40, 0, 0, PL, "", .5}, {4, "", "", 38, 0, 0, PL, "", .6}, {9, "", "", 38, 55, 72, PL, "", .55}},
+                {{0}, {2, "첼레스타", 72, 96, 48}, {1, "현악", 52, 67, 38}, {2, "글로켄", 76, 100, 38}},
+                {{5, "", "", 40, 0, 0, PL, "", .5}, {4, "", "", 38, 0, 0, PL, "", .6}, {9, "", "", 38, 55, 72, PL, "", .55}, {11, "", "", 38, 0, 0, "하프", "", .5}},
                 {{"", 0, ""}},
                 {{"", 0}, {"waltz_brush", 0}}, NOCOMP, false, false, false};
         // 6 진정 — 피아노 혼자 (+ 현악 조금)
         P[6] = {{{PR, 1, 64, 86, 58, 1}, {PR, 3, 64, 86, 58, 1}, {PR, 2, 64, 86, 60, 1}, {PR, 4, 64, 86, 56, 1}},
                 {{0}, {1, "현악", 52, 67, 38}},
-                {{4, "", "", 40, 0, 0, PL, "", .5}, {2, "", "", 42, 0, 0, "", "", .3}, {3, "", "", 38, 0, 0, "", "", .2}, {9, "", "", 38, 55, 74, PL, "", .5}},
+                {{4, "", "", 40, 0, 0, PL, "", .5}, {2, "", "", 42, 0, 0, "", "", .3}, {3, "", "", 38, 0, 0, "", "", .2}, {9, "", "", 38, 55, 74, PL, "", .5},
+                 {11, "", "", 38, 0, 0, "하프", "", .5}},
                 {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, false, false};
         // 7 위로 — 피아노 · 첼로 · 바이올린 · 현악
-        P[7] = {{{PR, 2, 66, 88, 64, 1}, {"첼로", 0, 50, 72, 66, 1}, {"바이올린", 0, 67, 91, 66, 1}, {PR, 1, 64, 86, 60, 1}},
-                {{0}, {1, "첼로", 48, 62, 56}, {2, "바이올린", 67, 91, 54}},
+        P[7] = {{{PR, 2, 66, 88, 64, 1}, {"첼로", 0, 50, 72, 66, 1}, {"바이올린", 0, 67, 91, 66, 1}, {PR, 1, 64, 86, 60, 1}, {"오보에", 0, 62, 84, 62, 1}},
+                {{0}, {1, "첼로", 48, 62, 56}, {2, "바이올린", 67, 91, 54}, {1, "호른", 48, 62, 48}},
                 {{4, "", "", 42, 0, 0, PL, "", .5}, {9, "", "", 40, 55, 72, PL, "", .55}, {8, "", "", 36, 43, 58, "", "", .35}, {2, "", "", 44, 0, 0, "", "", .3}},
                 {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, true, false};
         // 8 낮 드라이브 — 테너 · 피아노 · 로즈 · 일렉 베이스 · 드럼
         P[8] = {{{"테너색소폰", 0, 52, 76, 83, 1}, {PR, 2, 64, 88, 70, 1}, {PR, 3, 64, 86, 66, 1}},
                 {{0}, {2, PR, 64, 88, 60}, {1, "테너색소폰", 50, 67, 58}, {3, "테너색소폰", 50, 74, 62}},
                 {{1, "straight", "rootless", 50, 50, 68, PR, PL, .65}, {1, "straight", "quartal", 44, 48, 64, "로즈", "로즈", .55},
-                 {1, "ballad", "rootless", 44, 50, 68, "로즈", "로즈", .35}, {2, "", "", 46, 0, 0, "", "", .3}},
+                 {1, "ballad", "rootless", 44, 50, 68, "로즈", "로즈", .35}, {2, "", "", 46, 0, 0, "", "", .3}, {7, "straight", "", 46, 0, 0, "스틸기타", "", .6}},
                 {{"straight", 78, "일렉베이스"}, {"two", 72, "일렉베이스"}},
                 {{"straight", 0}, {"straight", 1}, {"straight", 2}}, NOCOMP, false, true, true};
         // 9 클래식 피아노 — 피아노 혼자 (선율 한 줄 · 3·6도 · 옥타브 / 왼손 알베르티 · 펼침 · 길게 누름)
@@ -98,14 +99,32 @@ static const Palette &palette(int style) {
                 {{10, "", "", 40, 0, 0, PL, "", .5}, {4, "", "", 40, 0, 0, PL, "", .55}, {2, "", "", 42, 0, 0, "", "", .3}},
                 {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, false, false};
         // 10 현악 앙상블 — 바이올린 · 첼로 · 현악 · 피아노
-        P[10] = {{{"바이올린", 0, 67, 88, 66, 1}, {"첼로", 0, 50, 72, 66, 1}, {PR, 4, 64, 88, 58, 1}},
-                 {{0}, {1, "첼로", 48, 62, 52}, {2, "바이올린", 67, 91, 50}},
-                 {{8, "", "", 40, 50, 70, "", "", .4}, {9, "", "", 36, 52, 70, PL, "", .55}, {4, "", "", 38, 0, 0, PL, "", .5}},
+        P[10] = {{{"바이올린", 0, 67, 88, 66, 1}, {"첼로", 0, 50, 72, 66, 1}, {PR, 4, 64, 88, 58, 1}, {"클라리넷", 0, 55, 79, 62, 1}, {"오보에", 0, 62, 84, 62, 1}},
+                 {{0}, {1, "첼로", 48, 62, 52}, {2, "바이올린", 67, 91, 50}, {1, "호른", 48, 62, 48}},
+                 {{8, "", "", 40, 50, 70, "", "", .4}, {9, "", "", 36, 52, 70, PL, "", .55}, {4, "", "", 38, 0, 0, PL, "", .5}, {11, "", "", 38, 0, 0, "하프", "", .5}},
                  {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, true, false};
         // 11 클래식 왈츠 (3/4) — 피아노 · 플루트 · 바이올린 · 첼로 · 현악
-        P[11] = {{{PR, 3, 64, 86, 58, 1}, {"플루트", 0, 67, 91, 72, .95}, {"바이올린", 0, 67, 88, 66, 1}, {PR, 4, 64, 86, 56, 1}},
-                 {{0}, {1, "첼로", 48, 62, 50}},
+        P[11] = {{{PR, 3, 64, 86, 58, 1}, {"플루트", 0, 67, 91, 72, .95}, {"바이올린", 0, 67, 88, 66, 1}, {PR, 4, 64, 86, 56, 1}, {"클라리넷", 0, 55, 79, 64, 1},
+                  {"오보에", 0, 62, 84, 62, 1}},
+                 {{0}, {1, "첼로", 48, 62, 50}, {2, "글로켄", 76, 100, 40}},
                  {{5, "", "", 40, 0, 0, PL, "", .5}, {9, "", "", 38, 55, 72, PL, "", .55}},
+                 {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, true, false};
+        // 12 상쾌한 아침 — 마림바 · 비브라폰 · 플루트 · 스틸 기타 · 일렉 베이스 · 드럼
+        P[12] = {{{"마림바", 0, 62, 86, 74, .9}, {"비브라폰", 0, 62, 86, 72, 1}, {"플루트", 0, 67, 91, 72, .95}, {PR, 4, 64, 88, 64, 1}},
+                 {{0}, {2, "글로켄", 76, 100, 44}, {1, "클라리넷", 52, 67, 50}},
+                 {{7, "straight", "", 50, 0, 0, "스틸기타", "", .6}, {1, "straight", "rootless", 46, 50, 68, PR, PL, .55}, {7, "straight", "", 46, 0, 0, "나일론기타", "", .5}},
+                 {{"straight", 74, "일렉베이스"}, {"two", 70, "일렉베이스"}},
+                 {{"straight", 0}, {"straight", 1}, {"", 0}}, NOCOMP, false, true, false};
+        // 13 밤 고속도로 — 비브라폰 · 테너 · 뮤트 트럼펫 · 로즈 · 재즈 기타 · 베이스 · 드럼
+        P[13] = {{{"비브라폰", 0, 62, 86, 78, 1}, {"테너색소폰", 0, 52, 76, 80, 1}, {"뮤트트럼펫", 0, 58, 80, 76, 1}},
+                 {{0}, {1, "테너색소폰", 50, 67, 54}, {3, "비브라폰", 60, 82, 58}},
+                 {{1, "straight", "quartal", 48, 50, 72, "로즈", "로즈", .6}, {7, "straight", "", 46, 0, 0, "재즈기타", "", .6}, {1, "straight", "rootless", 46, 50, 68, PR, PL, .6}},
+                 {{"straight", 76, "베이스"}, {"walk", 74, "베이스"}},
+                 {{"straight", 1}, {"straight", 2}, {"straight", 0}}, NOCOMP, false, true, true};
+        // 14 눈 오는 저녁 — 하프 · 첼레스타 · 클라리넷 · 호른 · 글로켄 · 현악
+        P[14] = {{{"클라리넷", 0, 55, 79, 64, 1}, {"첼레스타", 0, 72, 96, 54, 1}, {PR, 4, 64, 86, 56, 1}, {"하프", 0, 62, 86, 60, 1}},
+                 {{0}, {1, "호른", 48, 62, 46}, {2, "글로켄", 76, 100, 40}, {1, "첼로", 48, 62, 46}},
+                 {{11, "", "", 40, 0, 0, "하프", "", .5}, {9, "", "", 36, 55, 72, PL, "", .55}, {8, "", "", 36, 52, 70, "", "", .35}},
                  {{"", 0, ""}}, {{"", 0}}, NOCOMP, false, true, false};
     }
     return P[style];
@@ -122,6 +141,8 @@ static bool orch_ok(const Palette &P, const Orch &o) {
     if (S2.kind && std::string(S2.part) == L.part) return false;                  // 둘째 목소리는 다른 악기
     if (S2.kind == 2 && std::string(S2.part) == PR && is_piano_lead(L)) return false;
     if (C.kind == 7 && std::string(C.ph) == L.part) return false;                 // 기타가 선율이면 기타 반주 X
+    if (C.kind == 11 && std::string(C.ph) == L.part) return false;                // 하프가 선율이면 하프 펼침 X
+    if (S2.kind && C.kind == 11 && std::string(S2.part) == C.ph) return false;
     if (S2.kind && std::string(S2.part) == PR && uses_rh(C)) return false;
     return true;
 }
@@ -135,8 +156,9 @@ std::string Session::orch_text() const {
     static const char *SK[4] = {"", "대선율", "겹치기", "화음"};
     if (S2.kind) s += "+" + std::string(std::string(S2.part) == PR ? "피아노" : S2.part) + SK[S2.kind];
     const CompOpt &C = P.comp[orch.comp];
-    static const char *CK[11] = {"", "컴핑", "왼손 가이드", "왼손 껍데기", "펼침", "쿵짝짝", "", "기타", "현악", "펼침+현악", "알베르티"};
-    if (C.kind) s += " / " + std::string(C.kind == 1 ? (std::string(C.ph) == PR ? "피아노 " : "로즈 ") : "") + CK[C.kind] + (C.kind == 1 ? std::string("(") + C.feel + ")" : "");
+    static const char *CK[12] = {"", "컴핑", "왼손 가이드", "왼손 껍데기", "펼침", "쿵짝짝", "", "기타", "현악", "펼침+현악", "알베르티", "펼침"};
+    if (C.kind) s += " / " + std::string(C.kind == 1 ? (std::string(C.ph) == PR ? "피아노 " : "로즈 ") : C.kind == 11 || (C.kind == 7 && std::string(C.ph) != "재즈기타") ? std::string(C.ph) + " " : "") +
+                     CK[C.kind] + (C.kind == 1 ? std::string("(") + C.feel + ")" : "");
     const BassOpt &B = P.bass[orch.bass];
     if (B.style[0]) s += " / 베이스 " + std::string(B.style);
     const DrumOpt &D = P.drum[orch.drum];
@@ -158,14 +180,26 @@ void Session::pick_orch(Role role) {
         for (size_t i = orch_hist.size() > 8 ? orch_hist.size() - 8 : 0; i < orch_hist.size(); i++) same += orch_hist[i] == o;
         s -= 1.1 * same;                                                         // 최근에 쓴 조합
         const double target = .15 + .7 * energy + .12 * this->P.dens;                 // 세기 · 음 수 조절값 높으면 촘촘하게
-        s -= 1.6 * std::fabs(density(o) - target * ((m.style >= 5 && m.style <= 7) || m.style >= 9 ? .7 : 1));
+        s -= 1.6 * std::fabs(density(o) - target * ((m.style >= 5 && m.style <= 7) || (m.style >= 9 && m.style <= 11) || m.style == 14 ? .7 : 1));
+        // 지휘자 지시: 상황에 맞는 악기는 더 · 쓰지 말 악기는 크게 덜
+        const char *dk = P.drum[o.drum].kind;
+        const std::string drum_part = dk[0] ? (std::string(dk).find("brush") != std::string::npos ? "브러시" : "드럼") : "";
+        const std::string parts[5] = {P.lead[o.lead].part, P.second[o.second].kind ? P.second[o.second].part : "",
+                                      P.comp[o.comp].kind == 1 || P.comp[o.comp].kind == 7 || P.comp[o.comp].kind == 11 ? P.comp[o.comp].ph : P.comp[o.comp].kind ? "피아노" : "",
+                                      P.bass[o.bass].style[0] ? P.bass[o.bass].part : "", drum_part};
+        for (int li = 0; li < 5; li++) {
+            if (parts[li].empty()) continue;
+            s += (li == 0 ? 1.0 : .6) * this->steer.weight(parts[li]);
+            if (this->steer.avoided(parts[li])) s -= li == 0 ? 6 : 4;
+        }
         if (changed == 0) s -= .25 + .5 * nov();                                 // 매번 조금은 바뀜 (새로움 조절값)
         if (changed > 1) s -= .7;                                                // 한꺼번에 많이 바뀌면 어색
-        if (P.drum[o.drum].kind[0] == 0 && P.drum.size() > 1 && energy > .4) s -= .8;
+        if (P.drum[o.drum].kind[0] == 0 && P.drum.size() > 1 && energy > .4 && !this->steer.avoided("드럼") && !this->steer.avoided("브러시")) s -= .8;
         if (role == R_SOLO && is_piano_lead(P.lead[o.lead])) s -= .6;
         return s + rng.uniform(0, .6);
     };
-    if (!orch_set) {                                                              // 처음: 무작위 (실행할 때마다 다른 편성으로 시작)
+    if (!orch_set || steer_dirty) {                                               // 처음 · 지휘자 지시가 바뀜: 무작위 후보 중 가장 맞는 것 (실행할 때마다 다른 편성)
+        steer_dirty = false;
         Orch best; double bs = -1e9;
         for (int k = 0; k < 40; k++) {
             Orch o{(int)rng.index(P.lead.size()), rng.random() < .6 ? 0 : (int)rng.index(P.second.size()), (int)rng.index(P.comp.size()),
@@ -644,7 +678,9 @@ void Session::arrange_body(Role role, int a, int b, const std::vector<BN> &mel) 
         return x;
     };
     std::vector<BN> placed;
-    if (role == R_TRADE) {                                                        // 주고받기: 2마디씩 두 악기
+    const bool rest_lead = steer.thin || steer.lead_rest;                         // 지휘자: 터널(비우기) · 언성(선율 쉼) — 선율은 기억만 하고 소리는 안 냄
+    if (rest_lead) {}
+    else if (role == R_TRADE) {                                                   // 주고받기: 2마디씩 두 악기
         int alt = -1;
         for (int k = 0; k < (int)P.lead.size(); k++)
             if (k != orch.lead && std::string(P.lead[k].part) != L.part && (P.lead[k].mode == 0 || L.mode == 0) &&
@@ -687,6 +723,7 @@ void Session::arrange_body(Role role, int a, int b, const std::vector<BN> &mel) 
         case 7: s.guitar_comp(bars, c.ph, c.feel, c.base); break;
         case 8: s.strings_pad(a, b, "현악", c.base, c.lo, c.hi); break;
         case 9: s.piano_pattern(a, b, m.ts == 3 ? "waltz" : "arp", c.base); s.pedals(a, b, m.ts == 3 ? 3 : 2); s.strings_pad(a, b, "현악", c.base, c.lo, c.hi); break;
+        case 11: s.piano_pattern(a, b, m.ts == 3 ? "waltz" : "arp", c.base, c.ph); break;
         case 10: s.piano_pattern(a, b, "alberti", c.base); s.pedals(a, b, 2); break;
         }
     };
@@ -694,14 +731,54 @@ void Session::arrange_body(Role role, int a, int b, const std::vector<BN> &mel) 
     do_comp(C);
     if (m.style == 10)                                                            // 현악 앙상블: 베이스 악기가 없으니 현악 저음이 근음을 길게 받침
         for (auto &sp : s.spans_in(a, b)) s.add("현악", sp.a, sp.b - sp.a + .05, fit(sp.c.root, 36, 47), 38 + 8 * energy);
+    const std::string dpart = std::string(D.kind).find("brush") != std::string::npos ? "브러시" : "드럼";
+    const bool drums_ok = !steer.thin && !steer.avoided(dpart);
     if (B.style[0] && !(role == R_BREAK && rng.random() < .5)) s.bass(a, b, role == R_SOLO && std::string(B.style) == "two" && P.bass.size() > 1 ? "walk" : B.style, B.base, B.part);
-    if (D.kind[0] && role != R_BREAK) s.drums(a, b, D.kind, std::min(2, D.lvl + (role == R_SOLO ? 1 : 0)), 8, true);
-    if (D.kind[0] && role == R_BREAK && std::string(D.kind).find("brush") != std::string::npos) s.drums(a, b, D.kind, 0, 99, false);
+    if (drums_ok && D.kind[0] && role != R_BREAK) s.drums(a, b, D.kind, std::min(2, D.lvl + (role == R_SOLO ? 1 : 0)), 8, true);
+    if (drums_ok && D.kind[0] && role == R_BREAK && std::string(D.kind).find("brush") != std::string::npos) s.drums(a, b, D.kind, 0, 99, false);
     // 세기가 높을 때 현악이 있는 분위기는 현악이 아주 작게 감쌈 (없던 단락에만)
-    if (((m.style >= 4 && m.style <= 7) || m.style == 11) && energy > .62 && role != R_BREAK) {
+    if (((m.style >= 4 && m.style <= 7) || m.style == 11 || m.style == 14) && energy > .62 && role != R_BREAK && !steer.thin) {
         bool has = false;
         for (auto &n : S.pool) has = has || (n.sec == S.cur_sec && S.names[n.part] == "현악");
         if (!has) S.strings_pad(a, b, "현악", 32 + 10 * energy, 55, 72);
+    }
+}
+
+// ---------------- 새 분위기의 도입 · 끝 (팔레트만으로) ----------------
+void Session::arrange_generic(Role R, int a, int b, const std::vector<BN> &M) {
+    const Palette &P = palette(m.style);
+    Song &s = S;
+    const LeadOpt &L = P.lead[0];
+    const CompOpt &C = P.comp[0];
+    const BassOpt &B = P.bass[0];
+    const DrumOpt &D = P.drum[0];
+    auto bars = range_v(a, b);
+    auto comp = [&](double base) {
+        switch (C.kind) {
+        case 1: s.comp(bars, C.feel, base, C.voicing, C.lo, C.hi, {}, C.ph, C.pl); break;
+        case 7: s.guitar_comp(bars, C.ph, C.feel, base); break;
+        case 11: s.piano_pattern(a, b, m.ts == 3 ? "waltz" : "arp", base, C.ph); break;
+        case 8: s.strings_pad(a, b, "현악", base, C.lo, C.hi); break;
+        default: s.piano_pattern(a, b, m.ts == 3 ? "waltz" : "arp", base); s.pedals(a, b, m.ts == 3 ? 3 : 2);
+        }
+    };
+    const std::string dpart = std::string(D.kind).find("brush") != std::string::npos ? "브러시" : "드럼";
+    const bool drums_ok = D.kind[0] && !steer.avoided(dpart);
+    if (R == R_INTRO) {                                                           // 반주 + (베이스 · 가벼운 북) + 선율 악기가 가이드톤으로 살짝
+        comp(C.base - 2);
+        if (B.style[0]) s.bass(a, b, B.style, B.base - 4, B.part);
+        if (drums_ok) s.drums(a, b, D.kind, 0, 4, false);
+        auto t = top_line(s, a, b, std::max(L.lo, 64), std::min(L.hi, 84));
+        if (L.mode == 0) s.lead(L.part, t, L.base - 10, L.legato); else s.piano_melody(t, L.base - 10, "line");
+        if (m.style == 14) s.strings_pad(a, b, "현악", 34, 55, 72);
+    } else {                                                                      // 끝 (R_TAG): 선율 + 반주 + 마지막 화음
+        auto x = oct_fit(M, L.lo, L.hi);
+        if (L.mode == 0) s.lead(L.part, x, L.base - 4, L.legato); else s.piano_melody(x, L.base - 4, "line");
+        comp(C.base - 4);
+        if (B.style[0]) s.bass(a, b, B.style, B.base - 6, B.part);
+        if (drums_ok) s.drums(a, b, D.kind, 0, 99, false);
+        if (m.style == 14) s.strings_pad(a, b, "현악", 34, 55, 72);
+        final_chord(s, b, L.mode == 0 ? L.part : "", L.lo, std::min(L.hi, L.lo + 14), drums_ok ? (dpart == "브러시" ? "브러시" : "드럼") : "", B.style[0] != 0, 48);
     }
 }
 
@@ -735,7 +812,7 @@ Section Session::next() {
         e_vel = .6 * e_vel + rng.gauss(0, .05);
         walk = std::max(.2, std::min(.8, walk + e_vel));
     }
-    energy = std::max(.08, std::min(.95, walk + .25 * P.energy + .17 * std::sin(6.283 * n_body / wT1 + wP1) + .1 * std::sin(6.283 * n_body / wT2 + wP2) +
+    energy = std::max(.08, std::min(std::max(.1, std::min(.95, steer.energy_max)), walk + .25 * P.energy + .17 * std::sin(6.283 * n_body / wT1 + wP1) + .1 * std::sin(6.283 * n_body / wT2 + wP2) +
                                              (role == R_B ? .05 : role == R_BREAK ? -.2 : role == R_SOLO ? .08 : 0)));
     // 이번 단락의 칸 (2마디씩) — 계획 줄에서 꺼냄 · 솔로는 최근 생각들의 코드 위에서 즉흥 · 쉬어가기는 한 칸 + 쉼
     const int ns = len / 2;

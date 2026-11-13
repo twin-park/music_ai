@@ -3,6 +3,7 @@
 #pragma once
 #include "amb.h"
 #include "compose.h"
+#include "conductor.h"
 #include "dsp.h"
 #include "fluid.h"
 #include "piano.h"
@@ -79,6 +80,29 @@ struct Engine {
     double master_db = 0, master_to = 0;
     std::atomic<float> volume{1.f}, duck{1.f};
     Ambience amb;                      // 주변 소리 (바닷가 파도 · 빗소리) — 음악 밑에 작게
+    // 지휘자 (상황 → 음악): 알아서(auto) 면 분위기 · 조절값 · 악기를 지휘자가 정함. 섞기(말소리 · 길 안내 · 통화)는 직접 고를 때도 늘 함
+    Conductor cond;
+    std::mutex cond_mtx;               // cond · dec 를 지킴 (화면 줄 · 작곡 줄)
+    Decision dec;
+    std::atomic<bool> auto_mode{false}, auto_start{false};
+    double cond_last = -1, mood_since = -1e9, pend_since = 0, params_at = -1e9, user_pick_until = -1e9, keep_until = -1e9;
+    std::string pend_mood;
+    bool cond_ended = false;
+    double start_at = -1;
+    Steer steer_cur;                   // 지금 지시 (mtx)
+    void set_steer(const Steer &s);
+    Steer get_steer() { std::lock_guard<std::mutex> g(mtx); return steer_cur; }
+    void cond_tick(double now);
+    std::string cur_mood_id();
+    void user_mood(const std::string &id);          // 알아서 하는 중에 사람이 직접 고름 → 15분은 그 분위기 (반응 기록)
+    std::string hear(const std::string &text, std::string *intent);   // 말 → 요청 (지휘자) + 그에 따른 일
+    void situation(const Json &patch);              // 상황 일부
+    // 섞기 (소리 줄): 전체 크기 · 말소리만큼 줄이기 · 말 대역 파내기 · 말과 겹치는 악기 줄이기
+    std::atomic<float> mix_db{0}, talk_level{0}, talk_duck_db{0}, talk_cut_db{0}, overlap_db{0};
+    std::atomic<float> out_db{-90};    // 지금 나가는 소리 크기 (화면 · 마이크 메아리 빼기용)
+    float mix_now = 1, talk_env = 0, talk_hold = 0;
+    double peq_db = 0, peq_b[3] = {1, 0, 0}, peq_a[2] = {0, 0}, peq_z[2][2] = {{0, 0}, {0, 0}};
+    std::vector<float> trk_talk;       // insts() 번호마다 말소리 겹침 (지휘자 악기 성격표)
     float vol_now = 1, fade = 0;       // 시작 페이드 · 끝 페이드
     std::atomic<bool> fading_out{false};
     std::vector<float> sendL, sendR, dryL, dryR, wetL, wetR;
