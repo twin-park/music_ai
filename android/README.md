@@ -23,6 +23,27 @@
 
 문제가 생기면 화면에 오류와 기록(앱 폴더의 `log.txt` 끝부분)이 뜹니다. 그 화면을 찍어 보내 주세요.
 
+## 윈도우 PC 에뮬레이터 (`pc/run_emulator.ps1`)
+
+DGX(arm64 리눅스)에는 구글 안드로이드 에뮬레이터가 없습니다. 그래서 시뮬은 PC에서 합니다.
+`build_apk.sh`가 끝날 때 `dist/pc_emulator/`에 스크립트와 APK 묶음(우리 앱 + 박수현 님 ear2 x86_64)을 만듭니다.
+
+PC PowerShell에서 아래 두 줄을 실행합니다.
+
+```powershell
+mkdir C:\CarBgmEmu -Force; scp -r "drboom@192.168.0.7:project/car_bgm/dist/pc_emulator/*" C:\CarBgmEmu\
+powershell -ExecutionPolicy Bypass -File C:\CarBgmEmu\run_emulator.ps1
+```
+
+- 처음 한 번은 구글에서 에뮬레이터, adb, 안드로이드 14 이미지(약 2GB)를 받습니다. 받은 파일은 SHA1로 확인합니다.
+- 그다음 1920x1080 가로 가상 기기를 만들어 켜고, `apk\`의 APK를 전부 깔고(권한 미리 허용), 앱을 켭니다.
+- 소리는 PC 스피커, 마이크는 PC 마이크를 씁니다.
+- 옵션
+  - `-Open ours`: 우리 앱을 먼저 띄웁니다.
+  - `-Log`: 기록을 파일로 저장합니다.
+  - `-Wipe`: 가상 기기를 새로 만듭니다.
+- 가속이 꺼져 있다고 나오면 관리자 PowerShell에서 `Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -All`을 실행하고 재부팅합니다.
+
 ## 휴대폰에 깔고 기록 보기 (`phone.sh`)
 
 DGX의 USB는 adb 권한 규칙(udev)이 없어서, 같은 와이파이의 **무선 디버깅**으로 붙습니다.

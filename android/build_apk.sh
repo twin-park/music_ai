@@ -83,3 +83,4 @@ java -jar "$ANDROID_BUILD_TOOLS/lib/apksigner.jar" sign --ks "$KS" --ks-pass pas
 java -jar "$ANDROID_BUILD_TOOLS/lib/apksigner.jar" verify "$OUT"
 rm -f "$OUT.idsig"
 echo "→ $OUT ($(du -h "$OUT" | cut -f1) · 판 $VN · 코드 $VC · $ABIS)"
+"$HERE/make_pc_bundle.sh" >/dev/null && echo "→ 윈도우 PC 에뮬레이터 묶음 dist/pc_emulator/ (android/pc/run_emulator.ps1)"
