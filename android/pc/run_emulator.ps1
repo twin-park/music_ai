@@ -9,10 +9,12 @@
 #
 #   -Open ours     우리 앱을 앞에 띄움 (기본은 박수현 님 앱 ear2)
 #   -Os plain      Pleos 대신 일반 안드로이드 14 태블릿 화면 (1920x1080)
+#   -Drive         감포 내륙 → 해안 주행(7분, 70km/h)을 에뮬레이터 GPS 로 재생 — 2분쯤 뒤 바닷가에 들어서면 음악이 바뀜
+#                  (에뮬레이터가 켜져 있으면 깔기는 건너뛰고 바로 달림 · 경로 파일은 routes\ — GPX 는 에뮬레이터 ⋯ → Location → Routes 로도 재생 가능)
 #   -Log           에뮬레이터 기록을 C:\CarBgmEmu\logcat_*.txt 로 저장 (앱이 죽었을 때 이 파일을 보내 주세요)
 #   -Wipe          가상 기기를 새로 만듦 (앱 · 설정 다 지워짐)
 #   다 지우기: 에뮬레이터 창 닫고 C:\CarBgmEmu 폴더 삭제
-param([string]$Root = "C:\CarBgmEmu", [string]$Open = "ear2", [string]$Os = "pleos", [switch]$Log, [switch]$Wipe)
+param([string]$Root = "C:\CarBgmEmu", [string]$Open = "ear2", [string]$Os = "pleos", [switch]$Log, [switch]$Wipe, [switch]$Drive, [string]$Route = "gampo_coast")
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
@@ -39,6 +41,26 @@ function Run([string]$exe, [string[]]$a) {
 }
 
 function Say([string]$s, [string]$c = "Green") { Write-Host $s -ForegroundColor $c }
+
+# ── 주행 재생: 경로(1초마다 위도,경도)를 에뮬레이터 GPS 로 ──
+function Drive-Route {
+    $csv = Join-Path $Root "routes\$Route.csv"
+    if (-not (Test-Path $csv)) { Say "경로 파일이 없습니다: $csv (맨 위 scp 줄을 먼저)" "Red"; return }
+    $pts = @(Get-Content $csv | Where-Object { $_ -match "," })
+    Run $Adb @("-e", "shell", "cmd", "location", "set-location-enabled", "true") | Out-Null              # 위치 켜기 (꺼져 있으면 앱이 못 받음)
+    Run $Adb @("-e", "shell", "cmd", "location", "set-location-enabled", "true", "--user", "10") | Out-Null # 차량 OS 화면 사용자
+    Say "주행 재생: $Route ($([math]::Floor($pts.Count / 60))분 $($pts.Count % 60)초 · 70km/h) — 2분쯤 뒤 바닷가에 들어서면 음악이 바닷가로 바뀌고 파도 소리가 깔립니다"
+    Say "  (Music 앱 DEV: 'AI IS CONDUCTING' 길게 누르기 → 맨 아래 위치 · 해안까지 거리 · 속도 · 멈추려면 Ctrl+C)" "White"
+    $t0 = Get-Date
+    for ($i = 0; $i -lt $pts.Count; $i++) {
+        $p = $pts[$i].Split(",")
+        Run $Adb @("-e", "emu", "geo", "fix", $p[1].Trim(), $p[0].Trim()) | Out-Null                 # geo fix 는 경도 먼저
+        if ($i % 30 -eq 0) { Write-Host ("  {0}분 {1:00}초 · {2}, {3}" -f [math]::Floor($i / 60), ($i % 60), $p[0], $p[1]) }
+        $wait = ($t0.AddSeconds($i + 1) - (Get-Date)).TotalMilliseconds
+        if ($wait -gt 0) { Start-Sleep -Milliseconds ([int]$wait) }
+    }
+    Say "도착 (위치는 마지막 자리에 그대로 둡니다)"
+}
 
 # ── 기록만 저장 ──
 if ($Log) {
@@ -140,6 +162,12 @@ if ($acc -notmatch "installed and usable") {
     exit 1
 }
 
+# ── -Drive: 이미 켜져 있으면 깔기 없이 바로 달림 ──
+if ($Drive -and ((Run $Adb @("devices")) -match "emulator-\d+\s+device") -and ((Run $Adb @("-e", "shell", "getprop", "sys.boot_completed")).Trim() -eq "1")) {
+    Drive-Route
+    exit 0
+}
+
 # ── 3. 가상 기기 ──
 $AvdDir = Join-Path $AvdHome "$Avd.avd"
 if ($Wipe -and (Test-Path $AvdDir)) {
@@ -228,4 +256,6 @@ Say "다 됐습니다. 에뮬레이터 창에서 쓰시면 됩니다."
 Say "  · 두 앱: 아래 막대의 앱 목록(네모 4개) — '차량 BGM AI'(우리 앱) · 'Music'(박수현 님 앱)" "White"
 Say "  · 소리는 PC 스피커로, 마이크는 PC 마이크로 들어갑니다" "White"
 Say "  · 앱이 죽으면: powershell -ExecutionPolicy Bypass -File $Root\run_emulator.ps1 -Log  → 저장된 파일을 보내 주세요" "White"
+Say "  · 차가 달리는 것처럼: 같은 명령 끝에 -Drive (감포 내륙 → 해안 7분 · 2분쯤 뒤 바닷가)" "White"
 Say "  · 끄기: 에뮬레이터 창 닫기 · 다시 켜기: 같은 명령 (받기 · 깔기는 건너뜀)" "White"
+if ($Drive) { Start-Sleep 20; Drive-Route }                                 # 앱이 음악을 시작할 틈을 두고 달림

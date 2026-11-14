@@ -7,12 +7,15 @@ set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(dirname "$HERE")
 OUT=$ROOT/dist/pc_emulator
-EAR2=${EAR2_APK:-/home/drboom/project/music_android/releases/v1.0-ear2/music_android-ear2-x86_64.apk}
+# 박수현 님 앱: 최신 엔진(지휘자 · 분위기 32 · 주변 소리)으로 다시 빌드한 판이 있으면 그것, 없으면 받은 v1.0-ear2 판
+LATEST=/home/drboom/project/carbgm_team/out/music_android-latest-x86_64.apk
+EAR2=${EAR2_APK:-$( [ -f "$LATEST" ] && echo "$LATEST" || echo /home/drboom/project/music_android/releases/v1.0-ear2/music_android-ear2-x86_64.apk )}
 rm -rf "$OUT"
 mkdir -p "$OUT/apk"
 # PowerShell 5.1 은 BOM 없는 .ps1 을 CP949 로 읽어 한글이 깨짐 → UTF-8 BOM + CRLF 로
 python3 -I -c 'import sys; s=open(sys.argv[1],encoding="utf-8").read().replace("\r\n","\n").replace("\n","\r\n"); open(sys.argv[2],"w",encoding="utf-8-sig",newline="").write(s)' \
     "$HERE/pc/run_emulator.ps1" "$OUT/run_emulator.ps1"
 ln -f "$ROOT/dist/CAR_BGM-android.apk" "$OUT/apk/CAR_BGM-android.apk"
+mkdir -p "$OUT/routes" && cp "$HERE"/pc/routes/*.csv "$HERE"/pc/routes/*.gpx "$OUT/routes/"      # -Drive 주행 경로 (만든 스크립트 android/tools/make_route.py)
 [ -f "$EAR2" ] && ln -f "$EAR2" "$OUT/apk/$(basename "$EAR2")" || echo "(박수현 님 ear2 APK 없음 — 우리 앱만: $EAR2)"
 du -sh "$OUT"; ls -la "$OUT" "$OUT/apk" | grep -v "^total"
