@@ -98,6 +98,8 @@ bool Engine::init(const std::string &data_dir, std::string *err) {
     const char *fl = std::getenv("CAR_BGM_FLUID");
 #ifdef _WIN32
     std::string flp = fl ? fl : exe_dir() + "\\libfluidsynth-3.dll";
+#elif defined(__ANDROID__)
+    std::string flp = fl ? fl : "libfluidsynth.so";                       // APK 의 lib/<abi>/ (앱 이름 공간에서 찾음)
 #else
     std::string flp = fl ? fl : "libfluidsynth.so.3";
 #endif

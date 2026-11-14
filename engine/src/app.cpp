@@ -17,6 +17,15 @@
 #include <windows.h>
 #include <shellapi.h>
 #endif
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <mutex>
+// 안드로이드 앱(android/jni.cpp)이 보는 곳: 화면 포트가 열리면 > 0 · 시작 실패면 < 0 (그때 app_error)
+std::atomic<int> g_app_port{0};
+static std::mutex g_err_mtx;
+static std::string g_err;
+std::string app_error() { std::lock_guard<std::mutex> g(g_err_mtx); return g_err; }
+#endif
 
 static void say(const std::string &msg) {
 #ifdef _WIN32
@@ -24,6 +33,11 @@ static void say(const std::string &msg) {
     std::wstring w(n, 0);
     MultiByteToWideChar(CP_UTF8, 0, msg.c_str(), -1, &w[0], n);
     MessageBoxW(nullptr, w.c_str(), L"차량 BGM AI", MB_OK | MB_ICONERROR);
+#elif defined(__ANDROID__)
+    __android_log_print(ANDROID_LOG_ERROR, "car_bgm", "%s", msg.c_str());
+    std::fprintf(stderr, "%s\n", msg.c_str());
+    std::lock_guard<std::mutex> g(g_err_mtx);
+    g_err = msg;
 #else
     std::fprintf(stderr, "%s\n", msg.c_str());
 #endif
@@ -74,19 +88,23 @@ static double now_s() {
     return duration<double>(steady_clock::now().time_since_epoch()).count();
 }
 
-int main(int argc, char **argv) {
-    std::string data = exe_dir() + "/data";
-    bool null_audio = false, no_browser = false;
+// 데스크톱은 main 이 바로 부름 · 안드로이드는 android/jni.cpp 가 따로 줄을 만들어 부름 (돌아오지 않음)
+//   --data 폴더 · --out 악보 폴더 · --null-audio · --no-browser · --no-watch(화면 탭이 닫혀도 안 꺼짐 — 앱은 서비스가 수명을 쥠)
+int run_app(int argc, char **argv) {
+    std::string data = exe_dir() + "/data", out_dir = home_dir() + "/차량BGM_결과";
+    bool null_audio = false, no_browser = false, no_watch = false;
     for (int i = 1; i < argc; i++) {
         std::string a = argv[i];
         if (a == "--data" && i + 1 < argc) data = argv[++i];
+        else if (a == "--out" && i + 1 < argc) out_dir = argv[++i];
         else if (a == "--null-audio") null_audio = true;
         else if (a == "--no-browser") no_browser = true;
+        else if (a == "--no-watch") no_watch = true;
     }
     std::string err;
     if (!E.init(data, &err)) { say("시작하지 못했습니다\n" + err); return 2; }
     E.auto_mode = E.cond.loaded;                                             // 지휘자가 있으면 처음부터 알아서
-    E.out_dir = home_dir() + "/차량BGM_결과";
+    E.out_dir = out_dir;
     make_dirs(E.out_dir);
     const double target_fill = .2;
     E.play_latency = target_fill + .03;
@@ -138,8 +156,12 @@ int main(int argc, char **argv) {
     if (!srv.listen_on(7700)) { say("화면용 포트를 열지 못했습니다"); return 4; }
     const std::string url = "http://127.0.0.1:" + std::to_string(srv.port) + "/";
     if (!no_browser) open_url(url); else { std::printf("화면: %s\n", url.c_str()); std::fflush(stdout); }
+#ifdef __ANDROID__
+    g_app_port = srv.port;
+#endif
     last_ping = now_s();
-    std::thread watch([] {                                     // 탭을 닫으면 30초 뒤 끝 (처음엔 2분 기다림)
+    std::thread watch([no_watch] {                             // 탭을 닫으면 30초 뒤 끝 (처음엔 2분 기다림)
+        if (no_watch) return;
         double t0 = now_s(); bool pinged = false;
         while (running) {
             std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -277,6 +299,10 @@ int main(int argc, char **argv) {
     });
     return 0;
 }
+
+#ifndef __ANDROID__
+int main(int argc, char **argv) { return run_app(argc, argv); }
+#endif
 
 #ifdef _WIN32
 // 창 없는 프로그램 (콘솔 안 뜸) — 들어오는 곳만 WinMain

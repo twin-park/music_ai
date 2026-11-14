@@ -18,6 +18,7 @@
 !/dist/
 !/data/
 !/docs/
+!/android/
 
 # 어디에나
 __pycache__/
@@ -32,6 +33,9 @@ __pycache__/
 !/engine/data/calib.txt
 !/engine/data/tune.txt
 !/engine/data/conductor/
+
+# 안드로이드: 빌드 결과(.so · dex · 자료 사본)는 빼고 소스 · 스크립트 · 아이콘만
+/android/build/
 
 # 악보 결과 · 웹 빌드/시험 음원 · 윈도우 묶음 빌드
 /score/out/

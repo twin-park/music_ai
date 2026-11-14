@@ -327,6 +327,21 @@ function say(text) {
 }
 $("sayGo").onclick = () => say($("sayIn").value);
 $("sayIn").onkeydown = e => { if (e.key === "Enter" && !e.isComposing) say($("sayIn").value); };
+// 안드로이드 앱(WebView)엔 webkitSpeechRecognition 이 없음 → 앱이 넣어 준 AndroidSpeech(안드로이드 음성 인식)를 같은 꼴로 감쌈
+if (!window.SpeechRecognition && !window.webkitSpeechRecognition && window.AndroidSpeech && AndroidSpeech.available()) {
+  window.webkitSpeechRecognition = class {
+    constructor() { this.lang = "ko-KR"; this.interimResults = false; }
+    start() {
+      window.__androidSpeech = (type, text, fin) => {
+        if (type === "result") this.onresult && this.onresult({results: [Object.assign([{transcript: text}], {isFinal: fin})]});
+        else if (type === "error") this.onerror && this.onerror({error: text});
+        else if (type === "end") { window.__androidSpeech = null; this.onend && this.onend(); }
+      };
+      AndroidSpeech.start(this.lang, !!this.interimResults);
+    }
+    stop() { AndroidSpeech.stop(); }
+  };
+}
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (SpeechRec) {
   $("mic").classList.remove("hide");

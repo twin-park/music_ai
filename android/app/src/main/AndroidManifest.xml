@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 차량 BGM AI (안드로이드) — C++ 엔진이 앱 안에서 127.0.0.1 HTTP 서버를 띄우고, 화면은 WebView 로 그 페이지를 엶 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.carbgm.app">
+
+    <uses-permission android:name="android.permission.INTERNET" />                          <!-- 127.0.0.1 소켓 (엔진 ↔ 화면) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />                      <!-- 말소리 듣기 · 음성 요청 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />                <!-- 연주 중 알림 (끄기 단추) -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <queries>
+        <intent><action android:name="android.speech.RecognitionService" /></intent>         <!-- 음성 인식기 찾기 (안드로이드 11+) -->
+    </queries>
+
+    <application
+        android:label="차량 BGM AI"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:theme="@android:style/Theme.Material.NoActionBar"
+        android:usesCleartextTraffic="true"
+        android:extractNativeLibs="true"
+        android:allowBackup="false"
+        android:hardwareAccelerated="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".EngineService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+    </application>
+</manifest>
