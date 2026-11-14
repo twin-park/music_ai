@@ -222,9 +222,10 @@ if ((Run $Adb @("devices")) -match "emulator-\d+\s+device") {
 if ($start) {
     Say "에뮬레이터 켜는 중 ($Avd · 처음엔 2~5분) — 창이 따로 뜹니다"
     # -allow-host-audio: PC 마이크를 에뮬레이터 마이크로 (말소리 듣기 · 귀 모델)
-    $args2 = @("-avd", $Avd, "-allow-host-audio", "-no-boot-anim", "-gpu", "auto")
+    $args2 = @("-avd", $Avd, "-allow-host-audio", "-no-boot-anim", "-gpu", "auto", "-no-metrics")
     if ($Os -ne "plain") { $args2 += "-no-snapshot" }    # Pleos 안내: 콜드 부트
-    Start-Process -FilePath $Emu -ArgumentList $args2
+    # 에뮬레이터 자체 기록 창은 최소화로 띄움 (닫으면 에뮬레이터가 꺼짐 — IPv6 · ColorBuffer 줄은 무시해도 되는 기록)
+    Start-Process -FilePath $Emu -ArgumentList $args2 -WindowStyle Minimized
 }
 $t0 = Get-Date
 while ((Run $Adb @("-e", "shell", "getprop", "sys.boot_completed")).Trim() -ne "1") {
