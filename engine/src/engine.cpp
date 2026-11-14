@@ -163,6 +163,17 @@ std::pair<double, double> Engine::tune_of(const std::string &kw, int p) const {
     return *best;
 }
 
+int inst_group(const InstDef &d) {
+    const std::string k = d.kw;
+    auto has = [&](const char *w) { return k.find(w) != std::string::npos; };
+    if (d.drum || has("타이코") || has("팀파니")) return GRP_DRUM;
+    if (has("베이스") || has("튜바")) return GRP_BASS;
+    if (d.engine == 0 || has("피아노") || has("로즈") || has("하프시코드") || has("클라비넷") || has("오르간") || has("비브라폰") || has("첼레스타") ||
+        has("마림바") || has("글로켄") || has("실로폰") || has("칼림바") || has("뮤직박스") || has("폴리신스")) return GRP_KEYS;
+    if (has("현악") || has("바이올린") || has("첼로") || has("피치카토") || has("패드") || has("합창") || has("하프")) return GRP_STR;
+    return GRP_LEAD;
+}
+
 Track &Engine::track(int i) {
     {
         std::lock_guard<std::mutex> g(mtx);
@@ -171,6 +182,7 @@ Track &Engine::track(int i) {
     auto tr = std::make_unique<Track>();
     const InstDef &d = insts()[i];
     tr->def = &d;
+    tr->group = inst_group(d);
     if (d.engine == 1) {
         tr->set = FL.new_settings();
         FL.setnum(tr->set, "synth.sample-rate", SR);
@@ -834,9 +846,13 @@ void Engine::render(float *L, float *R, int n) {
             }
             if (tr->measure) for (int i = 0; i < B; i++) tr->meas.push_back(std::sqrt((tr->bl[i] * tr->bl[i] + tr->br[i] * tr->br[i]) * .5f));
             // 크기 · 저역컷 · 좌우 · 잔향 보내기
-            const double g0 = std::pow(10.0, tr->gain_db / 20);
+            const double gt = std::pow(10.0, group_db[tr->group].load() / 20.0);   // 갈래 세기 (믹서) — 0dB 면 1 그대로 (소리 비트 같음)
+            const double gp0 = tr->grp_g;
+            tr->grp_g += (gt - tr->grp_g) * .15;
+            if (std::fabs(tr->grp_g - gt) < 1e-4) tr->grp_g = gt;
+            const double g0 = std::pow(10.0, tr->gain_db / 20) * gp0;
             tr->gain_db += (tr->gain_to - tr->gain_db) * .08;
-            const double g1 = std::pow(10.0, tr->gain_db / 20);
+            const double g1 = std::pow(10.0, tr->gain_db / 20) * tr->grp_g;
             const double pa = tr->def->pan, pl0 = std::cos((pa + 1) * M_PI / 4) * 1.414, pr0 = std::sin((pa + 1) * M_PI / 4) * 1.414;
             double ovg = 1;                                                   // 말소리 중: 말과 많이 겹치는 악기(색소폰 · 트럼펫 · 오보에 …)를 더 줄임
             {

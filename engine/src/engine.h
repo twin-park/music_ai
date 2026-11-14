@@ -22,6 +22,9 @@ struct InstDef {
     double db, pan, rv, hp;
 };
 const std::vector<InstDef> &insts();
+// 악기 갈래 (믹서): 0 베이스 · 1 피아노·건반 · 2 드럼·타악 · 3 선율(관악 · 기타 · 리드) · 4 현악·패드
+enum { GRP_BASS = 0, GRP_KEYS, GRP_DRUM, GRP_LEAD, GRP_STR, GRP_N };
+int inst_group(const InstDef &d);
 int inst_of(const std::string &part);         // 악기 이름 → insts() 번호 (-1 모름)
 
 enum EvType { EV_ON, EV_OFF, EV_CC, EV_BEND, EV_PROG, EV_BANK, EV_ALLOFF, EV_PIANO, EV_CAP };   // EV_CAP: 피아노 울리던 음을 t1 에 손 뗌
@@ -34,6 +37,8 @@ struct Track {
     std::vector<Ev> q;                // 시각 순 (소리 줄이 앞에서부터 씀)
     size_t qh = 0;
     double gain_db = 0, gain_to = 0;  // 지금 · 목표 (천천히 따라감)
+    int group = 3;                    // 갈래 (inst_group) — 갈래별 세기(믹서)
+    double grp_g = 1;                 // 갈래 세기 지금 값 (목표를 천천히 따라감)
     bool gain_set = false;
     Biquad hp[2];
     // 연주 상태 (작곡 줄만 씀)
@@ -147,6 +152,8 @@ struct Engine {
     bool playing() const { return cur != nullptr && !stopped; }
     // 작곡 한 걸음 (한 일이 있으면 true)
     bool compose_step(double now);
+    // 갈래별 세기 (dB, 0 = 그대로) — 화면 믹서가 바로 바꿈 (소리 줄이 천천히 따라감 · 다시 작곡 안 함)
+    std::atomic<float> group_db[GRP_N] = {};
     // 소리 n 개 (n 은 512 배수)
     void render(float *L, float *R, int n);
     // 음 시작 알림 — render 가 음을 낼 때마다 넣음 (소리 줄 하나가 쓰고 다른 줄 하나가 읽음 · 가득 차면 버림)

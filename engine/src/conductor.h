@@ -42,6 +42,8 @@ struct Conductor {
     Json derived(double now) const;                 // 상황 + 지휘자가 채운 칸 (시간대 · 주행 상태 · 터널 앞 …)
     double talk_of(const std::string &part) const;  // 악기의 말소리 겹침 (섞기용)
     const std::vector<std::string> &mood_order() const { return mood_ids; }
+    // 켜진 규칙 · 장면이 어떤 상황 칸 때문인지 (화면 그림용): [{id, aspect, say, priority, keys:["place.kind", …]}]
+    Json explain(const std::vector<std::string> &ids) const;
 
 private:
     struct Rule { std::string id, aspect, say; Json when, set; int priority = 0; double hold = 2, release = 4; };

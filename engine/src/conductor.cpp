@@ -406,3 +406,31 @@ Json Decision::to_json() const {
     j.set("end", Json::bool_(end)); j.set("urgent", Json::bool_(urgent));
     return j;
 }
+
+Json Conductor::explain(const std::vector<std::string> &ids) const {
+    Json out = Json::arr_();
+    auto keys_of = [](const Json &w) {
+        Json ks = Json::arr_();
+        if (w.is_obj()) for (auto &kv : w.o) ks.a.push_back(Json::str_(kv.first));
+        return ks;
+    };
+    for (auto &id : ids) {
+        bool found = false;
+        for (auto &r : rules_) {
+            if (r.id != id) continue;
+            Json j = Json::obj_();
+            j.set("id", Json::str_(r.id)); j.set("aspect", Json::str_(r.aspect)); j.set("say", Json::str_(r.say));
+            j.set("priority", Json::num_(r.priority)); j.set("keys", keys_of(r.when));
+            out.a.push_back(j); found = true; break;
+        }
+        if (found) continue;
+        for (auto &sc : scenes_) {
+            if (sc.id != id) continue;
+            Json j = Json::obj_();
+            j.set("id", Json::str_(sc.id)); j.set("aspect", Json::str_("scene")); j.set("say", Json::str_(sc.name));
+            j.set("priority", Json::num_(50)); j.set("keys", keys_of(sc.match));
+            out.a.push_back(j); break;
+        }
+    }
+    return out;
+}
