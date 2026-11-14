@@ -1,14 +1,18 @@
-# 윈도우 PC 안드로이드 에뮬레이터 — 차량 BGM AI(우리 앱) · Music(박수현 님 ear2 앱) 같이 깔고 켜기
+# 윈도우 PC 에뮬레이터 — Pleos Connect(현대 차량 OS) 화면에서 차량 BGM AI(우리 앱) · Music(박수현 님 ear2 앱) 깔고 켜기
 #
-#   PowerShell 에서 (처음 한 번은 구글에서 약 2GB 받음 · 다음부터는 바로 켜짐):
+#   PowerShell 에서:
 #     mkdir C:\CarBgmEmu -Force; scp -r "drboom@192.168.0.7:project/car_bgm/dist/pc_emulator/*" C:\CarBgmEmu\
 #     powershell -ExecutionPolicy Bypass -File C:\CarBgmEmu\run_emulator.ps1
 #
+#   처음 한 번: Pleos Connect v2.1.0 이미지 4GB 받기(풀면 18GB · C: 여유 30GB 필요) + 42dot 라이선스 동의
+#   다음부터는 바로 켜짐 (Pleos 안내대로 매번 콜드 부트 1~2분)
+#
 #   -Open ours     우리 앱을 앞에 띄움 (기본은 박수현 님 앱 ear2)
+#   -Os plain      Pleos 대신 일반 안드로이드 14 태블릿 화면 (1920x1080)
 #   -Log           에뮬레이터 기록을 C:\CarBgmEmu\logcat_*.txt 로 저장 (앱이 죽었을 때 이 파일을 보내 주세요)
 #   -Wipe          가상 기기를 새로 만듦 (앱 · 설정 다 지워짐)
 #   다 지우기: 에뮬레이터 창 닫고 C:\CarBgmEmu 폴더 삭제
-param([string]$Root = "C:\CarBgmEmu", [string]$Open = "ear2", [switch]$Log, [switch]$Wipe)
+param([string]$Root = "C:\CarBgmEmu", [string]$Open = "ear2", [string]$Os = "pleos", [switch]$Log, [switch]$Wipe)
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
@@ -44,27 +48,85 @@ if ($Log) {
     exit 0
 }
 
-# ── 1. 받기 (구글 공식 · SHA1 확인) ──
-$Base = "https://dl.google.com/android/repository/"
-$Parts = @(
-    @{ Name = "에뮬레이터 37.2.13"; Url = $Base + "emulator-windows_x64-16740729.zip"; Sha1 = "4d7268aa7787c640ad892844e6c9a5f159e91ad3"; Into = $Sdk; Check = "emulator\emulator.exe" },
-    @{ Name = "adb (platform-tools 37.0.1)"; Url = $Base + "platform-tools_r37.0.1-win.zip"; Sha1 = "e03e78b1d80b396f1c3358e31251cb31740e1110"; Into = $Sdk; Check = "platform-tools\adb.exe" },
-    @{ Name = "안드로이드 14 (Google APIs · x86_64, 1.5GB)"; Url = $Base + "sys-img/google_apis/x86_64-34_r14.zip"; Sha1 = "e0f6c9a0691aa27bd597d0deb1bcfdc943ac8ca7"; Into = (Join-Path $Sdk "system-images\android-34\google_apis"); Check = "system-images\android-34\google_apis\x86_64\system.img" }
-)
-foreach ($p in $Parts) {
-    if (Test-Path (Join-Path $Sdk $p.Check)) { continue }
+# ── 0. 어떤 화면(OS) ──
+$G = "https://dl.google.com/android/repository/"
+$PleosXml = "https://nexus-playground.pleos.ai/repository/raw-releases/connect-avd/2.x/crp-sys-img.xml"
+if ($Os -eq "plain") {
+    $Avd = "car_bgm"
+    $Img = @{ Name = "안드로이드 14 (Google APIs · x86_64, 1.5GB)"; Url = $G + "sys-img/google_apis/x86_64-34_r14.zip"; Size = 1563721130; Sha1 = "e0f6c9a0691aa27bd597d0deb1bcfdc943ac8ca7"
+              Into = "system-images\android-34\google_apis"; Top = "x86_64" }
+} else {
+    $Avd = "pleos"
+    $Img = @{ Name = "Pleos Connect v2.1.0 (42dot · x86_64, 4GB)"; Url = "https://nexus-playground.pleos.ai/repository/raw-releases/connect-avd/2.x/crp_car_emulator.zip"; Size = 4087751964; Sha1 = "b4f858d5bcc6c71506d7edfc872bcb9e5a11acaa"
+              Into = "system-images\android-34\pleos_car_emulator"; Top = "crp_avd_out_x86_64" }
+}
+$ImgDir = Join-Path (Join-Path $Sdk $Img.Into) "x86_64"
+$ImgOk = Join-Path $ImgDir ".carbgm_ok"
+
+# ── 1. 받기 (구글 · Pleos 공식, SHA1 확인 · 끊기면 다시 실행하면 이어 받음) ──
+function Get-Zip($p) {
     $zip = Join-Path $Dl ([IO.Path]::GetFileName($p.Url))
-    $ok = (Test-Path $zip) -and ((Get-FileHash $zip -Algorithm SHA1).Hash -eq $p.Sha1.ToUpper())
-    if (-not $ok) {
-        Say "받는 중: $($p.Name)"
-        & curl.exe -L --fail -o $zip $p.Url
-        if ($LASTEXITCODE -ne 0) { throw "받기 실패: $($p.Url)" }
-        if ((Get-FileHash $zip -Algorithm SHA1).Hash -ne $p.Sha1.ToUpper()) { throw "받은 파일이 깨졌습니다 (SHA1 다름): $zip — 다시 실행하세요" }
+    if (Test-Path $zip) {
+        $len = (Get-Item $zip).Length
+        if ($len -eq $p.Size -and (Get-FileHash $zip -Algorithm SHA1).Hash -eq $p.Sha1.ToUpper()) { return $zip }
+        if ($len -ge $p.Size) { Remove-Item $zip }
     }
+    Say "받는 중: $($p.Name)"
+    & curl.exe -L --fail -C - -o $zip $p.Url
+    if ($LASTEXITCODE -ne 0) { throw "받기 실패 (다시 실행하면 이어 받습니다): $($p.Url)" }
+    if ((Get-FileHash $zip -Algorithm SHA1).Hash -ne $p.Sha1.ToUpper()) { Remove-Item $zip; throw "받은 파일이 깨졌습니다 (SHA1 다름) — 다시 실행하세요" }
+    return $zip
+}
+
+$Tools = @(
+    @{ Name = "에뮬레이터 37.2.13"; Url = $G + "emulator-windows_x64-16740729.zip"; Size = 455344678; Sha1 = "4d7268aa7787c640ad892844e6c9a5f159e91ad3"; Check = "emulator\emulator.exe" },
+    @{ Name = "adb (platform-tools 37.0.1)"; Url = $G + "platform-tools_r37.0.1-win.zip"; Size = 8044989; Sha1 = "e03e78b1d80b396f1c3358e31251cb31740e1110"; Check = "platform-tools\adb.exe" }
+)
+foreach ($p in $Tools) {
+    if (Test-Path (Join-Path $Sdk $p.Check)) { continue }
+    $zip = Get-Zip $p
     Say "푸는 중: $($p.Name)"
-    New-Item -ItemType Directory -Force $p.Into | Out-Null
-    & tar.exe -xf $zip -C $p.Into
+    & tar.exe -xf $zip -C $Sdk
     if ($LASTEXITCODE -ne 0) { throw "풀기 실패: $zip" }
+    Remove-Item $zip
+}
+
+$plainOld = Join-Path $Sdk "system-images\android-34\google_apis\x86_64\system.img"   # 이전 판 스크립트로 받아 둔 일반 이미지
+if ($Os -eq "plain" -and (Test-Path $plainOld) -and -not (Test-Path $ImgOk)) { New-Item -ItemType File -Force $ImgOk | Out-Null }
+
+if (-not (Test-Path $ImgOk)) {
+    if ($Os -ne "plain") {
+        # Pleos Connect SDK 는 42dot 라이선스 동의가 있어야 씀 (Android Studio SDK Manager 에서 받을 때와 같은 글)
+        $lic = Join-Path $Root "PLEOS_SDK_LICENSE.txt"
+        $agreed = Join-Path $Root ".pleos_license_agreed"
+        if (-not (Test-Path $agreed)) {
+            $licXml = Join-Path $Dl "crp-sys-img.xml"
+            & curl.exe -sL --fail -o $licXml $PleosXml
+            if ($LASTEXITCODE -ne 0) { throw "Pleos 목록을 못 받음: $PleosXml" }
+            $xml = [IO.File]::ReadAllText($licXml, [Text.Encoding]::UTF8)
+            if ($xml -match '(?s)<license[^>]*>(.*?)</license>') { [IO.File]::WriteAllText($lic, [Net.WebUtility]::HtmlDecode($Matches[1]), [Text.Encoding]::UTF8) }
+            Say "Pleos Connect 에뮬레이터는 42dot 의 'Software Development Kit License Agreement' 에 동의해야 받을 수 있습니다." "Yellow"
+            Say "  전문: $lic  (Android Studio 에서 받을 때 나오는 것과 같은 글)" "Yellow"
+            $ans = Read-Host "  동의하면 y 를 입력하세요"
+            if ($ans -ne "y") { Say "동의하지 않아 멈춥니다. (일반 안드로이드 화면은: -Os plain)" "Yellow"; exit 1 }
+            New-Item -ItemType File -Force $agreed | Out-Null
+        }
+    }
+    $drive = $Root.Substring(0, 1)
+    $needGB = if ($Os -eq "plain") { 6 } else { 30 }
+    $freeGB = [math]::Floor((Get-PSDrive -Name $drive).Free / 1GB)
+    if ($freeGB -lt $needGB) { throw "${drive}: 여유 공간이 모자랍니다 (필요 ${needGB}GB · 남음 ${freeGB}GB)" }
+    $zip = Get-Zip $Img
+    $into = Join-Path $Sdk $Img.Into
+    if (Test-Path $ImgDir) { Remove-Item -Recurse -Force $ImgDir }
+    $top = Join-Path $into $Img.Top
+    if (Test-Path $top) { Remove-Item -Recurse -Force $top }
+    New-Item -ItemType Directory -Force $into | Out-Null
+    Say "푸는 중: $($Img.Name) — 몇 분 걸립니다"
+    & tar.exe -xf $zip -C $into
+    if ($LASTEXITCODE -ne 0) { throw "풀기 실패: $zip" }
+    if ($Img.Top -ne "x86_64") { Rename-Item $top "x86_64" }
+    New-Item -ItemType File -Force $ImgOk | Out-Null
     Remove-Item $zip
 }
 
@@ -78,66 +140,73 @@ if ($acc -notmatch "installed and usable") {
     exit 1
 }
 
-# ── 3. 가상 기기 (가로 1920x1080 · 차 화면 비슷하게) ──
-$Avd = "car_bgm"
+# ── 3. 가상 기기 ──
 $AvdDir = Join-Path $AvdHome "$Avd.avd"
 if ($Wipe -and (Test-Path $AvdDir)) {
     Run $Adb @("-e", "emu", "kill") | Out-Null
-    Start-Sleep 3
+    Start-Sleep 5
     Remove-Item -Recurse -Force $AvdDir
 }
 if (-not (Test-Path (Join-Path $AvdDir "config.ini"))) {
     New-Item -ItemType Directory -Force $AvdDir | Out-Null
-    @(
-        "avd.ini.encoding=UTF-8",
-        "path=$AvdDir",
-        "target=android-34"
-    ) | Set-Content -Encoding ASCII (Join-Path $AvdHome "$Avd.ini")
-    @(
-        "AvdId=$Avd",
-        "avd.ini.displayname=Car BGM 1920x1080",
-        "avd.ini.encoding=UTF-8",
-        "abi.type=x86_64",
-        "hw.cpu.arch=x86_64",
-        "hw.cpu.ncore=4",
-        "hw.ramSize=4096",
-        "vm.heapSize=512",
-        "disk.dataPartition.size=8G",
-        "image.sysdir.1=system-images\android-34\google_apis\x86_64\",
-        "tag.id=google_apis",
-        "tag.display=Google APIs",
-        "target=android-34",
-        "hw.lcd.width=1920",
-        "hw.lcd.height=1080",
-        "hw.lcd.density=240",
-        "hw.initialOrientation=landscape",
-        "hw.keyboard=yes",
-        "hw.mainKeys=no",
-        "hw.audioInput=yes",
-        "hw.audioOutput=yes",
-        "hw.gpu.enabled=yes",
-        "hw.gpu.mode=auto",
-        "showDeviceFrame=no",
-        "PlayStore.enabled=false"
-    ) | Set-Content -Encoding ASCII (Join-Path $AvdDir "config.ini")
+    @("avd.ini.encoding=UTF-8", "path=$AvdDir", "target=android-34") | Set-Content -Encoding ASCII (Join-Path $AvdHome "$Avd.ini")
+    $common = @(
+        "AvdId=$Avd", "avd.ini.encoding=UTF-8", "abi.type=x86_64", "hw.cpu.arch=x86_64", "hw.cpu.ncore=4",
+        "hw.ramSize=4096", "disk.dataPartition.size=8G", "target=android-34",
+        "hw.keyboard=yes", "hw.mainKeys=no", "hw.audioInput=yes", "hw.audioOutput=yes",
+        "hw.gpu.enabled=yes", "hw.initialOrientation=landscape", "showDeviceFrame=no", "PlayStore.enabled=false"
+    )
+    if ($Os -eq "plain") {
+        $cfg = $common + @(
+            "avd.ini.displayname=Car BGM 1920x1080", "image.sysdir.1=system-images\android-34\google_apis\x86_64\",
+            "tag.id=google_apis", "tag.display=Google APIs", "vm.heapSize=512",
+            "hw.lcd.width=1920", "hw.lcd.height=1080", "hw.lcd.density=240", "hw.gpu.mode=auto"
+        )
+    } else {
+        # Pleos 이미지 안의 devices.xml(Pleos Connect v2.1.0 · 2560x1440 · 160dpi) + Pleos 안내(RAM 4GB · 콜드 부트)
+        $cfg = $common + @(
+            "avd.ini.displayname=Pleos Connect v2.1.0", "image.sysdir.1=system-images\android-34\pleos_car_emulator\x86_64\",
+            "tag.id=android-automotive", "tag.display=Pleos Connect v2.1.0 APIs",
+            "hw.device.name=Pleos_Connect_v2_0", "hw.device.manufacturer=42dot",
+            "hw.lcd.width=2560", "hw.lcd.height=1440", "hw.lcd.density=160", "hw.gpu.mode=host",
+            "hw.multi_display_window=no", "hw.hotplug_multi_display=no",
+            "fastboot.forceColdBoot=yes", "fastboot.forceFastBoot=no"
+        )
+    }
+    $cfg | Set-Content -Encoding ASCII (Join-Path $AvdDir "config.ini")
     Say "가상 기기 만듦: $Avd"
 }
 
-# ── 4. 켜기 · 다 켜질 때까지 ──
+# ── 4. 켜기 (다른 가상 기기가 켜져 있으면 끄고) · 다 켜질 때까지 ──
 Run $Adb @("start-server") | Out-Null
-if ((Run $Adb @("devices")) -notmatch "emulator-\d+\s+device") {
-    Say "에뮬레이터 켜는 중 (처음엔 1~3분) — 창이 따로 뜹니다"
+$start = $true
+if ((Run $Adb @("devices")) -match "emulator-\d+\s+device") {
+    $cur = ((Run $Adb @("-e", "emu", "avd", "name")) -split "`n")[0].Trim()
+    if ($cur -eq $Avd) { $start = $false }
+    else {
+        Say "켜져 있던 '$cur' 을 끄고 '$Avd' 를 켭니다" "Yellow"
+        Run $Adb @("-e", "emu", "kill") | Out-Null
+        Start-Sleep 8
+    }
+} elseif (Get-Process -Name "qemu-system-x86_64*" -ErrorAction SilentlyContinue) {
+    $start = $false   # 이미 켜지는 중
+}
+if ($start) {
+    Say "에뮬레이터 켜는 중 ($Avd · 처음엔 2~5분) — 창이 따로 뜹니다"
     # -allow-host-audio: PC 마이크를 에뮬레이터 마이크로 (말소리 듣기 · 귀 모델)
-    Start-Process -FilePath $Emu -ArgumentList @("-avd", $Avd, "-allow-host-audio", "-no-boot-anim", "-gpu", "auto")
+    $args2 = @("-avd", $Avd, "-allow-host-audio", "-no-boot-anim", "-gpu", "auto")
+    if ($Os -ne "plain") { $args2 += "-no-snapshot" }    # Pleos 안내: 콜드 부트
+    Start-Process -FilePath $Emu -ArgumentList $args2
 }
 $t0 = Get-Date
 while ((Run $Adb @("-e", "shell", "getprop", "sys.boot_completed")).Trim() -ne "1") {
-    if (((Get-Date) - $t0).TotalSeconds -gt 360) { throw "6분이 지나도 안 켜졌습니다 — 에뮬레이터 창의 오류 글을 확인하세요" }
+    if (((Get-Date) - $t0).TotalSeconds -gt 600) { throw "10분이 지나도 안 켜졌습니다 — 에뮬레이터 창의 오류 글을 확인하세요" }
     Start-Sleep 3
 }
+Start-Sleep 5
 Say "켜짐"
 
-# ── 5. apk\ 의 APK 전부 깔기 (권한은 미리 허용 -g) ──
+# ── 5. apk\ 의 APK 전부 깔기 (권한은 미리 허용 -g · 모든 사용자에게) ──
 $apks = @(Get-ChildItem $ApkDir -Filter *.apk -ErrorAction SilentlyContinue)
 if ($apks.Count -eq 0) { Say "깔 APK 가 없습니다: $ApkDir (맨 위 scp 줄을 먼저)" "Yellow" }
 foreach ($f in $apks) {
@@ -151,12 +220,12 @@ foreach ($f in $apks) {
     if ($o -match "Success") { Say "  완료" } else { Say "  실패:`n$o" "Red" }
 }
 
-# ── 6. 앱 켜기 ──
-$pkg = if ($Open -eq "ours") { "com.carbgm.app" } else { "com.twinpark.music" }
-Run $Adb @("-e", "shell", "monkey", "-p", $pkg, "-c", "android.intent.category.LAUNCHER", "1") | Out-Null
+# ── 6. 앱 켜기 (차량 OS 는 화면 쓰는 사용자가 10번이라 --user current) ──
+$comp = if ($Open -eq "ours") { "com.carbgm.app/.MainActivity" } else { "com.twinpark.music/.MainActivity" }
+Run $Adb @("-e", "shell", "am", "start", "--user", "current", "-n", $comp) | Out-Null
 Say ""
 Say "다 됐습니다. 에뮬레이터 창에서 쓰시면 됩니다."
-Say "  · 두 앱: 아래에서 위로 쓸면 앱 목록 — '차량 BGM AI'(우리 앱) · 'Music'(박수현 님 앱)" "White"
+Say "  · 두 앱: 아래 막대의 앱 목록(네모 4개) — '차량 BGM AI'(우리 앱) · 'Music'(박수현 님 앱)" "White"
 Say "  · 소리는 PC 스피커로, 마이크는 PC 마이크로 들어갑니다" "White"
 Say "  · 앱이 죽으면: powershell -ExecutionPolicy Bypass -File $Root\run_emulator.ps1 -Log  → 저장된 파일을 보내 주세요" "White"
 Say "  · 끄기: 에뮬레이터 창 닫기 · 다시 켜기: 같은 명령 (받기 · 깔기는 건너뜀)" "White"

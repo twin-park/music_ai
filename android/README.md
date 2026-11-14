@@ -35,8 +35,13 @@ mkdir C:\CarBgmEmu -Force; scp -r "drboom@192.168.0.7:project/car_bgm/dist/pc_em
 powershell -ExecutionPolicy Bypass -File C:\CarBgmEmu\run_emulator.ps1
 ```
 
-- 처음 한 번은 구글에서 에뮬레이터, adb, 안드로이드 14 이미지(약 2GB)를 받습니다. 받은 파일은 SHA1로 확인합니다.
-- 그다음 1920x1080 가로 가상 기기를 만들어 켜고, `apk\`의 APK를 전부 깔고(권한 미리 허용), 앱을 켭니다.
+- 기본 화면은 **Pleos Connect v2.1.0**(42dot 공식 차량 OS 이미지, 2560x1440)입니다. 박수현 님 시연 영상과 같은 화면입니다.
+  - 처음 한 번은 4GB를 받고, 풀면 18GB가 됩니다. C:에 여유 30GB가 필요합니다.
+  - 받기 전에 42dot SDK 라이선스 동의를 묻습니다. 전문은 `C:\CarBgmEmu\PLEOS_SDK_LICENSE.txt`에 저장됩니다.
+  - Pleos 안내대로 RAM 4GB, 매번 콜드 부트입니다.
+- 에뮬레이터와 adb는 구글 공식판을 받습니다. 받은 파일은 모두 SHA1로 확인합니다.
+- 그다음 가상 기기를 만들어 켜고, `apk\`의 APK를 전부 깔고(권한 미리 허용), 앱을 켭니다.
+- 일반 안드로이드 14 태블릿 화면으로 보려면 `-Os plain`을 붙입니다(1920x1080).
 - 소리는 PC 스피커, 마이크는 PC 마이크를 씁니다.
 - 옵션
   - `-Open ours`: 우리 앱을 먼저 띄웁니다.
