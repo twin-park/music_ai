@@ -11,7 +11,7 @@
 ## 설치 · 실행
 
 1. `CAR_BGM-android.apk`를 휴대폰으로 옮겨 누릅니다. "출처를 알 수 없는 앱" 허용을 물으면 허용합니다.
-   - USB로 연결했다면 DGX에서 `source android/env.sh && adb install -r dist/CAR_BGM-android.apk`도 됩니다.
+   - DGX에서 깔고 바로 오류 기록까지 보려면 `./android/phone.sh`를 씁니다(무선 디버깅, 아래 참고).
 2. 처음 켜면 마이크·알림 권한을 묻습니다.
    - 마이크: 🎙 말로 요청하기, 차 안 말소리 듣기에 씁니다.
    - 알림: 연주 중 알림과 [끄기] 단추에 씁니다.
@@ -22,6 +22,21 @@
    - 완전히 끄기: 알림의 [끄기]를 누르세요.
 
 문제가 생기면 화면에 오류와 기록(앱 폴더의 `log.txt` 끝부분)이 뜹니다. 그 화면을 찍어 보내 주세요.
+
+## 휴대폰에 깔고 기록 보기 (`phone.sh`)
+
+DGX의 USB는 adb 권한 규칙(udev)이 없어서, 같은 와이파이의 **무선 디버깅**으로 붙습니다.
+
+```bash
+./android/phone.sh pair 192.168.0.12:37123 123456   # 처음 한 번: 개발자 옵션 → 무선 디버깅 → [페어링 코드로 기기 페어링]
+./android/phone.sh connect 192.168.0.12:41234       # 무선 디버깅 첫 화면의 IP 주소 및 포트
+./android/phone.sh ours                             # 우리 앱 깔기 → 켜기 → 기록 (logs/phone/ 에도 남음)
+./android/phone.sh ear2                             # 박수현 님 앱 music_android v1.0-ear2 (기기에 맞춰 arm64/x86_64)
+./android/phone.sh log ear2                         # 기록만 다시 · 앱이 죽었으면 죽은 이유
+./android/phone.sh stop                             # adb 끄기
+```
+
+박수현 님 앱의 소스와 APK는 `~/project/music_android`에 있습니다(`releases/v1.0-ear2/`, git 제외).
 
 ## 개발 환경 (DGX Spark · arm64 · sudo 없이)
 
