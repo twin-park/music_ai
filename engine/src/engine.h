@@ -53,6 +53,7 @@ struct Engine {
     Piano piano;
     std::map<std::string, std::map<int, std::pair<double, double>>> tune;     // 악기 → 음 → (센트, 지연초)
     std::map<std::string, Calib> calib;                                       // 분위기 → 보정
+    std::string calib_name = "calib.txt";                                     // 보정표 파일 (안드로이드 TinySoundFont 판은 calib_tsf.txt — 소리 크기가 fluidsynth 와 다름)
     std::string sf_gu, sf_sso;
     std::mutex mtx;                    // 사건 줄 · 악보 · 상태
     std::vector<std::unique_ptr<Track>> tracks;     // insts() 번호마다 (처음 쓸 때 만듦)
@@ -85,6 +86,7 @@ struct Engine {
     std::mutex cond_mtx;               // cond · dec 를 지킴 (화면 줄 · 작곡 줄)
     Decision dec;
     std::atomic<bool> auto_mode{false}, auto_start{false};
+    std::atomic<bool> change_now{false};   // "다른 거" — 다음 걸음에서 바로 (머무는 시간 · 사람이 고른 15분도 넘김)
     double cond_last = -1, mood_since = -1e9, pend_since = 0, params_at = -1e9, user_pick_until = -1e9, keep_until = -1e9;
     std::string pend_mood;
     bool cond_ended = false;
@@ -127,6 +129,16 @@ struct Engine {
     std::atomic<float> space{0.f};
     void set_params(const Params &p);
     Params get_params() { std::lock_guard<std::mutex> g(mtx); return params; }
+    // 사람이 얹는 조절량 (안드로이드 노브 4분면) — '알아서' 일 때 지휘자가 고른 조절값 위에 더함 (데스크톱은 늘 0)
+    Params knob;
+    Params with_knob(const Params &p) const {
+        auto c = [](double v) { return std::max(-1.0, std::min(1.0, v)); };
+        if (!knob.reg && !knob.tempo && !knob.dens && !knob.energy && !knob.novelty && !knob.space && !knob.tension) return p;   // 노브 안 씀 = 예전 그대로
+        Params r = p;
+        r.reg = c(p.reg + knob.reg); r.tempo = c(p.tempo + knob.tempo); r.dens = c(p.dens + knob.dens);
+        r.energy = c(p.energy + knob.energy); r.novelty = c(p.novelty + knob.novelty); r.space = c(p.space + knob.space); r.tension = c(p.tension + knob.tension);
+        return r;
+    }
     void request_stop() { req_stop = true; }
     std::atomic<bool> req_stop{false};
     std::atomic<bool> live{false};     // 연주 중 (끄면 false)
@@ -137,6 +149,14 @@ struct Engine {
     bool compose_step(double now);
     // 소리 n 개 (n 은 512 배수)
     void render(float *L, float *R, int n);
+    // 음 시작 알림 — render 가 음을 낼 때마다 넣음 (소리 줄 하나가 쓰고 다른 줄 하나가 읽음 · 가득 차면 버림)
+    //   안드로이드 앱(music_android)의 박자 신호 · 피아노 화면이 씀. frame = 소리 줄이 만든 샘플 위치, s = 세기(킥이 가장 큼)
+    struct Onset { long frame = 0; int key = -1, vel = 0, track = -1; float s = 0.f; };
+    static constexpr size_t kOnsetCap = 1024;
+    Onset onset_q[kOnsetCap];
+    std::atomic<size_t> onset_w{0}, onset_r{0};
+    void push_onset(long frame, int key, int vel, int track, bool drum);
+    bool pop_onset(long played, Onset *o);          // 재생 위치(played)에 닿은 것 하나를 꺼냄 (없으면 false)
     Status status_at(double t);
     std::string recent_score(int n_sections);
 

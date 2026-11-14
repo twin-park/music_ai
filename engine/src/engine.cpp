@@ -125,7 +125,7 @@ bool Engine::init(const std::string &data_dir, std::string *err) {
             if (w >> kw >> n >> c >> ms) tune[kw][n] = {std::max(-30.0, std::min(30.0, c)), std::max(0.0, ms) / 1000};
         }
     }
-    if (read_file(data + "/calib.txt", t)) {
+    if (read_file(data + "/" + calib_name, t)) {
         std::istringstream in(t); std::string ln;
         while (std::getline(in, ln)) {
             if (ln.empty() || ln[0] == '#') continue;
@@ -537,7 +537,7 @@ std::string Engine::hear(const std::string &text, std::string *intent) {
     }
     if (intent) *intent = it;
     if (it == "like") { keep_until = now + 600; return "이 느낌 오래 둘게요"; }
-    if (it == "change") { mood_since = -1e9; pend_since = -1e9; return "다른 분위기로 바꿀게요"; }
+    if (it == "change") { mood_since = -1e9; pend_since = -1e9; user_pick_until = -1e9; change_now = true; return "다른 분위기로 바꿀게요"; }
     if (it == "music_off") { request_end(); return "음악을 마무리할게요"; }
     if (it == "auto_off") { auto_mode = false; set_steer(Steer()); return "자동을 껐어요 · 직접 골라 주세요"; }
     if (it == "baby_sleep") return "아기가 자요 → 잔잔하게 바꿀게요";
@@ -573,20 +573,26 @@ void Engine::cond_tick(double now) {
         if (auto_start && start_at < 0) start_at = now;                    // 상황이 자리 잡을 2.5초를 기다렸다가 시작
         if (auto_start && now - start_at >= 3.6 && !d.mood.empty()) {     // (장면은 3초 이어져야 켜짐)
             auto_start = false; start_at = -1;
-            set_params(d.params); set_steer(d.steer); params_at = now;
+            set_params(with_knob(d.params)); set_steer(d.steer); params_at = now;
             request_mood(d.mood); mood_since = now; pend_mood.clear(); cond_ended = false;
         }
         return;
     }
     if (d.end) { if (!cond_ended) { cond_ended = true; request_end(); } return; }
     cond_ended = false;
+    // "다른 거": 지금 분위기를 뺀 결정으로 바로 넘어감 (기다리지 않음)
+    if (change_now.exchange(false) && !d.mood.empty() && d.mood != curm) {
+        set_params(with_knob(d.params)); set_steer(d.steer); params_at = now;
+        request_mood(d.mood); mood_since = now; pend_mood.clear();
+        return;
+    }
     // 분위기: 몇 초 이어져야 · 한 분위기는 얼마쯤 머문 뒤에 (급한 일 — 아기 · 언성 · 과속 — 은 빨리)
     if (!d.mood.empty() && d.mood != curm && now >= user_pick_until) {
         if (pend_mood != d.mood) { pend_mood = d.mood; pend_since = now; }
         const double need = d.urgent ? 3 : 8;
         const double dwell = d.urgent ? 8 : (now < keep_until ? 600 : 45);
         if (now - pend_since >= need && now - mood_since >= dwell) {
-            set_params(d.params); set_steer(d.steer); params_at = now;
+            set_params(with_knob(d.params)); set_steer(d.steer); params_at = now;
             request_mood(d.mood); mood_since = now; pend_mood.clear();
             return;
         }
@@ -594,9 +600,10 @@ void Engine::cond_tick(double now) {
     // 같은 분위기 안: 조절값 · 악기 지시가 꽤 달라졌으면 (터널 · 급한 일은 2초, 보통은 15초 간격)
     const Params cp = get_params();
     const Steer cs = get_steer();
-    const double pd = std::max({std::fabs(cp.reg - d.params.reg), std::fabs(cp.tempo - d.params.tempo), std::fabs(cp.dens - d.params.dens),
-                                std::fabs(cp.energy - d.params.energy), std::fabs(cp.novelty - d.params.novelty), std::fabs(cp.tension - d.params.tension),
-                                std::fabs(cp.space - d.params.space)});
+    const Params dp = with_knob(d.params);                                // 노브(사람이 얹은 양)까지 더한 값과 견줌
+    const double pd = std::max({std::fabs(cp.reg - dp.reg), std::fabs(cp.tempo - dp.tempo), std::fabs(cp.dens - dp.dens),
+                                std::fabs(cp.energy - dp.energy), std::fabs(cp.novelty - dp.novelty), std::fabs(cp.tension - dp.tension),
+                                std::fabs(cp.space - dp.space)});
     double idiff = 0;
     std::set<std::string> keys;
     for (auto &kv : cs.instr) keys.insert(kv.first);
@@ -606,7 +613,7 @@ void Engine::cond_tick(double now) {
                      std::fabs(d.steer.energy_max - cs.energy_max) > .01 || std::fabs(d.steer.tempo_max - cs.tempo_max) > .5;
     const double gap = (d.move_now || d.urgent || big) ? 2 : 15;
     if ((pd > .12 || big || idiff > .8) && now - params_at >= gap) {
-        set_params(d.params); set_steer(d.steer); params_at = now;
+        set_params(with_knob(d.params)); set_steer(d.steer); params_at = now;
     }
 }
 
@@ -723,6 +730,27 @@ bool Engine::compose_step(double now) {
 }
 
 // ---------------- 소리 ----------------
+void Engine::push_onset(long f, int key, int vel, int track, bool drum) {
+    const size_t w = onset_w.load(std::memory_order_relaxed);
+    if (w - onset_r.load(std::memory_order_acquire) >= kOnsetCap) return;       // 읽는 쪽이 없거나 느리면 버림 (데스크톱판)
+    float s = std::max(0, std::min(127, vel)) / 127.f;
+    if (drum) s *= (key == 35 || key == 36) ? 1.f : (key == 38 || key == 40 || key == 39) ? .8f : .45f;   // 킥 > 스네어 · 박수 > 나머지
+    else s *= .7f;
+    Onset &o = onset_q[w % kOnsetCap];
+    o.frame = f; o.key = key; o.vel = vel; o.track = track; o.s = s;
+    onset_w.store(w + 1, std::memory_order_release);
+}
+
+bool Engine::pop_onset(long played, Onset *o) {
+    const size_t r = onset_r.load(std::memory_order_relaxed);
+    if (r == onset_w.load(std::memory_order_acquire)) return false;
+    const Onset &q = onset_q[r % kOnsetCap];
+    if (q.frame > played) return false;
+    *o = q;
+    onset_r.store(r + 1, std::memory_order_release);
+    return true;
+}
+
 void Engine::render(float *L, float *R, int n) {
     const int B = Convolver::B, SUB = 32;
     for (int off = 0; off < n; off += B) {
@@ -772,7 +800,10 @@ void Engine::render(float *L, float *R, int n) {
                     int at = std::max(0, std::min(B - 1, (int)std::lround((ev[ei].t - t0) * SR)));
                     if (ev[ei].type == EV_ALLOFF) piano.release_all(at);
                     else if (ev[ei].type == EV_CAP) piano.cap_all(at, (long)((ev[ei].t1 - ev[ei].t) * SR));
-                    else if (ev[ei].type == EV_PIANO) piano.note(ev[ei].a, ev[ei].b, std::max(.02, ev[ei].t1 - ev[ei].t), at);
+                    else if (ev[ei].type == EV_PIANO) {
+                        piano.note(ev[ei].a, ev[ei].b, std::max(.02, ev[ei].t1 - ev[ei].t), at);
+                        push_onset(f0 + at, ev[ei].a, ev[ei].b, (int)(tr->def - insts().data()), false);
+                    }
                 }
                 piano.render(tr->bl.data(), tr->br.data(), B);
             } else {
@@ -781,7 +812,11 @@ void Engine::render(float *L, float *R, int n) {
                     for (; ei < ev.size() && ev[ei].t < te; ei++) {
                         const Ev &e = ev[ei];
                         switch (e.type) {
-                        case EV_ON: FL.noteon(tr->syn, e.ch, e.a, e.b); break;
+                        case EV_ON:
+                            FL.noteon(tr->syn, e.ch, e.a, e.b);
+                            if (e.b > 0) push_onset(f0 + std::max(0L, std::min((long)B - 1, std::lround((e.t - t0) * SR))), e.a, e.b,
+                                                    (int)(tr->def - insts().data()), tr->def->drum);
+                            break;
                         case EV_OFF: FL.noteoff(tr->syn, e.ch, e.a); break;
                         case EV_CC: FL.cc(tr->syn, e.ch, e.a, e.b); break;
                         case EV_BEND: FL.pitch_bend(tr->syn, e.ch, e.a + 8192); break;
